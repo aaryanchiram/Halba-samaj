@@ -628,7 +628,7 @@ textarea:focus {
     margin: 0 !important;
     padding: 0 !important;
 
-    font-size: 13px !important;
+    font-size: 15px !important;
     line-height: 1.05 !important;
   }
 
@@ -664,11 +664,11 @@ textarea:focus {
   }
 
   .success-icon {
-    width: 8mm !important;
-    height: 8mm !important;
+    width: 10mm !important;
+    height: 10mm !important;
 
-    min-width: 8mm !important;
-    min-height: 8mm !important;
+    min-width: 10mm !important;
+    min-height: 10mm !important;
 
     margin: 0 auto 0.6mm !important;
     padding: 0 !important;
@@ -695,7 +695,7 @@ textarea:focus {
     margin: 0 0 0.6mm !important;
     padding: 0 !important;
 
-    font-size: 11.5px !important;
+    font-size: 15px !important;
     line-height: 1 !important;
   }
 
@@ -703,7 +703,7 @@ textarea:focus {
     margin: 0.2mm 0 !important;
     padding: 0 !important;
 
-    font-size: 6.5px !important;
+    font-size: 10px !important;
     line-height: 1 !important;
   }
 
@@ -740,9 +740,9 @@ textarea:focus {
   .registration-card-header {
     width: 100% !important;
 
-    height: 6.5mm !important;
-    min-height: 6.5mm !important;
-    max-height: 6.5mm !important;
+    height: 8mm !important;
+    min-height: 8mm !important;
+    max-height: 8mm !important;
 
     margin: 0 !important;
     padding: 0.8mm 2.5mm !important;
@@ -761,7 +761,7 @@ textarea:focus {
     margin: 0 !important;
     padding: 0 !important;
 
-    font-size: 8.5px !important;
+    font-size: 10px !important;
     line-height: 1 !important;
   }
 
@@ -769,7 +769,7 @@ textarea:focus {
     margin: 0 !important;
     padding: 0 !important;
 
-    font-size: 6.5px !important;
+    font-size: 10px !important;
     line-height: 1 !important;
 
     white-space: nowrap !important;
@@ -790,7 +790,7 @@ textarea:focus {
 
     table-layout: fixed !important;
 
-    font-size: 6.5px !important;
+    font-size: 10px !important;
     line-height: 1 !important;
   }
 
@@ -799,9 +799,9 @@ textarea:focus {
   }
 
   .details-table tr {
-    height: 5.8mm !important;
-    min-height: 5.8mm !important;
-    max-height: 5.8mm !important;
+    height: 7mm !important;
+    min-height: 7mm !important;
+    max-height: 7mm !important;
 
     page-break-inside: avoid !important;
     break-inside: avoid !important;
@@ -811,9 +811,9 @@ textarea:focus {
   .details-table td {
     display: table-cell !important;
 
-    height: 5.8mm !important;
-    min-height: 5.8mm !important;
-    max-height: 5.8mm !important;
+    height: 7mm !important;
+    min-height: 7mm !important;
+    max-height: 7mm !important;
 
     margin: 0 !important;
 
@@ -825,7 +825,7 @@ textarea:focus {
 
     box-sizing: border-box !important;
 
-    font-size: 6.5px !important;
+    font-size: 10px !important;
 
     line-height: 1 !important;
   }

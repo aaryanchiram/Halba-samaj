@@ -1,5 +1,5 @@
 /* Use the same deployed Apps Script /exec URL as script.js. */
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwoPRbJjgxXsoToR2A2L_b7bkfAQAUkOHVd2UNvt1EqWtngM2FVsoQ3cu2KE9LaIOZt/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwYC5JEZKwnRGv6xFydZANi5PO54V-T89DU6yHSVZPzzlDD511ZcWIVlxH9T_SNnAjA/exec";
 const loginForm = document.getElementById("loginForm");
 const loginBtn = document.getElementById("loginBtn");
 const loginPanel = document.getElementById("loginPanel");

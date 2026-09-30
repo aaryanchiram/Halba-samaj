@@ -1,5 +1,5 @@
 /* Paste your deployed Google Apps Script Web App /exec URL here. */
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwoPRbJjgxXsoToR2A2L_b7bkfAQAUkOHVd2UNvt1EqWtngM2FVsoQ3cu2KE9LaIOZt/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwYC5JEZKwnRGv6xFydZANi5PO54V-T89DU6yHSVZPzzlDD511ZcWIVlxH9T_SNnAjA/exec";
 const form = document.getElementById("registrationForm");
 const message = document.getElementById("message");
 const submitBtn = document.getElementById("submitBtn");

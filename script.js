@@ -1,5 +1,5 @@
 /* Paste your deployed Google Apps Script Web App /exec URL here. */
-const APPS_SCRIPT_URL = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwoPRbJjgxXsoToR2A2L_b7bkfAQAUkOHVd2UNvt1EqWtngM2FVsoQ3cu2KE9LaIOZt/exec";
 const form = document.getElementById("registrationForm");
 const message = document.getElementById("message");
 const submitBtn = document.getElementById("submitBtn");

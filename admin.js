@@ -1,30 +1,25 @@
-// ============================================================
-// HALBA SAMAJ ADMIN DASHBOARD
-// FIREBASE VERSION
-// ============================================================
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-
 import {
   getAuth,
   signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  signOut
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 
 import {
   getFirestore,
   collection,
-  getDocs
+  getDocs,
+  query,
+  orderBy
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
-
-// ============================================================
-// FIREBASE CONFIG
-// ============================================================
+/* =========================
+   FIREBASE CONFIG
+========================= */
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDrAvxLdDT9TUabC9B3p7SsJDTp5XfVuEU",
+  apiKey: "AIzaSyDrAvxLdDT9TUbbC9B3p7SsJDTp5XfVuEU",
   authDomain: "halba-register-b23bb.firebaseapp.com",
   projectId: "halba-register-b23bb",
   storageBucket: "halba-register-b23bb.firebasestorage.app",
@@ -33,465 +28,731 @@ const firebaseConfig = {
   measurementId: "G-162MZWB8RB"
 };
 
-
-// ============================================================
-// INITIALIZE FIREBASE
-// ============================================================
-
 const app = initializeApp(firebaseConfig);
-
 const auth = getAuth(app);
-
 const db = getFirestore(app);
 
-
-// ============================================================
-// ADMIN CONFIG
-// ============================================================
-
-// Login page पर username "admin" रहेगा
-// Firebase Authentication में वास्तविक email यह रहेगा
+/* =========================
+   ADMIN SETTINGS
+========================= */
 
 const ADMIN_USERNAME = "admin";
-
 const ADMIN_EMAIL = "admin@halbasamaj.com";
 
+/* =========================
+   DOM
+========================= */
 
-// ============================================================
-// HTML ELEMENTS
-// ============================================================
+const loginPanel = document.getElementById("loginPanel");
+const dashboardPanel = document.getElementById("dashboardPanel");
 
-const loginForm =
-  document.getElementById("loginForm");
+const loginForm = document.getElementById("loginForm");
+const loginBtn = document.getElementById("loginBtn");
 
-const loginBtn =
-  document.getElementById("loginBtn");
+const adminMessage = document.getElementById("adminMessage");
 
-const loginPanel =
-  document.getElementById("loginPanel");
+const refreshBtn = document.getElementById("refreshBtn");
+const logoutBtn = document.getElementById("logoutBtn");
 
-const dashboardPanel =
-  document.getElementById("dashboardPanel");
+const districtFilter = document.getElementById("districtFilter");
+const blockFilter = document.getElementById("blockFilter");
+const villageFilter = document.getElementById("villageFilter");
+const genderFilter = document.getElementById("genderFilter");
+const searchFilter = document.getElementById("searchFilter");
 
-const adminMessage =
-  document.getElementById("adminMessage");
+const recordsBody = document.getElementById("recordsBody");
 
-const recordsBody =
-  document.getElementById("recordsBody");
+const totalCount = document.getElementById("totalCount");
+const maleCount = document.getElementById("maleCount");
+const femaleCount = document.getElementById("femaleCount");
+const otherCount = document.getElementById("otherCount");
 
-const districtFilter =
-  document.getElementById("districtFilter");
+const visibleCount = document.getElementById("visibleCount");
 
-const blockFilter =
-  document.getElementById("blockFilter");
+const districtSummary = document.getElementById("districtSummary");
+const blockSummary = document.getElementById("blockSummary");
+const villageSummary = document.getElementById("villageSummary");
 
-const villageFilter =
-  document.getElementById("villageFilter");
+const lastUpdated = document.getElementById("lastUpdated");
 
-const genderFilter =
-  document.getElementById("genderFilter");
+const printListBtn = document.getElementById("printListBtn");
+const downloadExcelBtn = document.getElementById("downloadExcelBtn");
 
-const searchFilter =
-  document.getElementById("searchFilter");
-
-const refreshBtn =
-  document.getElementById("refreshBtn");
-
-const logoutBtn =
-  document.getElementById("logoutBtn");
-
-const printListBtn =
-  document.getElementById("printListBtn");
-
-
-// ============================================================
-// DATA
-// ============================================================
+/* =========================
+   DATA
+========================= */
 
 let records = [];
 
+/* =========================
+   MESSAGE
+========================= */
 
-// ============================================================
-// MESSAGE
-// ============================================================
+function showMessage(message, type = "") {
+  if (!adminMessage) return;
 
-function showMessage(text, type) {
+  adminMessage.textContent = message;
+  adminMessage.className = "message";
 
-  adminMessage.textContent = text;
-
-  adminMessage.className =
-    "message show " + type;
-
+  if (type) {
+    adminMessage.classList.add(type);
+  }
 }
 
-
-// ============================================================
-// ESCAPE HTML
-// ============================================================
+/* =========================
+   ESCAPE HTML
+========================= */
 
 function esc(value) {
-
   return String(value ?? "")
-    .replace(/[&<>"']/g, char => ({
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#39;"
-    }[char]));
-
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
+/* =========================
+   FIRESTORE TIMESTAMP
+========================= */
 
-// ============================================================
-// FIREBASE AUTH STATE
-// ============================================================
+function formatTimestamp(value) {
+  if (!value) return "";
+
+  try {
+    if (typeof value.toDate === "function") {
+      return value.toDate().toLocaleString("hi-IN");
+    }
+
+    if (value.seconds) {
+      return new Date(value.seconds * 1000).toLocaleString("hi-IN");
+    }
+
+    const date = new Date(value);
+
+    if (!isNaN(date.getTime())) {
+      return date.toLocaleString("hi-IN");
+    }
+  } catch (error) {
+    console.error(error);
+  }
+
+  return String(value);
+}
+
+/* =========================
+   AUTH STATE
+========================= */
 
 onAuthStateChanged(auth, async (user) => {
 
-  if (user) {
-
-    // केवल निर्धारित admin email स्वीकार करें
-
-    if (
-      user.email?.toLowerCase() !==
-      ADMIN_EMAIL.toLowerCase()
-    ) {
-
-      await signOut(auth);
-
-      showMessage(
-        "यह Admin account नहीं है।",
-        "error"
-      );
-
-      return;
-    }
-
+  if (user && user.email === ADMIN_EMAIL) {
 
     loginPanel.classList.add("hidden");
-
     dashboardPanel.classList.remove("hidden");
 
-    showMessage(
-      "लॉगिन सफल।",
-      "success"
-    );
-
+    showMessage("एडमिन लॉगिन सफल।", "success");
 
     await loadData();
 
   } else {
 
     loginPanel.classList.remove("hidden");
-
     dashboardPanel.classList.add("hidden");
 
   }
 
 });
 
+/* =========================
+   LOGIN
+========================= */
 
-// ============================================================
-// ADMIN LOGIN
-// ============================================================
+loginForm.addEventListener("submit", async (event) => {
 
-loginForm.addEventListener(
-  "submit",
-  async (event) => {
+  event.preventDefault();
 
-    event.preventDefault();
+  const formData = new FormData(loginForm);
 
-    showMessage("", "");
+  const username = String(formData.get("username") || "").trim();
+  const password = String(formData.get("password") || "");
 
-    const formData =
-      new FormData(loginForm);
-
-    const username =
-      String(
-        formData.get("username") || ""
-      ).trim();
-
-    const password =
-      String(
-        formData.get("password") || ""
-      );
-
-
-    // Username check
-
-    if (
-      username.toLowerCase() !==
-      ADMIN_USERNAME.toLowerCase()
-    ) {
-
-      showMessage(
-        "❌ गलत Admin username।",
-        "error"
-      );
-
-      return;
-    }
-
-
-    if (!password) {
-
-      showMessage(
-        "❌ पासवर्ड दर्ज करें।",
-        "error"
-      );
-
-      return;
-    }
-
-
-    loginBtn.disabled = true;
-
-    loginBtn.innerHTML =
-      "<span>लॉगिन हो रहा है...</span><b>…</b>";
-
-
-    try {
-
-      await signInWithEmailAndPassword(
-        auth,
-        ADMIN_EMAIL,
-        password
-      );
-
-      loginForm.reset();
-
-
-    } catch (error) {
-
-      console.error(
-        "Admin Login Error:",
-        error
-      );
-
-
-      let msg =
-        "❌ यूज़रनेम या पासवर्ड गलत है।";
-
-
-      if (
-        error.code ===
-        "auth/invalid-credential"
-      ) {
-
-        msg =
-          "❌ Admin username या password गलत है।";
-
-      }
-
-      else if (
-        error.code ===
-        "auth/user-not-found"
-      ) {
-
-        msg =
-          "❌ Firebase में Admin account नहीं मिला।";
-
-      }
-
-      else if (
-        error.code ===
-        "auth/wrong-password"
-      ) {
-
-        msg =
-          "❌ Admin password गलत है।";
-
-      }
-
-      else if (
-        error.code ===
-        "auth/too-many-requests"
-      ) {
-
-        msg =
-          "❌ बहुत अधिक प्रयास हुए हैं। कुछ समय बाद पुनः प्रयास करें।";
-
-      }
-
-      else if (
-        error.code ===
-        "auth/network-request-failed"
-      ) {
-
-        msg =
-          "❌ Internet connection की समस्या है।";
-
-      }
-
-
-      showMessage(
-        msg,
-        "error"
-      );
-
-
-    } finally {
-
-      loginBtn.disabled = false;
-
-      loginBtn.innerHTML =
-        "<span>लॉगिन करें</span><b>→</b>";
-
-    }
-
-  }
-);
-
-
-// ============================================================
-// LOAD FIRESTORE DATA
-// ============================================================
-
-async function loadData() {
-
-  if (!auth.currentUser) {
-
+  if (username !== ADMIN_USERNAME) {
+    showMessage("❌ गलत यूज़रनेम।", "error");
     return;
   }
 
+  if (!password) {
+    showMessage("❌ पासवर्ड डालें।", "error");
+    return;
+  }
 
-  refreshBtn.disabled = true;
+  loginBtn.disabled = true;
 
-  refreshBtn.textContent =
-    "लोड हो रहा है...";
-
+  const oldText = loginBtn.innerHTML;
+  loginBtn.innerHTML = "<span>लॉगिन हो रहा है...</span>";
 
   try {
 
-    const snapshot =
-      await getDocs(
-        collection(
-          db,
-          "registrations"
-        )
-      );
-
-
-    records = [];
-
-
-    snapshot.forEach(
-      docSnapshot => {
-
-        const data =
-          docSnapshot.data();
-
-
-        records.push({
-
-          id:
-            docSnapshot.id,
-
-          ...data
-
-        });
-
-      }
+    await signInWithEmailAndPassword(
+      auth,
+      ADMIN_EMAIL,
+      password
     );
 
-
-    // नवीनतम registration पहले
-
-    records.sort(
-      (a, b) => {
-
-        const aTime =
-          a.createdAt?.toMillis
-            ? a.createdAt.toMillis()
-            : 0;
-
-        const bTime =
-          b.createdAt?.toMillis
-            ? b.createdAt.toMillis()
-            : 0;
-
-        return bTime - aTime;
-
-      }
-    );
-
-
-    populateFilters();
-
-    renderDashboard();
-
-
-    const lastUpdated =
-      document.getElementById(
-        "lastUpdated"
-      );
-
-
-    if (lastUpdated) {
-
-      lastUpdated.textContent =
-        "अंतिम अपडेट: " +
-        new Date().toLocaleString(
-          "hi-IN"
-        );
-
-    }
-
+    loginForm.reset();
 
   } catch (error) {
 
-    console.error(
-      "Firestore Load Error:",
-      error
-    );
+    console.error(error);
 
+    let message = "❌ लॉगिन असफल।";
 
     if (
-      error.code ===
-      "permission-denied"
+      error.code === "auth/invalid-credential" ||
+      error.code === "auth/wrong-password" ||
+      error.code === "auth/user-not-found"
     ) {
-
-      showMessage(
-        "❌ Firestore ने अनुमति नहीं दी। Firebase Authentication और Rules जाँचें।",
-        "error"
-      );
-
-    } else {
-
-      showMessage(
-        "❌ डेटा लोड नहीं हो पाया।",
-        "error"
-      );
-
+      message = "❌ यूज़रनेम या पासवर्ड गलत है।";
     }
 
+    showMessage(message, "error");
 
   } finally {
 
-    refreshBtn.disabled = false;
+    loginBtn.disabled = false;
+    loginBtn.innerHTML = oldText;
 
-    refreshBtn.textContent =
-      "रीफ्रेश";
+  }
+
+});
+
+/* =========================
+   LOAD FIRESTORE DATA
+========================= */
+
+async function loadData() {
+
+  try {
+
+    showMessage("डेटा लोड हो रहा है...", "info");
+
+    const registrationsRef = collection(db, "registrations");
+
+    let snapshot;
+
+    try {
+
+      const q = query(
+        registrationsRef,
+        orderBy("createdAt", "desc")
+      );
+
+      snapshot = await getDocs(q);
+
+    } catch (error) {
+
+      console.warn(
+        "createdAt order query failed. Loading without order.",
+        error
+      );
+
+      snapshot = await getDocs(registrationsRef);
+
+    }
+
+    records = [];
+
+    snapshot.forEach((docSnap) => {
+
+      records.push({
+        id: docSnap.id,
+        ...docSnap.data()
+      });
+
+    });
+
+    records.sort((a, b) => {
+
+      const aTime = getTimeValue(a.createdAt);
+      const bTime = getTimeValue(b.createdAt);
+
+      return bTime - aTime;
+
+    });
+
+    populateFilters();
+    renderDashboard();
+
+    const now = new Date();
+
+    lastUpdated.textContent =
+      "अंतिम अपडेट: " +
+      now.toLocaleString("hi-IN");
+
+    showMessage(
+      `✅ ${records.length} पंजीयन रिकॉर्ड लोड हुए।`,
+      "success"
+    );
+
+  } catch (error) {
+
+    console.error("Firestore load error:", error);
+
+    showMessage(
+      "❌ डेटा लोड नहीं हो पाया। Firestore Rules और Firebase Config जाँचें।",
+      "error"
+    );
+
+    recordsBody.innerHTML =
+      `<tr><td colspan="10">डेटा लोड नहीं हुआ।</td></tr>`;
 
   }
 
 }
 
+/* =========================
+   TIMESTAMP VALUE
+========================= */
 
-// ============================================================
-// REFRESH
-// ============================================================
+function getTimeValue(value) {
+
+  if (!value) return 0;
+
+  try {
+
+    if (typeof value.toDate === "function") {
+      return value.toDate().getTime();
+    }
+
+    if (value.seconds) {
+      return Number(value.seconds) * 1000;
+    }
+
+    const time = new Date(value).getTime();
+
+    return isNaN(time) ? 0 : time;
+
+  } catch (error) {
+
+    return 0;
+
+  }
+
+}
+
+/* =========================
+   UNIQUE VALUES
+========================= */
+
+function uniqueValues(field) {
+
+  return [
+    ...new Set(
+      records
+        .map(record => String(record[field] || "").trim())
+        .filter(Boolean)
+    )
+  ].sort((a, b) =>
+    a.localeCompare(b, "hi")
+  );
+
+}
+
+/* =========================
+   POPULATE FILTERS
+========================= */
+
+function populateFilters() {
+
+  const oldDistrict = districtFilter.value;
+  const oldBlock = blockFilter.value;
+  const oldVillage = villageFilter.value;
+
+  districtFilter.innerHTML =
+    `<option value="">सभी जिले</option>`;
+
+  uniqueValues("district").forEach(value => {
+
+    districtFilter.insertAdjacentHTML(
+      "beforeend",
+      `<option value="${esc(value)}">${esc(value)}</option>`
+    );
+
+  });
+
+  districtFilter.value = oldDistrict;
+
+  populateBlockFilter(oldBlock);
+  populateVillageFilter(oldVillage);
+
+}
+
+/* =========================
+   BLOCK FILTER
+========================= */
+
+function populateBlockFilter(selectedValue = "") {
+
+  const selectedDistrict = districtFilter.value;
+
+  let values = records
+    .filter(record => {
+      if (!selectedDistrict) return true;
+      return String(record.district || "") === selectedDistrict;
+    })
+    .map(record =>
+      String(record.block || "").trim()
+    )
+    .filter(Boolean);
+
+  values = [...new Set(values)].sort((a, b) =>
+    a.localeCompare(b, "hi")
+  );
+
+  blockFilter.innerHTML =
+    `<option value="">सभी ब्लॉक</option>`;
+
+  values.forEach(value => {
+
+    blockFilter.insertAdjacentHTML(
+      "beforeend",
+      `<option value="${esc(value)}">${esc(value)}</option>`
+    );
+
+  });
+
+  if (values.includes(selectedValue)) {
+    blockFilter.value = selectedValue;
+  }
+
+}
+
+/* =========================
+   VILLAGE FILTER
+========================= */
+
+function populateVillageFilter(selectedValue = "") {
+
+  const selectedDistrict = districtFilter.value;
+  const selectedBlock = blockFilter.value;
+
+  let values = records
+    .filter(record => {
+
+      if (
+        selectedDistrict &&
+        String(record.district || "") !== selectedDistrict
+      ) {
+        return false;
+      }
+
+      if (
+        selectedBlock &&
+        String(record.block || "") !== selectedBlock
+      ) {
+        return false;
+      }
+
+      return true;
+
+    })
+    .map(record =>
+      String(record.village || "").trim()
+    )
+    .filter(Boolean);
+
+  values = [...new Set(values)].sort((a, b) =>
+    a.localeCompare(b, "hi")
+  );
+
+  villageFilter.innerHTML =
+    `<option value="">सभी गाँव</option>`;
+
+  values.forEach(value => {
+
+    villageFilter.insertAdjacentHTML(
+      "beforeend",
+      `<option value="${esc(value)}">${esc(value)}</option>`
+    );
+
+  });
+
+  if (values.includes(selectedValue)) {
+    villageFilter.value = selectedValue;
+  }
+
+}
+
+/* =========================
+   FILTER EVENTS
+========================= */
+
+districtFilter.addEventListener("change", () => {
+
+  populateBlockFilter();
+  populateVillageFilter();
+
+  renderDashboard();
+
+});
+
+blockFilter.addEventListener("change", () => {
+
+  populateVillageFilter();
+
+  renderDashboard();
+
+});
+
+villageFilter.addEventListener(
+  "change",
+  renderDashboard
+);
+
+genderFilter.addEventListener(
+  "change",
+  renderDashboard
+);
+
+searchFilter.addEventListener(
+  "input",
+  renderDashboard
+);
+
+/* =========================
+   FILTERED RECORDS
+========================= */
+
+function filteredRecords() {
+
+  const district = districtFilter.value;
+  const block = blockFilter.value;
+  const village = villageFilter.value;
+  const gender = genderFilter.value;
+
+  const search =
+    String(searchFilter.value || "")
+      .trim()
+      .toLowerCase();
+
+  return records.filter(record => {
+
+    if (
+      district &&
+      String(record.district || "") !== district
+    ) {
+      return false;
+    }
+
+    if (
+      block &&
+      String(record.block || "") !== block
+    ) {
+      return false;
+    }
+
+    if (
+      village &&
+      String(record.village || "") !== village
+    ) {
+      return false;
+    }
+
+    if (
+      gender &&
+      String(record.gender || "") !== gender
+    ) {
+      return false;
+    }
+
+    if (search) {
+
+      const searchable = [
+        record.participantName,
+        record.email,
+        record.mobile,
+        record.fatherName,
+        record.gotra,
+        record.totem,
+        record.district,
+        record.block,
+        record.relatedBlock,
+        record.village
+      ]
+        .map(value =>
+          String(value || "").toLowerCase()
+        )
+        .join(" ");
+
+      if (!searchable.includes(search)) {
+        return false;
+      }
+
+    }
+
+    return true;
+
+  });
+
+}
+
+/* =========================
+   RENDER DASHBOARD
+========================= */
+
+function renderDashboard() {
+
+  const list = filteredRecords();
+
+  visibleCount.textContent = list.length;
+
+  totalCount.textContent = records.length;
+
+  maleCount.textContent =
+    records.filter(
+      r => String(r.gender || "") === "पुरुष"
+    ).length;
+
+  femaleCount.textContent =
+    records.filter(
+      r => String(r.gender || "") === "महिला"
+    ).length;
+
+  otherCount.textContent =
+    records.filter(r => {
+
+      const gender = String(r.gender || "");
+
+      return (
+        gender !== "पुरुष" &&
+        gender !== "महिला"
+      );
+
+    }).length;
+
+  renderTable(list);
+  renderSummary(list);
+
+}
+
+/* =========================
+   RENDER TABLE
+========================= */
+
+function renderTable(list) {
+
+  if (!list.length) {
+
+    recordsBody.innerHTML =
+      `<tr>
+        <td colspan="10">
+          कोई रिकॉर्ड नहीं मिला।
+        </td>
+      </tr>`;
+
+    return;
+
+  }
+
+  recordsBody.innerHTML = list
+    .map((record, index) => {
+
+      return `
+        <tr>
+          <td>${index + 1}</td>
+
+          <td>
+            <strong>${esc(record.participantName)}</strong>
+          </td>
+
+          <td>${esc(record.gender)}</td>
+
+          <td>${esc(record.district)}</td>
+
+          <td>${esc(record.block)}</td>
+
+          <td>${esc(record.village)}</td>
+
+          <td>${esc(record.mobile)}</td>
+
+          <td>${esc(record.email)}</td>
+
+          <td>
+            <button
+              type="button"
+              class="secondary-btn"
+              onclick="window.printRegistration('${esc(record.id)}')"
+            >
+              प्रिंट
+            </button>
+          </td>
+
+        </tr>
+      `;
+
+    })
+    .join("");
+
+}
+
+/* =========================
+   SUMMARY
+========================= */
+
+function makeSummary(list, field) {
+
+  const map = {};
+
+  list.forEach(record => {
+
+    const value =
+      String(record[field] || "नहीं बताया").trim();
+
+    map[value] = (map[value] || 0) + 1;
+
+  });
+
+  return Object.entries(map)
+    .sort((a, b) => b[1] - a[1])
+    .map(([name, count]) =>
+      `<div class="summary-row">
+        <span>${esc(name)}</span>
+        <strong>${count}</strong>
+      </div>`
+    )
+    .join("");
+
+}
+
+function renderSummary(list) {
+
+  districtSummary.innerHTML =
+    makeSummary(list, "district") ||
+    "<p>कोई डेटा नहीं।</p>";
+
+  blockSummary.innerHTML =
+    makeSummary(list, "block") ||
+    "<p>कोई डेटा नहीं।</p>";
+
+  villageSummary.innerHTML =
+    makeSummary(list, "village") ||
+    "<p>कोई डेटा नहीं।</p>";
+
+}
+
+/* =========================
+   REFRESH
+========================= */
 
 refreshBtn.addEventListener(
   "click",
   loadData
 );
 
-
-// ============================================================
-// LOGOUT
-// ============================================================
+/* =========================
+   LOGOUT
+========================= */
 
 logoutBtn.addEventListener(
   "click",
@@ -501,22 +762,17 @@ logoutBtn.addEventListener(
 
       await signOut(auth);
 
-      records = [];
-
       showMessage(
-        "लॉगआउट हो गया।",
+        "आप सफलतापूर्वक लॉगआउट हो गए।",
         "success"
       );
 
     } catch (error) {
 
-      console.error(
-        "Logout Error:",
-        error
-      );
+      console.error(error);
 
       showMessage(
-        "लॉगआउट नहीं हो पाया।",
+        "❌ लॉगआउट नहीं हो पाया।",
         "error"
       );
 
@@ -525,1020 +781,337 @@ logoutBtn.addEventListener(
   }
 );
 
+/* =========================
+   PRINT SINGLE RECORD
+========================= */
 
-// ============================================================
-// UNIQUE VALUES
-// ============================================================
+window.printRegistration = function (id) {
 
-function uniq(values) {
-
-  return [
-    ...new Set(
-      values
-        .map(
-          value =>
-            String(value || "")
-              .trim()
-        )
-        .filter(Boolean)
-    )
-  ].sort(
-    (a, b) =>
-      a.localeCompare(
-        b,
-        "hi"
-      )
+  const record = records.find(
+    item => item.id === id
   );
-
-}
-
-
-// ============================================================
-// FILL SELECT
-// ============================================================
-
-function fillSelect(
-  element,
-  values,
-  defaultText
-) {
-
-  if (!element) {
-
-    return;
-  }
-
-
-  const oldValue =
-    element.value;
-
-
-  element.innerHTML = "";
-
-
-  const defaultOption =
-    document.createElement(
-      "option"
-    );
-
-  defaultOption.value = "";
-
-  defaultOption.textContent =
-    defaultText;
-
-  element.appendChild(
-    defaultOption
-  );
-
-
-  values.forEach(
-    value => {
-
-      const option =
-        document.createElement(
-          "option"
-        );
-
-      option.value =
-        value;
-
-      option.textContent =
-        value;
-
-      element.appendChild(
-        option
-      );
-
-    }
-  );
-
-
-  if (
-    values.includes(oldValue)
-  ) {
-
-    element.value =
-      oldValue;
-
-  }
-
-}
-
-
-// ============================================================
-// POPULATE FILTERS
-// ============================================================
-
-function populateFilters() {
-
-  fillSelect(
-    districtFilter,
-    uniq(
-      records.map(
-        r => r.district
-      )
-    ),
-    "सभी जिले"
-  );
-
-
-  fillSelect(
-    blockFilter,
-    uniq(
-      records.map(
-        r => r.block
-      )
-    ),
-    "सभी ब्लॉक"
-  );
-
-
-  fillSelect(
-    villageFilter,
-    uniq(
-      records.map(
-        r => r.village
-      )
-    ),
-    "सभी गाँव"
-  );
-
-}
-
-
-// ============================================================
-// FILTER EVENTS
-// ============================================================
-
-[
-  districtFilter,
-  blockFilter,
-  villageFilter,
-  genderFilter
-].forEach(
-  element => {
-
-    element.addEventListener(
-      "change",
-      renderDashboard
-    );
-
-  }
-);
-
-
-searchFilter.addEventListener(
-  "input",
-  renderDashboard
-);
-
-
-// ============================================================
-// FILTER RECORDS
-// ============================================================
-
-function filteredRecords() {
-
-  const district =
-    districtFilter.value;
-
-  const block =
-    blockFilter.value;
-
-  const village =
-    villageFilter.value;
-
-  const gender =
-    genderFilter.value;
-
-  const query =
-    searchFilter.value
-      .trim()
-      .toLowerCase();
-
-
-  return records.filter(
-    record => {
-
-      const districtMatch =
-        !district ||
-        record.district ===
-        district;
-
-
-      const blockMatch =
-        !block ||
-        record.block ===
-        block;
-
-
-      const villageMatch =
-        !village ||
-        record.village ===
-        village;
-
-
-      const genderMatch =
-        !gender ||
-        record.gender ===
-        gender;
-
-
-      const searchMatch =
-        !query ||
-        [
-          record.participantName,
-          record.email,
-          record.mobile,
-          record.fatherName,
-          record.gotra,
-          record.totem
-        ]
-          .some(
-            value =>
-              String(
-                value || ""
-              )
-                .toLowerCase()
-                .includes(
-                  query
-                )
-          );
-
-
-      return (
-        districtMatch &&
-        blockMatch &&
-        villageMatch &&
-        genderMatch &&
-        searchMatch
-      );
-
-    }
-  );
-
-}
-
-
-// ============================================================
-// RENDER DASHBOARD
-// ============================================================
-
-function renderDashboard() {
-
-  const list =
-    filteredRecords();
-
-
-  // Total
-
-  document.getElementById(
-    "totalCount"
-  ).textContent =
-    records.length;
-
-
-  // Male
-
-  document.getElementById(
-    "maleCount"
-  ).textContent =
-    records.filter(
-      r =>
-        r.gender ===
-        "पुरुष"
-    ).length;
-
-
-  // Female
-
-  document.getElementById(
-    "femaleCount"
-  ).textContent =
-    records.filter(
-      r =>
-        r.gender ===
-        "महिला"
-    ).length;
-
-
-  // Other
-
-  document.getElementById(
-    "otherCount"
-  ).textContent =
-    records.filter(
-      r =>
-        ![
-          "पुरुष",
-          "महिला"
-        ].includes(
-          r.gender
-        )
-    ).length;
-
-
-  // Visible
-
-  document.getElementById(
-    "visibleCount"
-  ).textContent =
-    list.length;
-
-
-  renderTable(list);
-
-
-  renderSummary(
-    "districtSummary",
-    list,
-    "district"
-  );
-
-
-  renderSummary(
-    "blockSummary",
-    list,
-    "block"
-  );
-
-
-  renderSummary(
-    "villageSummary",
-    list,
-    "village"
-  );
-
-}
-
-
-// ============================================================
-// FORMAT DATE
-// ============================================================
-
-function formatTimestamp(
-  timestamp
-) {
-
-  if (
-    timestamp &&
-    typeof timestamp.toDate ===
-      "function"
-  ) {
-
-    return timestamp
-      .toDate()
-      .toLocaleString(
-        "hi-IN"
-      );
-
-  }
-
-
-  if (
-    timestamp instanceof Date
-  ) {
-
-    return timestamp
-      .toLocaleString(
-        "hi-IN"
-      );
-
-  }
-
-
-  return "—";
-
-}
-
-
-// ============================================================
-// RENDER TABLE
-// ============================================================
-
-function renderTable(list) {
-
-  if (!list.length) {
-
-    recordsBody.innerHTML =
-      `
-      <tr>
-        <td colspan="9"
-            class="empty-row">
-          कोई रिकॉर्ड नहीं मिला।
-        </td>
-      </tr>
-      `;
-
-    return;
-  }
-
-
-  recordsBody.innerHTML =
-    list.map(
-      (record, index) => {
-
-        return `
-        <tr>
-
-          <td>${index + 1}</td>
-
-          <td>
-            ${esc(
-              record.participantName
-            )}
-          </td>
-
-          <td>
-            ${esc(
-              record.gender
-            )}
-          </td>
-
-          <td>
-            ${esc(
-              record.district
-            )}
-          </td>
-
-          <td>
-            ${esc(
-              record.block
-            )}
-          </td>
-
-          <td>
-            ${esc(
-              record.village
-            )}
-          </td>
-
-          <td>
-            ${esc(
-              record.mobile
-            )}
-          </td>
-
-          <td>
-            ${esc(
-              record.email
-            )}
-          </td>
-
-          <td>
-
-            <button
-              type="button"
-              class="print-row-btn"
-              data-id="${esc(record.id)}">
-              प्रिंट
-            </button>
-
-          </td>
-
-        </tr>
-        `;
-
-      }
-    ).join("");
-
-
-  recordsBody
-    .querySelectorAll(
-      "button[data-id]"
-    )
-    .forEach(
-      button => {
-
-        button.addEventListener(
-          "click",
-          () => {
-
-            const record =
-              records.find(
-                r =>
-                  r.id ===
-                  button.dataset.id
-              );
-
-            printRecord(record);
-
-          }
-        );
-
-      }
-    );
-
-}
-
-
-// ============================================================
-// SUMMARY
-// ============================================================
-
-function renderSummary(
-  elementId,
-  list,
-  key
-) {
-
-  const counts = {};
-
-
-  list.forEach(
-    record => {
-
-      const value =
-        String(
-          record[key] ||
-          "(जानकारी नहीं)"
-        );
-
-
-      counts[value] =
-        (counts[value] || 0) + 1;
-
-    }
-  );
-
-
-  const items =
-    Object.entries(
-      counts
-    ).sort(
-      (a, b) =>
-        b[1] - a[1] ||
-        a[0].localeCompare(
-          b[0],
-          "hi"
-        )
-    );
-
-
-  const element =
-    document.getElementById(
-      elementId
-    );
-
-
-  if (!element) {
-
-    return;
-  }
-
-
-  element.innerHTML =
-    items.length
-
-      ? `
-        <div class="summary-list">
-
-          ${items.map(
-            ([name, count]) => `
-              <div class="summary-row">
-                <span>${esc(name)}</span>
-                <strong>${count}</strong>
-              </div>
-            `
-          ).join("")}
-
-        </div>
-        `
-
-      : `
-        <p class="privacy-note">
-          कोई रिकॉर्ड नहीं
-        </p>
-        `;
-
-}
-
-
-// ============================================================
-// PRINT SINGLE RECORD
-// ============================================================
-
-function printRecord(record) {
 
   if (!record) {
 
-    return;
-  }
-
-
-  const rows = [
-
-    ["महासभा", record.mahasabha],
-
-    [
-      "अन्य महासभा",
-      record.otherMahasabha
-    ],
-
-    [
-      "प्रतिभागी का नाम",
-      record.participantName
-    ],
-
-    ["गोत्र", record.gotra],
-
-    ["टोटम", record.totem],
-
-    [
-      "पिता का नाम",
-      record.fatherName
-    ],
-
-    ["जन्मतिथि", record.dob],
-
-    ["ईमेल", record.email],
-
-    ["मोबाइल", record.mobile],
-
-    ["लिंग", record.gender],
-
-    ["जिला", record.district],
-
-    ["ब्लॉक", record.block],
-
-    ["गाँव / नगर", record.village],
-
-    ["पूरा पता", record.address],
-
-    [
-      "नियम एवं शर्तें",
-      record.termsAccepted
-    ],
-
-    [
-      "जानकारी पुष्टि",
-      record.informationConfirmed
-    ],
-
-    [
-      "स्थिति",
-      record.status
-    ],
-
-    [
-      "पंजीयन समय",
-      formatTimestamp(
-        record.createdAt
-      )
-    ]
-
-  ];
-
-
-  const htmlRows =
-    rows
-      .filter(
-        ([, value]) =>
-          value !== undefined &&
-          value !== null &&
-          value !== ""
-      )
-      .map(
-        ([label, value]) => `
-          <tr>
-            <th>${esc(label)}</th>
-            <td>${esc(value)}</td>
-          </tr>
-        `
-      )
-      .join("");
-
-
-  printHtml(
-    "पंजीयन प्रति",
-    htmlRows
-  );
-
-}
-
-
-// ============================================================
-// PRINT HTML
-// ============================================================
-
-function printHtml(
-  title,
-  rows
-) {
-
-  const logoUrl =
-    new URL(
-      "assets/logo.webp",
-      window.location.href
-    ).href;
-
-
-  const win =
-    window.open(
-      "",
-      "_blank",
-      "width=900,height=900"
-    );
-
-
-  if (!win) {
-
     showMessage(
-      "प्रिंट विंडो नहीं खुली। कृपया Pop-up की अनुमति दें।",
+      "❌ रिकॉर्ड नहीं मिला।",
       "error"
     );
 
     return;
+
   }
 
+  const rows = [
+    ["पंजीयन ID", record.id],
+    ["महासभा", record.mahasabha],
+    ["अन्य महासभा", record.otherMahasabha],
+    ["प्रतिभागी का नाम", record.participantName],
+    ["गोत्र", record.gotra],
+    ["टोटम", record.totem],
+    ["पिता का नाम", record.fatherName],
+    ["जन्मतिथि", record.dob],
+    ["लिंग", record.gender],
+    ["ईमेल", record.email],
+    ["कॉन्टेक्ट नम्बर", record.mobile],
+    ["जिला", record.district],
+    ["संबंधित ब्लॉक", record.relatedBlock],
+    ["ब्लॉक / विकासखंड", record.block],
+    ["गाँव / नगर", record.village],
+    ["पूरा पता", record.address],
+    ["नियम एवं शर्तें", record.termsAccepted],
+    ["जानकारी पुष्टि", record.informationConfirmed],
+    ["स्थिति", record.status],
+    ["पंजीयन समय", formatTimestamp(record.createdAt)]
+  ];
 
-  win.document.write(`
+  const html = `
+    <!doctype html>
+    <html lang="hi">
+    <head>
+      <meta charset="utf-8">
+      <title>पंजीयन विवरण</title>
 
-<!doctype html>
+      <style>
+        @page {
+          size: A4 portrait;
+          margin: 12mm;
+        }
 
-<html lang="hi">
+        * {
+          box-sizing: border-box;
+        }
 
-<head>
+        body {
+          font-family:
+            Arial,
+            "Noto Sans Devanagari",
+            sans-serif;
 
-<meta charset="utf-8">
+          margin: 0;
+          color: #222;
+        }
 
-<title>
-${esc(title)}
-</title>
+        h1 {
+          text-align: center;
+          margin: 0 0 4px;
+          font-size: 22px;
+        }
 
-<style>
+        h2 {
+          text-align: center;
+          margin: 0 0 18px;
+          font-size: 16px;
+        }
 
-body{
-  font-family:
-    Arial,
-    "Noto Sans Devanagari",
-    sans-serif;
+        table {
+          width: 100%;
+          border-collapse: collapse;
+        }
 
-  padding:28px;
+        th,
+        td {
+          border: 1px solid #777;
+          padding: 7px 9px;
+          text-align: left;
+          vertical-align: top;
+        }
 
-  color:#163b39;
-}
+        th {
+          width: 30%;
+          background: #f2f2f2;
+        }
 
-header{
-  text-align:center;
+        .footer {
+          margin-top: 18px;
+          text-align: center;
+          font-size: 11px;
+        }
+      </style>
+    </head>
 
-  border-bottom:
-    2px solid #0d6f6c;
+    <body>
 
-  padding-bottom:12px;
-}
+      <h1>अखिल भारतीय आदिवासी हलबा हलबी समाज</h1>
+      <h2>पंजीयन विवरण</h2>
 
-header img{
-  width:80px;
-  height:80px;
+      <table>
+        ${rows.map(([label, value]) => `
+          <tr>
+            <th>${esc(label)}</th>
+            <td>${esc(value)}</td>
+          </tr>
+        `).join("")}
+      </table>
 
-  object-fit:contain;
-}
+      <div class="footer">
+        Powered by Aaryan Chiram
+      </div>
 
-h1{
-  font-size:22px;
-  margin:8px 0;
-}
+      <script>
+        window.onload = function() {
+          window.print();
+        };
+      <\/script>
 
-h2{
-  font-size:18px;
-  margin:4px 0;
-}
+    </body>
+    </html>
+  `;
 
-table{
-  width:100%;
-
-  border-collapse:
-    collapse;
-
-  margin-top:20px;
-}
-
-th,
-td{
-  border:
-    1px solid #bbb;
-
-  padding:9px;
-
-  text-align:left;
-
-  vertical-align:top;
-}
-
-th{
-  width:34%;
-
-  background:#f0f7f6;
-}
-
-.print-button{
-  margin-top:20px;
-
-  padding:10px 20px;
-}
-
-@media print{
-
-  .noprint{
-    display:none;
-  }
-
-  body{
-    padding:0;
-  }
-
-}
-
-</style>
-
-</head>
-
-<body>
-
-<header>
-
-<img
-  src="${logoUrl}"
-  alt="समाज लोगो"
->
-
-<h1>
-अखिल भारतीय आदिवासी हल्बा हल्बी समाज
-</h1>
-
-<h2>
-बालोद महासभा
-</h2>
-
-<p>
-${esc(title)}
-</p>
-
-</header>
-
-<table>
-
-${rows}
-
-</table>
-
-<div class="noprint">
-
-<button
-  class="print-button"
-  onclick="window.print()">
-
-प्रिंट करें
-
-</button>
-
-</div>
-
-<script>
-
-window.onload = function(){
-
-  setTimeout(
-    function(){
-      window.print();
-    },
-    300
-  );
+  printHtml(html);
 
 };
 
-<\/script>
+/* =========================
+   PRINT HTML
+========================= */
 
-</body>
+function printHtml(html) {
 
-</html>
+  const printWindow = window.open(
+    "",
+    "_blank",
+    "width=900,height=700"
+  );
 
-  `);
+  if (!printWindow) {
 
+    showMessage(
+      "❌ Popup blocked है। Browser में popup allow करें।",
+      "error"
+    );
 
-  win.document.close();
+    return;
+
+  }
+
+  printWindow.document.open();
+  printWindow.document.write(html);
+  printWindow.document.close();
 
 }
 
-
-// ============================================================
-// PRINT FILTERED LIST
-// ============================================================
+/* =========================
+   PRINT LIST
+========================= */
 
 printListBtn.addEventListener(
   "click",
   () => {
 
-    const list =
-      filteredRecords();
-
+    const list = filteredRecords();
 
     if (!list.length) {
 
       showMessage(
-        "प्रिंट करने के लिए कोई रिकॉर्ड नहीं है।",
+        "❌ प्रिंट करने के लिए कोई रिकॉर्ड नहीं है।",
         "error"
       );
 
       return;
+
     }
 
+    const rows = list
+      .map((record, index) => `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${esc(record.participantName)}</td>
+          <td>${esc(record.gender)}</td>
+          <td>${esc(record.district)}</td>
+          <td>${esc(record.relatedBlock)}</td>
+          <td>${esc(record.block)}</td>
+          <td>${esc(record.village)}</td>
+          <td>${esc(record.mobile)}</td>
+          <td>${esc(record.email)}</td>
+        </tr>
+      `)
+      .join("");
 
-    const header = `
+    const html = `
+      <!doctype html>
+      <html lang="hi">
 
-      <tr>
+      <head>
 
-        <th>क्रम</th>
+        <meta charset="utf-8">
 
-        <th>नाम</th>
+        <title>पंजीयन सूची</title>
 
-        <th>लिंग</th>
+        <style>
 
-        <th>जिला</th>
+          @page {
+            size: A4 landscape;
+            margin: 8mm;
+          }
 
-        <th>ब्लॉक</th>
+          * {
+            box-sizing: border-box;
+          }
 
-        <th>गाँव</th>
+          body {
+            font-family:
+              Arial,
+              "Noto Sans Devanagari",
+              sans-serif;
 
-        <th>मोबाइल</th>
+            margin: 0;
+            color: #222;
+          }
 
-        <th>ईमेल</th>
+          h1 {
+            text-align: center;
+            margin: 0 0 3px;
+            font-size: 20px;
+          }
 
-      </tr>
+          h2 {
+            text-align: center;
+            margin: 0 0 12px;
+            font-size: 14px;
+          }
 
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9px;
+          }
+
+          th,
+          td {
+            border: 1px solid #777;
+            padding: 4px;
+            vertical-align: top;
+          }
+
+          th {
+            background: #f2f2f2;
+          }
+
+          .footer {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 9px;
+          }
+
+        </style>
+
+      </head>
+
+      <body>
+
+        <h1>
+          अखिल भारतीय आदिवासी हलबा हलबी समाज
+        </h1>
+
+        <h2>
+          पंजीयन सूची — कुल ${list.length} रिकॉर्ड
+        </h2>
+
+        <table>
+
+          <thead>
+            <tr>
+              <th>क्रम</th>
+              <th>नाम</th>
+              <th>लिंग</th>
+              <th>जिला</th>
+              <th>संबंधित ब्लॉक</th>
+              <th>ब्लॉक</th>
+              <th>गाँव</th>
+              <th>मोबाइल</th>
+              <th>ईमेल</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            ${rows}
+          </tbody>
+
+        </table>
+
+        <div class="footer">
+          Powered by Aaryan Chiram
+        </div>
+
+        <script>
+          window.onload = function() {
+            window.print();
+          };
+        <\/script>
+
+      </body>
+      </html>
     `;
 
-
-    const rows =
-      list.map(
-        (record, index) => `
-
-          <tr>
-
-            <td>${index + 1}</td>
-
-            <td>
-              ${esc(
-                record.participantName
-              )}
-            </td>
-
-            <td>
-              ${esc(
-                record.gender
-              )}
-            </td>
-
-            <td>
-              ${esc(
-                record.district
-              )}
-            </td>
-
-            <td>
-              ${esc(
-                record.block
-              )}
-            </td>
-
-            <td>
-              ${esc(
-                record.village
-              )}
-            </td>
-
-            <td>
-              ${esc(
-                record.mobile
-              )}
-            </td>
-
-            <td>
-              ${esc(
-                record.email
-              )}
-            </td>
-
-          </tr>
-
-        `
-      ).join("");
-
-
-    printHtml(
-      "पंजीयन सूची",
-      header + rows
-    );
+    printHtml(html);
 
   }
 );
-// ============================================================
-// EXCEL DOWNLOAD
-// ============================================================
 
-const downloadExcelBtn =
-  document.getElementById("downloadExcelBtn");
+/* =========================
+   EXCEL DOWNLOAD
+========================= */
 
 if (downloadExcelBtn) {
 
@@ -1549,40 +1122,6 @@ if (downloadExcelBtn) {
 
 }
 
-
-// ============================================================
-// EXCEL DATE FORMAT
-// ============================================================
-
-function excelDateValue(timestamp) {
-
-  if (
-    timestamp &&
-    typeof timestamp.toDate === "function"
-  ) {
-
-    return timestamp
-      .toDate()
-      .toLocaleString("hi-IN");
-
-  }
-
-  if (timestamp instanceof Date) {
-
-    return timestamp
-      .toLocaleString("hi-IN");
-
-  }
-
-  return "";
-
-}
-
-
-// ============================================================
-// DOWNLOAD FIRESTORE DATA AS EXCEL
-// ============================================================
-
 function downloadExcel() {
 
   const list = filteredRecords();
@@ -1590,222 +1129,142 @@ function downloadExcel() {
   if (!list.length) {
 
     showMessage(
-      "❌ Excel डाउनलोड करने के लिए कोई रिकॉर्ड नहीं मिला।",
+      "❌ डाउनलोड करने के लिए कोई रिकॉर्ड नहीं है।",
       "error"
     );
 
     return;
+
   }
 
+  /* SheetJS library check */
 
-  // XLSX library check
-
-  if (typeof XLSX === "undefined") {
+  if (
+    typeof XLSX === "undefined"
+  ) {
 
     showMessage(
-      "❌ Excel लाइब्रेरी लोड नहीं हुई। Internet connection जाँचें।",
+      "❌ Excel Library लोड नहीं हुई। Internet connection जाँचें।",
       "error"
     );
 
     return;
-  }
-
-
-  downloadExcelBtn.disabled = true;
-
-  downloadExcelBtn.textContent =
-    "⏳ Excel तैयार हो रहा है...";
-
-
-  try {
-
-    // ========================================================
-    // EXCEL DATA
-    // ========================================================
-
-    const excelData = list.map(
-      (record, index) => ({
-
-        "क्रम":
-          index + 1,
-
-        "पंजीयन ID":
-          record.id || "",
-
-        "महासभा":
-          record.mahasabha || "",
-
-        "अन्य महासभा":
-          record.otherMahasabha || "",
-
-        "प्रतिभागी का नाम":
-          record.participantName || "",
-
-        "गोत्र":
-          record.gotra || "",
-
-        "टोटम":
-          record.totem || "",
-
-        "पिता का नाम":
-          record.fatherName || "",
-
-        "जन्मतिथि":
-          record.dob || "",
-
-        "लिंग":
-          record.gender || "",
-
-        "ईमेल":
-          record.email || "",
-
-        "मोबाइल":
-          record.mobile || "",
-
-        "जिला":
-          record.district || "",
-
-        "ब्लॉक / विकासखंड":
-          record.block || "",
-
-        "गाँव / नगर":
-          record.village || "",
-
-        "पूरा पता":
-          record.address || "",
-
-        "नियम एवं शर्तें":
-          record.termsAccepted || "",
-
-        "जानकारी पुष्टि":
-          record.informationConfirmed || "",
-
-        "स्थिति":
-          record.status || "",
-
-        "पंजीयन समय":
-          excelDateValue(
-            record.createdAt
-          )
-
-      })
-    );
-
-
-    // ========================================================
-    // CREATE WORKSHEET
-    // ========================================================
-
-    const worksheet =
-      XLSX.utils.json_to_sheet(
-        excelData
-      );
-
-
-    // ========================================================
-    // COLUMN WIDTH
-    // ========================================================
-
-    worksheet["!cols"] = [
-
-      { wch: 7 },   // क्रम
-      { wch: 28 },  // ID
-      { wch: 22 },  // महासभा
-      { wch: 22 },  // अन्य महासभा
-      { wch: 25 },  // नाम
-      { wch: 18 },  // गोत्र
-      { wch: 18 },  // टोटम
-      { wch: 25 },  // पिता
-      { wch: 15 },  // DOB
-      { wch: 14 },  // Gender
-      { wch: 30 },  // Email
-      { wch: 16 },  // Mobile
-      { wch: 22 },  // District
-      { wch: 22 },  // Block
-      { wch: 25 },  // Village
-      { wch: 40 },  // Address
-      { wch: 22 },  // Terms
-      { wch: 22 },  // Confirmation
-      { wch: 14 },  // Status
-      { wch: 25 }   // Created
-    ];
-
-
-    // ========================================================
-    // CREATE WORKBOOK
-    // ========================================================
-
-    const workbook =
-      XLSX.utils.book_new();
-
-
-    XLSX.utils.book_append_sheet(
-      workbook,
-      worksheet,
-      "पंजीयन डेटा"
-    );
-
-
-    // ========================================================
-    // FILE NAME
-    // ========================================================
-
-    const now =
-      new Date();
-
-
-    const date =
-      now.toISOString()
-        .slice(0, 10);
-
-
-    const time =
-      now.toTimeString()
-        .slice(0, 8)
-        .replace(/:/g, "-");
-
-
-    const filename =
-      `Halba-Samaj-Registration-${date}-${time}.xlsx`;
-
-
-    // ========================================================
-    // DOWNLOAD
-    // ========================================================
-
-    XLSX.writeFile(
-      workbook,
-      filename
-    );
-
-
-    showMessage(
-      `✅ ${list.length} रिकॉर्ड Excel में डाउनलोड हो गए।`,
-      "success"
-    );
-
-
-  } catch (error) {
-
-    console.error(
-      "Excel Export Error:",
-      error
-    );
-
-    showMessage(
-      "❌ Excel फाइल तैयार नहीं हो सकी।",
-      "error"
-    );
-
-
-  } finally {
-
-    downloadExcelBtn.disabled =
-      false;
-
-    downloadExcelBtn.textContent =
-      "📥 Excel डाउनलोड";
 
   }
+
+  const exportData = list.map(
+    (record, index) => ({
+
+      "क्रम": index + 1,
+
+      "पंजीयन ID":
+        record.id || "",
+
+      "महासभा":
+        record.mahasabha || "",
+
+      "अन्य महासभा":
+        record.otherMahasabha || "",
+
+      "प्रतिभागी का नाम":
+        record.participantName || "",
+
+      "गोत्र":
+        record.gotra || "",
+
+      "टोटम":
+        record.totem || "",
+
+      "पिता का नाम":
+        record.fatherName || "",
+
+      "जन्मतिथि":
+        record.dob || "",
+
+      "लिंग":
+        record.gender || "",
+
+      "ईमेल":
+        record.email || "",
+
+      "मोबाइल":
+        record.mobile || "",
+
+      "जिला":
+        record.district || "",
+
+      "संबंधित ब्लॉक":
+        record.relatedBlock || "",
+
+      "ब्लॉक / विकासखंड":
+        record.block || "",
+
+      "गाँव / नगर":
+        record.village || "",
+
+      "पूरा पता":
+        record.address || "",
+
+      "नियम एवं शर्तें":
+        record.termsAccepted || "",
+
+      "जानकारी पुष्टि":
+        record.informationConfirmed || "",
+
+      "स्थिति":
+        record.status || "",
+
+      "पंजीयन समय":
+        formatTimestamp(record.createdAt)
+
+    })
+  );
+
+  const worksheet =
+    XLSX.utils.json_to_sheet(exportData);
+
+  const workbook =
+    XLSX.utils.book_new();
+
+  XLSX.utils.book_append_sheet(
+    workbook,
+    worksheet,
+    "पंजीयन डेटा"
+  );
+
+  /* Column widths */
+
+  const headers =
+    Object.keys(exportData[0]);
+
+  worksheet["!cols"] =
+    headers.map(header => ({
+      wch: Math.min(
+        Math.max(header.length + 5, 12),
+        30
+      )
+    }));
+
+  /* Freeze first row */
+
+  worksheet["!freeze"] = {
+    xSplit: 0,
+    ySplit: 1
+  };
+
+  const date = new Date();
+
+  const dateText =
+    date.toISOString().slice(0, 10);
+
+  XLSX.writeFile(
+    workbook,
+    `Halba-Samaj-Registration-${dateText}.xlsx`
+  );
+
+  showMessage(
+    `✅ ${list.length} रिकॉर्ड Excel में डाउनलोड हो गए।`,
+    "success"
+  );
 
 }

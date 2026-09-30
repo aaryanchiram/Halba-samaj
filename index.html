@@ -1,159 +1,745 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0f6b68">
-  <title>अखिल भारतीय आदिवासी हल्बा हल्बी समाज बालोद महासभा</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="description"
+    content="अखिल भारतीय आदिवासी हल्बा हल्बी समाज छत्तीसगढ़ - सदस्य पंजीयन"
+  >
+
+  <title>हल्बा-हल्बी समाज | पंजीयन</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family:
+        "Noto Sans Devanagari",
+        "Nirmala UI",
+        Arial,
+        sans-serif;
+
+      background:
+        linear-gradient(
+          135deg,
+          #fff8ec,
+          #f7efe2
+        );
+
+      color: #2f241b;
+      min-height: 100vh;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 1050px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .header {
+      background: #6d3b19;
+      color: #fff;
+      border-radius: 18px;
+      padding: 22px;
+      text-align: center;
+      box-shadow:
+        0 8px 25px rgba(0,0,0,.12);
+      margin-bottom: 20px;
+    }
+
+    .logo {
+      width: 82px;
+      height: 82px;
+      object-fit: contain;
+      border-radius: 50%;
+      background: #fff;
+      padding: 5px;
+      margin-bottom: 10px;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 6px;
+    }
+
+    .header p {
+      font-size: 15px;
+      opacity: .95;
+    }
+
+    .form-card {
+      background: #fff;
+      border-radius: 18px;
+      padding: 25px;
+      box-shadow:
+        0 8px 30px rgba(0,0,0,.08);
+    }
+
+    .section-title {
+      background: #f5e4ce;
+      color: #6d3b19;
+      border-left: 5px solid #9b5b25;
+      padding: 12px 15px;
+      border-radius: 8px;
+      margin: 20px 0 15px;
+      font-size: 19px;
+      font-weight: 700;
+    }
+
+    .section-title:first-child {
+      margin-top: 0;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    .field span {
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    .field i {
+      color: #c62828;
+      font-style: normal;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid #d6c4b1;
+      border-radius: 9px;
+      padding: 12px 13px;
+      font-size: 15px;
+      background: #fff;
+      color: #2f241b;
+      outline: none;
+      transition: .2s;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #8b4d22;
+      box-shadow:
+        0 0 0 3px rgba(139,77,34,.12);
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .checkbox-box {
+      grid-column: 1 / -1;
+
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+
+      background: #fff9f0;
+      border: 1px solid #ead7c1;
+      padding: 13px;
+      border-radius: 10px;
+    }
+
+    .checkbox-box input {
+      width: 19px;
+      height: 19px;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .checkbox-box label {
+      font-size: 14px;
+      line-height: 1.6;
+      cursor: pointer;
+    }
+
+    .submit-area {
+      margin-top: 25px;
+      text-align: center;
+    }
+
+    .submit-btn {
+      border: none;
+      background: #7b401b;
+      color: white;
+      padding: 14px 35px;
+      border-radius: 10px;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      min-width: 220px;
+      transition: .2s;
+    }
+
+    .submit-btn:hover {
+      background: #5f3015;
+      transform: translateY(-1px);
+    }
+
+    .submit-btn:disabled {
+      opacity: .65;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .message {
+      display: none;
+      padding: 13px 15px;
+      margin-bottom: 18px;
+      border-radius: 9px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .message.success {
+      display: block;
+      background: #e9f7ef;
+      color: #176b3a;
+      border: 1px solid #a9dfbd;
+    }
+
+    .message.error {
+      display: block;
+      background: #fff0f0;
+      color: #a52323;
+      border: 1px solid #efb0b0;
+    }
+
+    .note {
+      margin-top: 15px;
+      padding: 12px;
+      background: #f8f4ee;
+      border-radius: 9px;
+      color: #654a36;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 22px 10px;
+      color: #765b45;
+      font-size: 13px;
+    }
+
+    .loading {
+      display: none;
+      margin-top: 12px;
+      color: #7b401b;
+      font-size: 14px;
+    }
+
+    @media (max-width: 700px) {
+
+      .page {
+        padding: 10px;
+      }
+
+      .header {
+        padding: 18px 12px;
+        border-radius: 14px;
+      }
+
+      .header h1 {
+        font-size: 22px;
+      }
+
+      .header p {
+        font-size: 13px;
+      }
+
+      .form-card {
+        padding: 16px;
+        border-radius: 14px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .field.full {
+        grid-column: auto;
+      }
+
+      .checkbox-box {
+        grid-column: auto;
+      }
+
+      .submit-btn {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
+
 <body>
-  <main class="page">
-    <section class="card">
-      <div class="hero">
-        <img src="assets/logo.webp" class="logo" alt="अखिल भारतीय आदिवासी हल्बा हल्बी समाज लोगो">
-        <div class="hero-text">
-          <p class="eyebrow">जय माँ दंतेश्वरी • जय जोहार</p>
-          <h1>अखिल भारतीय आदिवासी हल्बा हल्बी समाज</h1>
-          <h2>बालोद महासभा</h2>
-          <p class="subtitle">कार्यशाला हेतु पंजीयन फॉर्म</p>
+
+  <div class="page">
+
+    <!-- HEADER -->
+    <header class="header">
+
+      <!-- यदि logo.webp उपलब्ध है तो यह दिखेगा -->
+      <img
+        src="assets/logo.webp"
+        alt="हल्बा हल्बी समाज"
+        class="logo"
+        onerror="this.style.display='none'"
+      >
+
+      <h1>अखिल भारतीय आदिवासी हल्बा हल्बी समाज</h1>
+
+      <p>
+        छत्तीसगढ़ • समाज सदस्य पंजीयन
+      </p>
+
+    </header>
+
+
+    <!-- FORM -->
+    <main class="form-card">
+
+      <div id="formMessage" class="message"></div>
+
+      <form
+        id="registrationForm"
+        autocomplete="on"
+      >
+
+        <!-- ========================= -->
+        <!-- महासभा जानकारी -->
+        <!-- ========================= -->
+
+        <div class="section-title">
+          🏹 महासभा एवं सामाजिक जानकारी
         </div>
-      </div>
 
-      <div class="watermark" aria-hidden="true">
-        <img src="assets/logo.webp" alt="">
-      </div>
+        <div class="form-grid">
 
-      <div id="message" class="message" role="status" aria-live="polite"></div>
-
-      <form id="registrationForm" autocomplete="on">
-        <div class="section-title"><span>01</span><div><b>महासभा एवं प्रतिभागी</b><small>कृपया सही जानकारी भरें</small></div></div>
-
-        <div class="grid">
           <label class="field">
             <span>महासभा <i>*</i></span>
-            <select id="mahasabha" name="mahasabha" required>
-              <option value="">-- महासभा चुनें --</option>
-              <option value="बालोद महासभा">1. बालोद महासभा</option>
-              <option value="अन्य">2. अन्य</option>
+
+            <select
+              name="mahasabha"
+              id="mahasabha"
+              required
+            >
+              <option value="">
+                महासभा चुनें
+              </option>
+
+              <option value="छत्तीसगढ़ महासभा">
+                छत्तीसगढ़ महासभा
+              </option>
+
+              <option value="अन्य">
+                अन्य
+              </option>
             </select>
           </label>
 
-          <label class="field hidden" id="otherMahasabhaWrap">
-            <span>अन्य महासभा का नाम <i>*</i></span>
-            <input id="otherMahasabha" name="otherMahasabha" maxlength="120" placeholder="महासभा का नाम लिखें">
+
+          <label
+            class="field"
+            id="otherMahasabhaField"
+            style="display:none;"
+          >
+            <span>अन्य महासभा का नाम</span>
+
+            <input
+              type="text"
+              name="otherMahasabha"
+              id="otherMahasabha"
+              placeholder="महासभा का नाम"
+            >
           </label>
+
+
+          <label class="field">
+            <span>गोत्र</span>
+
+            <input
+              type="text"
+              name="gotra"
+              id="gotra"
+              placeholder="अपना गोत्र लिखें"
+            >
+          </label>
+
+
+          <label class="field">
+            <span>टोटम</span>
+
+            <input
+              type="text"
+              name="totem"
+              id="totem"
+              placeholder="अपना टोटम लिखें"
+            >
+          </label>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- व्यक्तिगत जानकारी -->
+        <!-- ========================= -->
+
+        <div class="section-title">
+          👤 व्यक्तिगत जानकारी
+        </div>
+
+        <div class="form-grid">
 
           <label class="field">
             <span>प्रतिभागी का नाम <i>*</i></span>
-            <input name="participantName" required maxlength="120" placeholder="पूरा नाम">
+
+            <input
+              type="text"
+              name="participantName"
+              id="participantName"
+              placeholder="पूरा नाम"
+              required
+            >
           </label>
 
-          <label class="field">
-            <span>गोत्र <i>*</i></span>
-            <input name="gotra" required maxlength="80" placeholder="गोत्र">
-          </label>
-
-          <label class="field">
-            <span>टोटम <i>*</i></span>
-            <input name="totem" required maxlength="80" placeholder="टोटम">
-          </label>
 
           <label class="field">
             <span>पिता का नाम <i>*</i></span>
-            <input name="fatherName" required maxlength="120" placeholder="पिता का पूरा नाम">
+
+            <input
+              type="text"
+              name="fatherName"
+              id="fatherName"
+              placeholder="पिता का पूरा नाम"
+              required
+            >
           </label>
 
-          <label class="field">
-            <span>जन्मतिथि <i>*</i></span>
-            <input type="date" name="dob" required>
-          </label>
 
           <label class="field">
-            <span>लिंग <i>*</i></span>
-            <select name="gender" required>
-              <option value="">-- लिंग चुनें --</option>
-              <option value="पुरुष">पुरुष</option>
-              <option value="महिला">महिला</option>
-              <option value="अन्य">अन्य</option>
-              <option value="बताना नहीं चाहते">बताना नहीं चाहते</option>
+            <span>जन्मतिथि</span>
+
+            <input
+              type="date"
+              name="dob"
+              id="dob"
+            >
+          </label>
+
+
+          <label class="field">
+            <span>लिंग</span>
+
+            <select
+              name="gender"
+              id="gender"
+            >
+              <option value="">
+                लिंग चुनें
+              </option>
+
+              <option value="पुरुष">
+                पुरुष
+              </option>
+
+              <option value="महिला">
+                महिला
+              </option>
+
+              <option value="अन्य">
+                अन्य
+              </option>
             </select>
           </label>
+
         </div>
 
-        <div class="section-title"><span>02</span><div><b>संपर्क विवरण</b><small>आपकी संपर्क जानकारी सुरक्षित रूप से दर्ज की जाएगी</small></div></div>
 
-        <div class="grid">
-          <label class="field">
-            <span>ईमेल <i>*</i></span>
-            <input type="email" name="email" required maxlength="160" placeholder="example@email.com">
-          </label>
+        <!-- ========================= -->
+        <!-- संपर्क जानकारी -->
+        <!-- ========================= -->
+
+        <div class="section-title">
+          📱 संपर्क जानकारी
+        </div>
+
+        <div class="form-grid">
 
           <label class="field">
-            <span>कॉन्टेक्ट नम्बर <i>*</i></span>
-            <input type="tel" id="mobile" name="mobile" required inputmode="numeric" maxlength="10" pattern="[6-9][0-9]{9}" placeholder="10 अंकों का मोबाइल नम्बर">
-          </label>
-<label class="field">
-  <span>जिला <i>*</i></span>
+            <span>मोबाइल नंबर <i>*</i></span>
 
-  <select
-    name="district"
-    id="district"
-    required
-  >
-    <option value="">जिला चुनें</option>
-  </select>
-</label>
-         
-          <label class="field">
-            <span>ब्लॉक / विकासखंड <i>*</i></span>
-            <select id="block" name="block" required disabled>
-              <option value="">-- पहले जिला चुनें --</option>
-            </select>
+            <input
+              type="tel"
+              name="mobile"
+              id="mobile"
+              inputmode="numeric"
+              maxlength="10"
+              pattern="[0-9]{10}"
+              placeholder="10 अंकों का मोबाइल नंबर"
+              required
+            >
           </label>
+
+
           <label class="field">
-  <span>संबंधित ब्लॉक <i>*</i></span>
-  <input
-    type="text"
-    name="relatedBlock"
-    id="relatedBlock"
-    placeholder="संबंधित ब्लॉक का नाम"
-    required
-  >
-</label>
-          <label class="field">
-            <span>गाँव / नगर <i>*</i></span>
-            <input name="village" required maxlength="120" placeholder="गाँव या नगर लिखें">
+            <span>वैकल्पिक मोबाइल नंबर</span>
+
+            <input
+              type="tel"
+              name="alternateMobile"
+              id="alternateMobile"
+              inputmode="numeric"
+              maxlength="10"
+              pattern="[0-9]{10}"
+              placeholder="वैकल्पिक मोबाइल नंबर"
+            >
           </label>
+
+
           <label class="field full">
-            <span>पूरा पता <i>*</i></span>
-            <textarea name="address" required maxlength="500" rows="4" placeholder="मोहल्ला/वार्ड, पोस्ट, तहसील, राज्य आदि"></textarea>
+            <span>ई-मेल</span>
+
+            <input
+              type="email"
+              name="email"
+              id="email"
+              placeholder="example@gmail.com"
+            >
           </label>
+
         </div>
 
-        <div class="consent terms-consent">
-          <input type="checkbox" id="termsAccepted" name="termsAccepted" value="हाँ" required>
-          <label for="termsAccepted">मैंने <a href="terms.html" target="_blank" rel="noopener">नियम एवं शर्तें</a> पढ़ ली हैं और उनका पालन करने के लिए सहमत हूँ। <i>*</i></label>
+
+        <!-- ========================= -->
+        <!-- पता -->
+        <!-- ========================= -->
+
+        <div class="section-title">
+          📍 पता एवं क्षेत्रीय जानकारी
         </div>
 
-        <div class="consent">
-          <input type="checkbox" id="consent" name="informationConfirmed" value="हाँ" required>
-          <label for="consent">मैंने दी गई जानकारी जाँचकर सही रूप से भरी है। <i>*</i></label>
+        <div class="form-grid">
+
+          <!-- DISTRICT -->
+          <label class="field">
+            <span>जिला <i>*</i></span>
+
+            <select
+              name="district"
+              id="district"
+              required
+            >
+              <option value="">
+                जिला चुनें
+              </option>
+            </select>
+          </label>
+
+
+          <!-- RELATED BLOCK -->
+          <label class="field">
+
+            <span>
+              संबंधित ब्लॉक <i>*</i>
+            </span>
+
+            <input
+              type="text"
+              name="relatedBlock"
+              id="relatedBlock"
+              placeholder="संबंधित ब्लॉक का नाम"
+              required
+            >
+
+          </label>
+
+
+          <!-- BLOCK -->
+          <label class="field">
+
+            <span>
+              ब्लॉक <i>*</i>
+            </span>
+
+            <select
+              name="block"
+              id="block"
+              required
+            >
+
+              <option value="">
+                पहले जिला चुनें
+              </option>
+
+            </select>
+
+          </label>
+
+
+          <!-- VILLAGE -->
+          <label class="field">
+
+            <span>
+              गाँव / नगर <i>*</i>
+            </span>
+
+            <input
+              type="text"
+              name="village"
+              id="village"
+              placeholder="गाँव / नगर का नाम"
+              required
+            >
+
+          </label>
+
+
+          <!-- ADDRESS -->
+          <label class="field full">
+
+            <span>
+              पूरा पता
+            </span>
+
+            <textarea
+              name="address"
+              id="address"
+              placeholder="मकान नंबर, मोहल्ला, गाँव, पोस्ट आदि"
+            ></textarea>
+
+          </label>
+
         </div>
 
-        <button class="submit-btn" id="submitBtn" type="submit">
-          <span>पंजीयन सबमिट करें</span><b>→</b>
-        </button>
-        <p class="privacy-note">आपकी जानकारी केवल पंजीयन एवं संबंधित प्रशासनिक कार्य के लिए storage में सुरक्षित की जाएगी।</p>
-        <p class="privacy-note"><a href="admin.html">एडमिन लॉगिन</a></p>
+
+        <!-- ========================= -->
+        <!-- घोषणा -->
+        <!-- ========================= -->
+
+        <div class="section-title">
+          ✅ घोषणा एवं पुष्टि
+        </div>
+
+        <div class="form-grid">
+
+          <div class="checkbox-box">
+
+            <input
+              type="checkbox"
+              name="termsAccepted"
+              id="termsAccepted"
+              value="true"
+              required
+            >
+
+            <label for="termsAccepted">
+              मैं घोषणा करता/करती हूँ कि मेरे द्वारा दी गई
+              जानकारी मेरी जानकारी के अनुसार सही है और
+              समाज पंजीयन के उद्देश्य से इसका उपयोग किया जा सकता है।
+              <strong>*</strong>
+            </label>
+
+          </div>
+
+
+          <div class="checkbox-box">
+
+            <input
+              type="checkbox"
+              name="informationConfirmed"
+              id="informationConfirmed"
+              value="true"
+              required
+            >
+
+            <label for="informationConfirmed">
+              मैंने ऊपर दी गई सभी जानकारी को जाँच लिया है
+              और इसे सही मानते हुए पंजीयन के लिए प्रस्तुत कर रहा/रही हूँ।
+              <strong>*</strong>
+            </label>
+
+          </div>
+
+        </div>
+
+
+        <!-- NOTE -->
+        <div class="note">
+          <strong>महत्वपूर्ण:</strong>
+          पंजीयन सफल होने के बाद आपको पंजीयन क्रमांक प्राप्त होगा।
+          कृपया इसे सुरक्षित रखें।
+        </div>
+
+
+        <!-- SUBMIT -->
+        <div class="submit-area">
+
+          <button
+            type="submit"
+            id="submitBtn"
+            class="submit-btn"
+          >
+            पंजीयन करें
+          </button>
+
+          <div
+            id="loadingMessage"
+            class="loading"
+          >
+            ⏳ पंजीयन सुरक्षित किया जा रहा है...
+          </div>
+
+        </div>
+
       </form>
-    </section>
-        <div class="powered-footer">
-      Powered by <strong>Aaryan Chiram</strong>
-    </div>
-  </main>
 
-  
-  <script type="module" src="script.js"></script>
+    </main>
+
+
+    <!-- FOOTER -->
+    <footer class="footer">
+
+      © <span id="currentYear"></span>
+      अखिल भारतीय आदिवासी हल्बा हल्बी समाज छत्तीसगढ़
+
+    </footer>
+
+  </div>
+
+
+  <!-- Supabase + Registration Script -->
+  <script
+    type="module"
+    src="script.js"
+  ></script>
+
 </body>
 </html>

@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="hi">
+
+<head>
+  <meta charset="utf-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <meta
+    name="theme-color"
+    content="#0f6b68"
+  >
+
+  <title>
+    पंजीयन सफल | हल्बा हल्बी समाज
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+  <style>
+
+    .success-page{
+      max-width:900px;
+      margin:auto;
+    }
+
+    .success-header{
+      text-align:center;
+      padding:10px 10px 25px;
+    }
+
+    .success-icon{
+      width:78px;
+      height:78px;
+      border-radius:50%;
+      margin:0 auto 15px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#0f6b68;
+      color:#fff;
+      font-size:42px;
+      font-weight:bold;
+    }
+
+    .success-header h1{
+      margin:8px 0;
+      color:#0f6b68;
+    }
+
+    .success-header p{
+      margin:6px 0;
+    }
+
+    .registration-card{
+      border:1px solid #d8e5e4;
+      border-radius:16px;
+      overflow:hidden;
+      background:#fff;
+      margin-top:20px;
+    }
+
+    .registration-card-header{
+      background:#f0f7f6;
+      padding:16px 20px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:15px;
+      flex-wrap:wrap;
+    }
+
+    .registration-card-header h2{
+      margin:0;
+      font-size:20px;
+      color:#0f6b68;
+    }
+
+    .registration-id{
+      font-weight:bold;
+      color:#163b39;
+    }
+
+    .details-table{
+      width:100%;
+      border-collapse:collapse;
+    }
+
+    .details-table th,
+    .details-table td{
+      padding:12px 15px;
+      border-bottom:1px solid #e4eeee;
+      text-align:left;
+      vertical-align:top;
+    }
+
+    .details-table th{
+      width:35%;
+      background:#fafcfc;
+      font-weight:600;
+    }
+
+    .details-table tr:last-child th,
+    .details-table tr:last-child td{
+      border-bottom:0;
+    }
+
+    .success-actions{
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:25px;
+    }
+
+    .success-actions button,
+    .success-actions a{
+      border:0;
+      border-radius:10px;
+      padding:12px 20px;
+      cursor:pointer;
+      text-decoration:none;
+      font-size:15px;
+      font-weight:600;
+    }
+
+    .print-btn{
+      background:#0f6b68;
+      color:#fff;
+    }
+
+    .new-btn{
+      background:#eaf4f3;
+      color:#0f6b68;
+    }
+
+    .note{
+      text-align:center;
+      margin-top:20px;
+      font-size:13px;
+      color:#667;
+    }
+
+    @media(max-width:600px){
+
+      .details-table th,
+      .details-table td{
+        display:block;
+        width:auto;
+      }
+
+      .details-table th{
+        padding-bottom:5px;
+        border-bottom:0;
+      }
+
+      .details-table td{
+        padding-top:5px;
+      }
+
+    }
+
+    @media print{
+
+      body{
+        background:#fff !important;
+      }
+
+      .success-actions,
+      .note,
+      .back-link{
+        display:none !important;
+      }
+
+      .card{
+        box-shadow:none !important;
+        border:0 !important;
+      }
+
+      .registration-card{
+        border:1px solid #999;
+      }
+
+      .success-icon{
+        background:#fff;
+        color:#0f6b68;
+        border:2px solid #0f6b68;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+<main class="page success-page">
+
+<section class="card">
+
+
+  <!-- HEADER -->
+
+  <div class="hero">
+
+    <img
+      src="assets/logo.webp"
+      class="logo"
+      alt="अखिल भारतीय आदिवासी हल्बा हल्बी समाज लोगो"
+    >
+
+    <div class="hero-text">
+
+      <p class="eyebrow">
+        जय माँ दंतेश्वरी • जय जोहार
+      </p>
+
+      <h1>
+        अखिल भारतीय आदिवासी हल्बा हल्बी समाज
+      </h1>
+
+      <h2>
+        बालोद महासभा
+      </h2>
+
+    </div>
+
+  </div>
+
+
+  <!-- SUCCESS -->
+
+  <div class="success-header">
+
+    <div class="success-icon">
+      ✓
+    </div>
+
+    <h1>
+      पंजीयन सफलतापूर्वक हो गया!
+    </h1>
+
+    <p>
+      आपका पंजीयन सुरक्षित रूप से दर्ज हो गया है।
+    </p>
+
+    <p>
+      नीचे आपके द्वारा जमा की गई जानकारी दी गई है।
+    </p>
+
+  </div>
+
+
+  <!-- REGISTRATION DETAILS -->
+
+  <div class="registration-card">
+
+    <div class="registration-card-header">
+
+      <h2>
+        पंजीयन विवरण
+      </h2>
+
+      <div class="registration-id">
+        पंजीयन ID:
+        <span id="registrationId">
+          —
+        </span>
+      </div>
+
+    </div>
+
+
+    <table class="details-table">
+
+      <tbody id="detailsBody">
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+
+  <!-- ACTIONS -->
+
+  <div class="success-actions">
+
+    <button
+      type="button"
+      class="print-btn"
+      onclick="window.print()"
+    >
+      🖨️ पंजीयन प्रिंट करें
+    </button>
+
+
+    <a
+      href="index.html"
+      class="new-btn"
+    >
+      ➕ नया पंजीयन करें
+    </a>
+
+  </div>
+
+
+  <p class="note">
+    प्रिंट बटन से आप इस पंजीयन को प्रिंट या PDF के रूप में सुरक्षित कर सकते हैं।
+  </p>
+
+
+  <p class="privacy-note back-link" style="text-align:center">
+
+    <a href="admin.html">
+      एडमिन लॉगिन
+    </a>
+
+  </p>
+
+
+</section>
+
+</main>
+
+
+<script>
+
+
+// ============================================================
+// LOAD REGISTRATION DATA
+// ============================================================
+
+const data =
+  JSON.parse(
+    sessionStorage.getItem(
+      "halbaRegistration"
+    ) || "null"
+  );
+
+
+// ============================================================
+// IF DATA NOT FOUND
+// ============================================================
+
+if (!data) {
+
+  document.getElementById(
+    "detailsBody"
+  ).innerHTML = `
+
+    <tr>
+
+      <td colspan="2"
+          style="text-align:center;padding:30px">
+
+        पंजीयन विवरण उपलब्ध नहीं है।
+
+        <br><br>
+
+        <a href="index.html">
+          वापस पंजीयन फॉर्म पर जाएँ
+        </a>
+
+      </td>
+
+    </tr>
+
+  `;
+
+}
+
+
+// ============================================================
+// SHOW DATA
+// ============================================================
+
+if (data) {
+
+  document.getElementById(
+    "registrationId"
+  ).textContent =
+    data.registrationId || "—";
+
+
+  const fields = [
+
+    [
+      "महासभा",
+      data.mahasabha
+    ],
+
+    [
+      "अन्य महासभा",
+      data.otherMahasabha
+    ],
+
+    [
+      "प्रतिभागी का नाम",
+      data.participantName
+    ],
+
+    [
+      "गोत्र",
+      data.gotra
+    ],
+
+    [
+      "टोटम",
+      data.totem
+    ],
+
+    [
+      "पिता का नाम",
+      data.fatherName
+    ],
+
+    [
+      "जन्मतिथि",
+      data.dob
+    ],
+
+    [
+      "लिंग",
+      data.gender
+    ],
+
+    [
+      "ईमेल",
+      data.email
+    ],
+
+    [
+      "कॉन्टेक्ट नम्बर",
+      data.mobile
+    ],
+
+    [
+      "जिला",
+      data.district
+    ],
+
+    [
+      "ब्लॉक / विकासखंड",
+      data.block
+    ],
+
+    [
+      "गाँव / नगर",
+      data.village
+    ],
+
+    [
+      "पूरा पता",
+      data.address
+    ],
+
+    [
+      "नियम एवं शर्तें",
+      data.termsAccepted
+    ],
+
+    [
+      "जानकारी पुष्टि",
+      data.informationConfirmed
+    ],
+
+    [
+      "पंजीयन समय",
+      data.registrationTime
+    ]
+
+  ];
+
+
+  document.getElementById(
+    "detailsBody"
+  ).innerHTML =
+
+    fields
+      .filter(
+        ([label, value]) =>
+          value !== undefined &&
+          value !== null &&
+          value !== ""
+      )
+      .map(
+        ([label, value]) => `
+
+          <tr>
+
+            <th>
+              ${escapeHtml(label)}
+            </th>
+
+            <td>
+              ${escapeHtml(value)}
+            </td>
+
+          </tr>
+
+        `
+      )
+      .join("");
+
+}
+
+
+// ============================================================
+// HTML ESCAPE
+// ============================================================
+
+function escapeHtml(value) {
+
+  return String(value ?? "")
+    .replace(
+      /[&<>"']/g,
+      char => ({
+
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+
+      }[char])
+    );
+
+}
+
+</script>
+
+</body>
+
+</html>

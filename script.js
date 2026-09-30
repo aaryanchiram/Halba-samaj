@@ -42,13 +42,17 @@ const db = getFirestore(app);
 // HTML ELEMENTS
 // ============================================================
 
-const form = document.getElementById("registrationForm");
+const form =
+  document.getElementById("registrationForm");
 
-const message = document.getElementById("message");
+const message =
+  document.getElementById("message");
 
-const submitBtn = document.getElementById("submitBtn");
+const submitBtn =
+  document.getElementById("submitBtn");
 
-const mahasabha = document.getElementById("mahasabha");
+const mahasabha =
+  document.getElementById("mahasabha");
 
 const otherWrap =
   document.getElementById("otherMahasabhaWrap");
@@ -542,7 +546,9 @@ function validateLocal(payload) {
       "error"
     );
 
-    otherInput.focus();
+    if (otherInput) {
+      otherInput.focus();
+    }
 
     return false;
   }
@@ -699,7 +705,9 @@ form.addEventListener(
     clearMessage();
 
 
-    // Browser validation
+    // ========================================================
+    // BROWSER VALIDATION
+    // ========================================================
 
     if (!form.checkValidity()) {
 
@@ -709,13 +717,17 @@ form.addEventListener(
     }
 
 
-    // Get data
+    // ========================================================
+    // GET DATA
+    // ========================================================
 
     const payload =
       getPayload();
 
 
-    // Local validation
+    // ========================================================
+    // LOCAL VALIDATION
+    // ========================================================
 
     if (!validateLocal(payload)) {
 
@@ -723,7 +735,9 @@ form.addEventListener(
     }
 
 
-    // Disable button
+    // ========================================================
+    // DISABLE BUTTON
+    // ========================================================
 
     submitBtn.disabled = true;
 
@@ -731,9 +745,15 @@ form.addEventListener(
       "<span>सेव हो रहा है...</span><b>…</b>";
 
 
+    // ========================================================
+    // FIREBASE SAVE + SUCCESS PAGE
+    // ========================================================
+
     try {
 
-      // Save to Firebase
+      // ------------------------------------------------------
+      // SAVE TO FIREBASE
+      // ------------------------------------------------------
 
       const documentId =
         await saveRegistration(
@@ -747,61 +767,98 @@ form.addEventListener(
       );
 
 
-      // Success
+      // ------------------------------------------------------
+      // DATA FOR SUCCESS PAGE
+      // ------------------------------------------------------
 
-      showMessage(
-        `
-        <strong>✅ पंजीयन सफलतापूर्वक सबमिट हो गया।</strong>
-        <p>आपका पंजीयन सुरक्षित रूप से दर्ज हो गया है।</p>
-        `,
-        "success"
+      const successData = {
+
+        registrationId:
+          documentId,
+
+        mahasabha:
+          payload.mahasabha || "",
+
+        otherMahasabha:
+          payload.otherMahasabha || "",
+
+        participantName:
+          payload.participantName || "",
+
+        gotra:
+          payload.gotra || "",
+
+        totem:
+          payload.totem || "",
+
+        fatherName:
+          payload.fatherName || "",
+
+        dob:
+          payload.dob || "",
+
+        gender:
+          payload.gender || "",
+
+        email:
+          payload.email || "",
+
+        mobile:
+          payload.mobile || "",
+
+        district:
+          payload.district || "",
+
+        block:
+          payload.block || "",
+
+        village:
+          payload.village || "",
+
+        address:
+          payload.address || "",
+
+        termsAccepted:
+          payload.termsAccepted || "",
+
+        informationConfirmed:
+          payload.informationConfirmed || "",
+
+        registrationTime:
+          new Date().toLocaleString(
+            "hi-IN"
+          )
+
+      };
+
+
+      // ------------------------------------------------------
+      // STORE SUBMITTED DATA TEMPORARILY
+      // ------------------------------------------------------
+
+      sessionStorage.setItem(
+        "halbaRegistration",
+        JSON.stringify(
+          successData
+        )
       );
 
 
-      // Reset form
+      // ------------------------------------------------------
+      // GO TO SUCCESS PAGE
+      // ------------------------------------------------------
 
-      form.reset();
+      window.location.href =
+        "success.html";
 
-
-      // Hide Other Mahasabha
-
-      if (otherWrap) {
-        otherWrap.classList.add(
-          "hidden"
-        );
-      }
-
-      if (otherInput) {
-        otherInput.required =
-          false;
-
-        otherInput.value =
-          "";
-      }
+    }
 
 
-      // Reset block
+    // ========================================================
+    // ERROR
+    // ========================================================
 
-      if (blockSelect) {
-
-        blockSelect.innerHTML =
-          '<option value="">-- पहले जिला चुनें --</option>';
-
-        blockSelect.disabled =
-          true;
-
-      }
-
-
-      // Scroll top
-
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
-
-
-    } catch (error) {
+    catch (error) {
 
       console.error(
         "Firebase Error:",
@@ -844,10 +901,14 @@ form.addEventListener(
         "error"
       );
 
+    }
 
-    } finally {
 
-      // Enable button
+    // ========================================================
+    // ENABLE BUTTON AGAIN
+    // ========================================================
+
+    finally {
 
       submitBtn.disabled =
         false;

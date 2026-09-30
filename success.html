@@ -27,7 +27,7 @@
   <style>
 
     /* =====================================================
-       SUCCESS PAGE
+       NORMAL SCREEN
     ===================================================== */
 
     .success-page{
@@ -37,16 +37,10 @@
       z-index:2;
     }
 
-
-    /* =====================================================
-       SUCCESS HEADER
-    ===================================================== */
-
     .success-header{
       text-align:center;
       padding:10px 10px 25px;
     }
-
 
     .success-icon{
       width:78px;
@@ -68,10 +62,8 @@
         0 0 0 8px rgba(15,107,104,.10),
         0 8px 25px rgba(15,107,104,.25);
 
-      animation:
-        successPop .7s ease-out;
+      animation:successPop .7s ease-out;
     }
-
 
     @keyframes successPop{
 
@@ -91,12 +83,10 @@
 
     }
 
-
     .success-header h1{
       margin:8px 0;
       color:#0f6b68;
     }
-
 
     .success-header p{
       margin:6px 0;
@@ -125,7 +115,6 @@
 
     }
 
-
     .registration-card-header{
 
       background:#f0f7f6;
@@ -144,7 +133,6 @@
 
     }
 
-
     .registration-card-header h2{
 
       margin:0;
@@ -154,7 +142,6 @@
       color:#0f6b68;
 
     }
-
 
     .registration-id{
 
@@ -177,7 +164,6 @@
 
     }
 
-
     .details-table th,
     .details-table td{
 
@@ -191,7 +177,6 @@
 
     }
 
-
     .details-table th{
 
       width:35%;
@@ -201,7 +186,6 @@
       font-weight:600;
 
     }
-
 
     .details-table tr:last-child th,
     .details-table tr:last-child td{
@@ -229,7 +213,6 @@
 
     }
 
-
     .success-actions button,
     .success-actions a{
 
@@ -249,7 +232,6 @@
 
     }
 
-
     .print-btn{
 
       background:#0f6b68;
@@ -258,7 +240,6 @@
 
     }
 
-
     .new-btn{
 
       background:#eaf4f3;
@@ -266,7 +247,6 @@
       color:#0f6b68;
 
     }
-
 
     .note{
 
@@ -282,7 +262,26 @@
 
 
     /* =====================================================
-       BALLOON ANIMATION AREA
+       FOOTER
+    ===================================================== */
+
+    .powered-footer{
+
+      text-align:center;
+
+      font-size:11px;
+
+      color:#777;
+
+      margin-top:18px;
+
+      padding-bottom:15px;
+
+    }
+
+
+    /* =====================================================
+       CELEBRATION
     ===================================================== */
 
     #celebration{
@@ -303,11 +302,6 @@
 
     }
 
-
-    /* =====================================================
-       BALLOONS
-    ===================================================== */
-
     .balloon{
 
       position:absolute;
@@ -326,7 +320,6 @@
         balloonRise 3.2s ease-out forwards;
 
     }
-
 
     .balloon::before{
 
@@ -353,7 +346,6 @@
 
     }
 
-
     .balloon::after{
 
       content:"";
@@ -372,7 +364,6 @@
 
     }
 
-
     .balloon.b1{
 
       left:8%;
@@ -382,7 +373,6 @@
       animation-delay:.05s;
 
     }
-
 
     .balloon.b2{
 
@@ -394,7 +384,6 @@
 
     }
 
-
     .balloon.b3{
 
       left:43%;
@@ -404,7 +393,6 @@
       animation-delay:.10s;
 
     }
-
 
     .balloon.b4{
 
@@ -416,7 +404,6 @@
 
     }
 
-
     .balloon.b5{
 
       left:82%;
@@ -426,7 +413,6 @@
       animation-delay:.15s;
 
     }
-
 
     @keyframes balloonRise{
 
@@ -442,15 +428,11 @@
       }
 
       15%{
-
         opacity:1;
-
       }
 
       70%{
-
         opacity:1;
-
       }
 
       100%{
@@ -465,11 +447,6 @@
       }
 
     }
-
-
-    /* =====================================================
-       BALLOON POP
-    ===================================================== */
 
     .pop{
 
@@ -487,7 +464,6 @@
         popBurst .65s ease-out forwards;
 
     }
-
 
     @keyframes popBurst{
 
@@ -514,11 +490,6 @@
 
     }
 
-
-    /* =====================================================
-       FLYING PAPER / CONFETTI
-    ===================================================== */
-
     .paper{
 
       position:absolute;
@@ -541,7 +512,6 @@
 
     }
 
-
     @keyframes paperFall{
 
       0%{
@@ -559,9 +529,7 @@
       }
 
       10%{
-
         opacity:1;
-
       }
 
       100%{
@@ -598,7 +566,6 @@
 
       }
 
-
       .details-table th{
 
         padding-bottom:5px;
@@ -607,13 +574,11 @@
 
       }
 
-
       .details-table td{
 
         padding-top:5px;
 
       }
-
 
       .balloon{
 
@@ -622,7 +587,6 @@
         height:54px;
 
       }
-
 
       .balloon::after{
 
@@ -634,14 +598,41 @@
 
 
     /* =====================================================
-       PRINT
+       A4 PRINT - ONE PAGE
     ===================================================== */
+
+    @page{
+
+      size:A4 portrait;
+
+      margin:8mm;
+
+    }
+
 
     @media print{
 
+      html,
       body{
 
+        width:210mm;
+
+        height:297mm;
+
+        margin:0 !important;
+
+        padding:0 !important;
+
         background:#fff !important;
+
+      }
+
+
+      body{
+
+        font-size:10px !important;
+
+        overflow:hidden;
 
       }
 
@@ -653,6 +644,228 @@
       }
 
 
+      .success-page{
+
+        width:100% !important;
+
+        max-width:none !important;
+
+        margin:0 !important;
+
+        padding:0 !important;
+
+      }
+
+
+      .card{
+
+        width:100% !important;
+
+        margin:0 !important;
+
+        padding:0 !important;
+
+        border:0 !important;
+
+        box-shadow:none !important;
+
+      }
+
+
+      /* -----------------------------------------------
+         HEADER
+      ------------------------------------------------ */
+
+      .hero{
+
+        padding:3mm 0 !important;
+
+        margin:0 !important;
+
+      }
+
+
+      .hero .logo{
+
+        max-width:48px !important;
+
+        max-height:48px !important;
+
+      }
+
+
+      .hero-text h1{
+
+        font-size:16px !important;
+
+        margin:2px 0 !important;
+
+      }
+
+
+      .hero-text h2{
+
+        font-size:13px !important;
+
+        margin:2px 0 !important;
+
+      }
+
+
+      .eyebrow{
+
+        font-size:9px !important;
+
+        margin:0 0 2px !important;
+
+      }
+
+
+      /* -----------------------------------------------
+         SUCCESS HEADER
+      ------------------------------------------------ */
+
+      .success-header{
+
+        padding:2mm 0 3mm !important;
+
+      }
+
+
+      .success-icon{
+
+        width:35px !important;
+
+        height:35px !important;
+
+        font-size:22px !important;
+
+        margin:0 auto 3px !important;
+
+        box-shadow:none !important;
+
+        border:1px solid #0f6b68 !important;
+
+        background:#fff !important;
+
+        color:#0f6b68 !important;
+
+      }
+
+
+      .success-header h1{
+
+        font-size:15px !important;
+
+        margin:2px 0 !important;
+
+      }
+
+
+      .success-header p{
+
+        font-size:9px !important;
+
+        margin:1px 0 !important;
+
+      }
+
+
+      /* -----------------------------------------------
+         REGISTRATION CARD
+      ------------------------------------------------ */
+
+      .registration-card{
+
+        margin:2mm 0 0 !important;
+
+        border:1px solid #999 !important;
+
+        border-radius:3px !important;
+
+        page-break-inside:avoid !important;
+
+        break-inside:avoid !important;
+
+      }
+
+
+      .registration-card-header{
+
+        padding:2.5mm 3mm !important;
+
+        background:#f0f7f6 !important;
+
+      }
+
+
+      .registration-card-header h2{
+
+        font-size:12px !important;
+
+      }
+
+
+      .registration-id{
+
+        font-size:9px !important;
+
+      }
+
+
+      /* -----------------------------------------------
+         TABLE
+      ------------------------------------------------ */
+
+      .details-table{
+
+        width:100% !important;
+
+        font-size:9px !important;
+
+        table-layout:fixed !important;
+
+      }
+
+
+      .details-table th,
+      .details-table td{
+
+        display:table-cell !important;
+
+        padding:1.8mm 2.5mm !important;
+
+        border-bottom:1px solid #ddd !important;
+
+        line-height:1.25 !important;
+
+      }
+
+
+      .details-table th{
+
+        width:32% !important;
+
+        background:#fafcfc !important;
+
+        font-size:9px !important;
+
+      }
+
+
+      .details-table td{
+
+        width:68% !important;
+
+        word-break:break-word !important;
+
+      }
+
+
+      /* -----------------------------------------------
+         HIDE BUTTONS
+      ------------------------------------------------ */
+
       .success-actions,
       .note,
       .back-link{
@@ -662,31 +875,23 @@
       }
 
 
-      .card{
+      /* -----------------------------------------------
+         FOOTER
+      ------------------------------------------------ */
 
-        box-shadow:none !important;
+      .powered-footer{
 
-        border:0 !important;
+        display:block !important;
 
-      }
+        font-size:7.5px !important;
 
+        color:#777 !important;
 
-      .registration-card{
+        margin:3mm 0 0 !important;
 
-        border:1px solid #999;
+        padding:0 !important;
 
-      }
-
-
-      .success-icon{
-
-        background:#fff;
-
-        color:#0f6b68;
-
-        border:2px solid #0f6b68;
-
-        box-shadow:none;
+        text-align:center !important;
 
       }
 
@@ -700,28 +905,24 @@
 <body>
 
 
-<!-- =======================================================
-     CELEBRATION ANIMATION
-======================================================== -->
+<!-- =====================================================
+     CELEBRATION
+===================================================== -->
 
 <div id="celebration">
 
   <div class="balloon b1"></div>
-
   <div class="balloon b2"></div>
-
   <div class="balloon b3"></div>
-
   <div class="balloon b4"></div>
-
   <div class="balloon b5"></div>
 
 </div>
 
 
-<!-- =======================================================
+<!-- =====================================================
      MAIN
-======================================================== -->
+===================================================== -->
 
 <main class="page success-page">
 
@@ -855,14 +1056,23 @@
   </p>
 
 
+  <!-- PRINT FOOTER -->
+
+  <div class="powered-footer">
+
+    Powered by Aarya Chiram
+
+  </div>
+
+
 </section>
 
 </main>
 
 
-<!-- =======================================================
-     SUCCESS DATA
-======================================================== -->
+<!-- =====================================================
+     DATA
+===================================================== -->
 
 <script>
 
@@ -874,9 +1084,9 @@ const data =
   );
 
 
-/* ==========================================================
+/* =====================================================
    NO DATA
-========================================================== */
+===================================================== */
 
 if (!data) {
 
@@ -908,9 +1118,9 @@ if (!data) {
 }
 
 
-/* ==========================================================
+/* =====================================================
    SHOW DATA
-========================================================== */
+===================================================== */
 
 if (data) {
 
@@ -997,9 +1207,9 @@ if (data) {
 }
 
 
-/* ==========================================================
-   HTML SECURITY
-========================================================== */
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
 
 function escapeHtml(value) {
 
@@ -1027,9 +1237,9 @@ function escapeHtml(value) {
 }
 
 
-/* ==========================================================
+/* =====================================================
    CELEBRATION
-========================================================== */
+===================================================== */
 
 function startCelebration() {
 
@@ -1039,9 +1249,7 @@ function startCelebration() {
     );
 
 
-  /* --------------------------------------------------------
-     FLYING PAPERS / CONFETTI
-  -------------------------------------------------------- */
+  /* PAPERS */
 
   for (
     let i = 0;
@@ -1123,19 +1331,11 @@ function startCelebration() {
   }
 
 
-  /* --------------------------------------------------------
-     BALLOON POP EFFECT
-  -------------------------------------------------------- */
-
   setTimeout(
     createPopEffect,
     2300
   );
 
-
-  /* --------------------------------------------------------
-     REMOVE ANIMATION
-  -------------------------------------------------------- */
 
   setTimeout(
     () => {
@@ -1149,9 +1349,9 @@ function startCelebration() {
 }
 
 
-/* ==========================================================
+/* =====================================================
    POP EFFECT
-========================================================== */
+===================================================== */
 
 function createPopEffect() {
 
@@ -1266,9 +1466,9 @@ function createPopEffect() {
 }
 
 
-/* ==========================================================
-   START
-========================================================== */
+/* =====================================================
+   START ANIMATION
+===================================================== */
 
 if (data) {
 
@@ -1283,16 +1483,28 @@ if (data) {
 
 </html>
 
-अब "script.js" में कोई बदलाव नहीं करना है। आपने जो पिछला पूरा "script.js" लगाया है, उसमें यह पहले से मौजूद है:
+अब Print में क्या होगा
 
-sessionStorage.setItem(
-  "halbaRegistration",
-  JSON.stringify(successData)
-);
+A4 Portrait — एक पेज में:
 
-window.location.href =
-  "success.html";
+ऊपर:
+लोगो + अखिल भारतीय आदिवासी हल्बा हल्बी समाज + बालोद महासभा
 
-इसलिए जैसे ही Firebase में registration सफल होगा, "success.html" खुलेगा और गुब्बारे + उड़ते कागज + pop/confetti effect शुरू हो जाएगा। 🎈🎊
+बीच में:
+✓ पंजीयन सफल
+पंजीयन ID
+पूरा पंजीयन विवरण
 
-Print करने पर animation दिखाई नहीं देगा, ताकि पंजीयन की प्रिंट कॉपी साफ रहे।
+सबसे नीचे:
+"Powered by Aarya Chiram"
+
+और Print करते समय:
+
+- 🎈 गुब्बारे नहीं
+- 🎊 उड़ते कागज नहीं
+- Print button नहीं
+- नया पंजीयन button नहीं
+- Admin login नहीं
+- अतिरिक्त नोट नहीं
+
+इससे print layout काफी compact रहेगा और एक A4 page में आने के लिए CSS में 8mm margin तथा छोटे font/padding सेट किए गए हैं।

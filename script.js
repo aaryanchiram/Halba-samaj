@@ -406,7 +406,9 @@ function updateBlocks() {
 }
 
 
-// Initialize dropdown
+// ============================================================
+// INITIALIZE DISTRICT/BLOCK
+// ============================================================
 
 initDistrictBlockDropdowns();
 
@@ -424,16 +426,24 @@ if (mahasabha) {
       const isOther =
         mahasabha.value === "अन्य";
 
-      otherWrap.classList.toggle(
-        "hidden",
-        !isOther
-      );
+      if (otherWrap) {
 
-      otherInput.required =
-        isOther;
+        otherWrap.classList.toggle(
+          "hidden",
+          !isOther
+        );
 
-      if (!isOther) {
-        otherInput.value = "";
+      }
+
+      if (otherInput) {
+
+        otherInput.required =
+          isOther;
+
+        if (!isOther) {
+          otherInput.value = "";
+        }
+
       }
 
     }
@@ -451,6 +461,10 @@ function showMessage(
   type
 ) {
 
+  if (!message) {
+    return;
+  }
+
   message.className =
     "message show " + type;
 
@@ -461,6 +475,10 @@ function showMessage(
 
 
 function clearMessage() {
+
+  if (!message) {
+    return;
+  }
 
   message.className =
     "message";
@@ -494,8 +512,44 @@ function getPayload() {
       new FormData(form).entries()
     );
 
+
+  // मोबाइल नंबर साफ करें
+
   payload.mobile =
     cleanMobile(payload.mobile);
+
+
+  // ==========================================================
+  // संबंधित ब्लॉक
+  // ==========================================================
+  // index.html में:
+  //
+  // name="relatedBlock"
+  // id="relatedBlock"
+  //
+  // होना चाहिए।
+  // ==========================================================
+
+  const relatedBlockInput =
+    document.getElementById(
+      "relatedBlock"
+    );
+
+
+  if (relatedBlockInput) {
+
+    payload.relatedBlock =
+      relatedBlockInput.value.trim();
+
+  } else {
+
+    payload.relatedBlock =
+      String(
+        payload.relatedBlock || ""
+      ).trim();
+
+  }
+
 
   return payload;
 
@@ -508,7 +562,9 @@ function getPayload() {
 
 function validateLocal(payload) {
 
-  // Mobile validation
+  // ----------------------------------------------------------
+  // Mobile
+  // ----------------------------------------------------------
 
   if (
     !/^[6-9]\d{9}$/.test(
@@ -522,7 +578,9 @@ function validateLocal(payload) {
     );
 
     const mobile =
-      document.getElementById("mobile");
+      document.getElementById(
+        "mobile"
+      );
 
     if (mobile) {
       mobile.focus();
@@ -532,7 +590,9 @@ function validateLocal(payload) {
   }
 
 
+  // ----------------------------------------------------------
   // Other Mahasabha
+  // ----------------------------------------------------------
 
   if (
     payload.mahasabha === "अन्य" &&
@@ -554,7 +614,9 @@ function validateLocal(payload) {
   }
 
 
+  // ----------------------------------------------------------
   // Email
+  // ----------------------------------------------------------
 
   if (
     !payload.email ||
@@ -572,7 +634,9 @@ function validateLocal(payload) {
   }
 
 
+  // ----------------------------------------------------------
   // District
+  // ----------------------------------------------------------
 
   if (!payload.district) {
 
@@ -585,7 +649,9 @@ function validateLocal(payload) {
   }
 
 
+  // ----------------------------------------------------------
   // Block
+  // ----------------------------------------------------------
 
   if (!payload.block) {
 
@@ -593,6 +659,62 @@ function validateLocal(payload) {
       "❌ कृपया ब्लॉक / विकासखंड चुनें।",
       "error"
     );
+
+    return false;
+  }
+
+
+  // ----------------------------------------------------------
+  // Related Block
+  // ----------------------------------------------------------
+
+  if (
+    !String(
+      payload.relatedBlock || ""
+    ).trim()
+  ) {
+
+    showMessage(
+      "❌ कृपया संबंधित ब्लॉक दर्ज करें।",
+      "error"
+    );
+
+    const relatedBlockInput =
+      document.getElementById(
+        "relatedBlock"
+      );
+
+    if (relatedBlockInput) {
+      relatedBlockInput.focus();
+    }
+
+    return false;
+  }
+
+
+  // ----------------------------------------------------------
+  // Village
+  // ----------------------------------------------------------
+
+  if (
+    !String(
+      payload.village || ""
+    ).trim()
+  ) {
+
+    showMessage(
+      "❌ कृपया गाँव / नगर दर्ज करें।",
+      "error"
+    );
+
+    const villageInput =
+      document.getElementById(
+        "village"
+      );
+
+    if (villageInput) {
+      villageInput.focus();
+    }
 
     return false;
   }
@@ -650,6 +772,22 @@ async function saveRegistration(
     district:
       payload.district || "",
 
+
+    // ========================================================
+    // नया FIELD
+    // संबंधित ब्लॉक
+    // ========================================================
+
+    relatedBlock:
+      String(
+        payload.relatedBlock || ""
+      ).trim(),
+
+
+    // ========================================================
+    // मौजूदा ब्लॉक / विकासखंड
+    // ========================================================
+
     block:
       payload.block || "",
 
@@ -674,8 +812,9 @@ async function saveRegistration(
   };
 
 
-  // Firestore collection:
-  // registrations
+  // ==========================================================
+  // SAVE TO FIRESTORE
+  // ==========================================================
 
   const docRef =
     await addDoc(
@@ -696,227 +835,237 @@ async function saveRegistration(
 // FORM SUBMIT
 // ============================================================
 
-form.addEventListener(
-  "submit",
-  async (event) => {
+if (form) {
 
-    event.preventDefault();
+  form.addEventListener(
+    "submit",
+    async (event) => {
 
-    clearMessage();
+      event.preventDefault();
 
-
-    // ========================================================
-    // BROWSER VALIDATION
-    // ========================================================
-
-    if (!form.checkValidity()) {
-
-      form.reportValidity();
-
-      return;
-    }
+      clearMessage();
 
 
-    // ========================================================
-    // GET DATA
-    // ========================================================
+      // ======================================================
+      // BROWSER VALIDATION
+      // ======================================================
 
-    const payload =
-      getPayload();
+      if (!form.checkValidity()) {
 
+        form.reportValidity();
 
-    // ========================================================
-    // LOCAL VALIDATION
-    // ========================================================
-
-    if (!validateLocal(payload)) {
-
-      return;
-    }
+        return;
+      }
 
 
-    // ========================================================
-    // DISABLE BUTTON
-    // ========================================================
+      // ======================================================
+      // GET DATA
+      // ======================================================
 
-    submitBtn.disabled = true;
-
-    submitBtn.innerHTML =
-      "<span>सेव हो रहा है...</span><b>…</b>";
+      const payload =
+        getPayload();
 
 
-    // ========================================================
-    // FIREBASE SAVE + SUCCESS PAGE
-    // ========================================================
+      // ======================================================
+      // LOCAL VALIDATION
+      // ======================================================
 
-    try {
+      if (!validateLocal(payload)) {
 
-      // ------------------------------------------------------
-      // SAVE TO FIREBASE
-      // ------------------------------------------------------
+        return;
+      }
 
-      const documentId =
-        await saveRegistration(
-          payload
+
+      // ======================================================
+      // DISABLE BUTTON
+      // ======================================================
+
+      submitBtn.disabled =
+        true;
+
+      submitBtn.innerHTML =
+        "<span>सेव हो रहा है...</span><b>…</b>";
+
+
+      // ======================================================
+      // FIREBASE SAVE
+      // ======================================================
+
+      try {
+
+        const documentId =
+          await saveRegistration(
+            payload
+          );
+
+
+        console.log(
+          "Registration saved:",
+          documentId
         );
 
 
-      console.log(
-        "Registration saved:",
-        documentId
-      );
+        // ====================================================
+        // SUCCESS PAGE DATA
+        // ====================================================
+
+        const successData = {
+
+          registrationId:
+            documentId,
+
+          mahasabha:
+            payload.mahasabha || "",
+
+          otherMahasabha:
+            payload.otherMahasabha || "",
+
+          participantName:
+            payload.participantName || "",
+
+          gotra:
+            payload.gotra || "",
+
+          totem:
+            payload.totem || "",
+
+          fatherName:
+            payload.fatherName || "",
+
+          dob:
+            payload.dob || "",
+
+          gender:
+            payload.gender || "",
+
+          email:
+            payload.email || "",
+
+          mobile:
+            payload.mobile || "",
+
+          district:
+            payload.district || "",
 
 
-      // ------------------------------------------------------
-      // DATA FOR SUCCESS PAGE
-      // ------------------------------------------------------
+          // ================================================
+          // नया FIELD
+          // ================================================
 
-      const successData = {
+          relatedBlock:
+            payload.relatedBlock || "",
 
-        registrationId:
-          documentId,
 
-        mahasabha:
-          payload.mahasabha || "",
+          block:
+            payload.block || "",
 
-        otherMahasabha:
-          payload.otherMahasabha || "",
+          village:
+            payload.village || "",
 
-        participantName:
-          payload.participantName || "",
+          address:
+            payload.address || "",
 
-        gotra:
-          payload.gotra || "",
+          termsAccepted:
+            payload.termsAccepted || "",
 
-        totem:
-          payload.totem || "",
+          informationConfirmed:
+            payload.informationConfirmed || "",
 
-        fatherName:
-          payload.fatherName || "",
+          registrationTime:
+            new Date().toLocaleString(
+              "hi-IN"
+            )
 
-        dob:
-          payload.dob || "",
+        };
 
-        gender:
-          payload.gender || "",
 
-        email:
-          payload.email || "",
+        // ====================================================
+        // TEMPORARY SUCCESS DATA
+        // ====================================================
 
-        mobile:
-          payload.mobile || "",
-
-        district:
-          payload.district || "",
-
-        block:
-          payload.block || "",
-
-        village:
-          payload.village || "",
-
-        address:
-          payload.address || "",
-
-        termsAccepted:
-          payload.termsAccepted || "",
-
-        informationConfirmed:
-          payload.informationConfirmed || "",
-
-        registrationTime:
-          new Date().toLocaleString(
-            "hi-IN"
+        sessionStorage.setItem(
+          "halbaRegistration",
+          JSON.stringify(
+            successData
           )
-
-      };
-
-
-      // ------------------------------------------------------
-      // STORE SUBMITTED DATA TEMPORARILY
-      // ------------------------------------------------------
-
-      sessionStorage.setItem(
-        "halbaRegistration",
-        JSON.stringify(
-          successData
-        )
-      );
+        );
 
 
-      // ------------------------------------------------------
-      // GO TO SUCCESS PAGE
-      // ------------------------------------------------------
+        // ====================================================
+        // SUCCESS PAGE
+        // ====================================================
 
-      window.location.href =
-        "success.html";
-
-    }
-
-
-    // ========================================================
-    // ERROR
-    // ========================================================
-
-    catch (error) {
-
-      console.error(
-        "Firebase Error:",
-        error
-      );
-
-
-      let errorMessage =
-        "❌ डेटा सेव नहीं हो पाया।";
-
-
-      // Permission error
-
-      if (
-        error.code ===
-        "permission-denied"
-      ) {
-
-        errorMessage =
-          "❌ Firebase अनुमति नहीं दे रहा है। Firestore Rules जाँचें।";
+        window.location.href =
+          "success.html";
 
       }
 
 
-      // Network error
+      // ======================================================
+      // ERROR
+      // ======================================================
 
-      else if (
-        error.code ===
-        "unavailable"
-      ) {
+      catch (error) {
 
-        errorMessage =
-          "❌ इंटरनेट कनेक्शन की समस्या है। कृपया पुनः प्रयास करें।";
+        console.error(
+          "Firebase Error:",
+          error
+        );
+
+
+        let errorMessage =
+          "❌ डेटा सेव नहीं हो पाया।";
+
+
+        // Permission error
+
+        if (
+          error.code ===
+          "permission-denied"
+        ) {
+
+          errorMessage =
+            "❌ Firebase अनुमति नहीं दे रहा है। Firestore Rules जाँचें।";
+
+        }
+
+
+        // Network error
+
+        else if (
+          error.code ===
+          "unavailable"
+        ) {
+
+          errorMessage =
+            "❌ इंटरनेट कनेक्शन की समस्या है। कृपया पुनः प्रयास करें।";
+
+        }
+
+
+        showMessage(
+          errorMessage,
+          "error"
+        );
 
       }
 
 
-      showMessage(
-        errorMessage,
-        "error"
-      );
+      // ======================================================
+      // ENABLE BUTTON
+      // ======================================================
+
+      finally {
+
+        submitBtn.disabled =
+          false;
+
+        submitBtn.innerHTML =
+          "<span>पंजीयन सबमिट करें</span><b>→</b>";
+
+      }
 
     }
+  );
 
-
-    // ========================================================
-    // ENABLE BUTTON AGAIN
-    // ========================================================
-
-    finally {
-
-      submitBtn.disabled =
-        false;
-
-      submitBtn.innerHTML =
-        "<span>पंजीयन सबमिट करें</span><b>→</b>";
-
-    }
-
-  }
-);
+}

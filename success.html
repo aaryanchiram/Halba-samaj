@@ -2,7 +2,6 @@
 <html lang="hi">
 
 <head>
-
   <meta charset="utf-8">
 
   <meta
@@ -17,15 +16,389 @@
 
   <title>पंजीयन सफल | हलबा हलबी समाज</title>
 
+  <!-- आपकी मौजूदा स्क्रीन डिजाइन -->
   <link rel="stylesheet" href="style.css">
 
+  <style>
+
+    /* =====================================================
+       SCREEN
+       स्क्रीन पर style.css का मौजूदा डिजाइन ही लागू रहेगा।
+       ===================================================== */
+
+    .success-message {
+      text-align: center;
+    }
+
+    .details-section {
+      margin-top: 18px;
+    }
+
+    .details-section h3 {
+      margin-bottom: 12px;
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .detail-item {
+      padding: 10px 12px;
+      border: 1px solid rgba(15, 107, 104, 0.15);
+      border-radius: 10px;
+      background: rgba(15, 107, 104, 0.035);
+      min-width: 0;
+    }
+
+    .detail-label {
+      display: block;
+      font-size: 0.78rem;
+      color: #6c7777;
+      margin-bottom: 3px;
+    }
+
+    .detail-value {
+      display: block;
+      font-size: 0.92rem;
+      color: #263636;
+      overflow-wrap: anywhere;
+    }
+
+    /* =====================================================
+       A4 PRINT ONLY
+       स्क्रीन डिजाइन पर इसका कोई असर नहीं होगा।
+       ===================================================== */
+
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+
+    @media print {
+
+      html,
+      body {
+        width: 210mm !important;
+        height: 297mm !important;
+        min-height: 297mm !important;
+        max-height: 297mm !important;
+
+        margin: 0 !important;
+        padding: 0 !important;
+
+        overflow: hidden !important;
+
+        background: #ffffff !important;
+      }
+
+      body {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      /* पूरा A4 printable area */
+
+      .page {
+        width: 210mm !important;
+        height: 297mm !important;
+
+        min-height: 297mm !important;
+        max-height: 297mm !important;
+
+        margin: 0 !important;
+        padding: 6mm !important;
+
+        overflow: hidden !important;
+
+        display: block !important;
+      }
+
+      /* Card को A4 के अंदर fit करना */
+
+      .card {
+        width: 198mm !important;
+        height: 285mm !important;
+
+        min-height: 285mm !important;
+        max-height: 285mm !important;
+
+        margin: 0 auto !important;
+        padding: 5mm !important;
+
+        overflow: hidden !important;
+
+        border-radius: 0 !important;
+        box-shadow: none !important;
+
+        background: #ffffff !important;
+      }
+
+      /* =================================================
+         HEADER
+         ================================================= */
+
+      .hero {
+        height: 28mm !important;
+
+        min-height: 28mm !important;
+
+        display: flex !important;
+        align-items: center !important;
+
+        margin: 0 0 3mm 0 !important;
+        padding: 0 !important;
+      }
+
+      .logo {
+        width: 22mm !important;
+        height: 22mm !important;
+
+        max-width: 22mm !important;
+        max-height: 22mm !important;
+
+        object-fit: contain !important;
+
+        flex: 0 0 22mm !important;
+      }
+
+      .hero-text {
+        margin-left: 4mm !important;
+        min-width: 0 !important;
+      }
+
+      .eyebrow {
+        margin: 0 0 1mm 0 !important;
+
+        font-size: 8pt !important;
+        line-height: 1.1 !important;
+      }
+
+      .hero h1 {
+        margin: 0 !important;
+
+        font-size: 15pt !important;
+        line-height: 1.15 !important;
+      }
+
+      .hero h2 {
+        margin: 1mm 0 0 !important;
+
+        font-size: 11pt !important;
+        line-height: 1.1 !important;
+      }
+
+      .hero .subtitle {
+        margin: 1mm 0 0 !important;
+
+        font-size: 9pt !important;
+        line-height: 1.1 !important;
+      }
+
+      /* =================================================
+         CELEBRATION HIDE
+         ================================================= */
+
+      #celebration {
+        display: none !important;
+      }
+
+      /* =================================================
+         SUCCESS MESSAGE
+         ================================================= */
+
+      .success-message {
+        margin: 2mm 0 4mm !important;
+        padding: 3mm !important;
+
+        border: 1px solid #d8e5e4 !important;
+        border-radius: 3mm !important;
+
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+
+      .success-icon {
+        width: 9mm !important;
+        height: 9mm !important;
+
+        line-height: 9mm !important;
+
+        margin: 0 auto 1.5mm !important;
+
+        font-size: 12pt !important;
+      }
+
+      .success-message h2 {
+        margin: 0 0 1mm !important;
+
+        font-size: 12pt !important;
+        line-height: 1.15 !important;
+      }
+
+      .success-message p {
+        margin: 0 !important;
+
+        font-size: 8.5pt !important;
+        line-height: 1.2 !important;
+      }
+
+      /* =================================================
+         DETAILS
+         ================================================= */
+
+      .details-section {
+        margin: 0 !important;
+
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+
+      .details-section h3 {
+        margin: 0 0 2.5mm !important;
+
+        padding-bottom: 1.5mm !important;
+
+        border-bottom: 1px solid #0f6b68 !important;
+
+        font-size: 11pt !important;
+        line-height: 1.1 !important;
+      }
+
+      .details-grid {
+        display: grid !important;
+
+        grid-template-columns:
+          1fr 1fr !important;
+
+        gap: 1.5mm 2.5mm !important;
+
+        width: 100% !important;
+      }
+
+      .detail-item {
+        min-height: 12mm !important;
+
+        padding: 2mm 2.5mm !important;
+
+        border: 0.3mm solid #d8dfdf !important;
+
+        border-radius: 1.5mm !important;
+
+        background: #ffffff !important;
+
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+
+      .detail-label {
+        display: block !important;
+
+        margin: 0 0 0.8mm !important;
+
+        font-size: 7pt !important;
+        line-height: 1.05 !important;
+
+        color: #687272 !important;
+      }
+
+      .detail-value {
+        display: block !important;
+
+        font-size: 8pt !important;
+        line-height: 1.15 !important;
+
+        color: #222 !important;
+
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+      }
+
+      /* पूरा पता थोड़ा बड़ा area */
+
+      .detail-item:nth-child(15) {
+        grid-column: 1 / -1 !important;
+
+        min-height: 15mm !important;
+      }
+
+      /* =================================================
+         ACTION BUTTONS / LINKS HIDE
+         ================================================= */
+
+      .success-actions,
+      .note,
+      .back-link,
+      .print-btn,
+      button {
+        display: none !important;
+      }
+
+      /* =================================================
+         POWERED FOOTER
+         ================================================= */
+
+      .powered-footer {
+        display: block !important;
+
+        margin-top: 3mm !important;
+        padding: 1mm 0 !important;
+
+        text-align: center !important;
+
+        font-size: 6.5pt !important;
+        line-height: 1 !important;
+
+        color: #777 !important;
+      }
+
+      /* =================================================
+         FORCE NO PAGE BREAK
+         ================================================= */
+
+      .card,
+      .hero,
+      .success-message,
+      .details-section,
+      .details-grid {
+        page-break-before: avoid !important;
+        page-break-after: avoid !important;
+      }
+
+      * {
+        box-sizing: border-box !important;
+      }
+
+    }
+
+    /* =====================================================
+       MOBILE SCREEN
+       स्क्रीन डिजाइन को responsive रखने के लिए
+       ===================================================== */
+
+    @media screen and (max-width: 700px) {
+
+      .details-grid {
+        grid-template-columns: 1fr;
+      }
+
+    }
+
+  </style>
+
 </head>
+
 
 <body>
 
   <main class="page">
 
     <section class="card">
+
+      <!-- ================================================
+           HEADER
+           ================================================ -->
 
       <div class="hero">
 
@@ -58,7 +431,9 @@
       </div>
 
 
-      <!-- Celebration -->
+      <!-- ================================================
+           CELEBRATION
+           ================================================ -->
 
       <div
         id="celebration"
@@ -68,7 +443,9 @@
       </div>
 
 
-      <!-- Success Message -->
+      <!-- ================================================
+           SUCCESS MESSAGE
+           ================================================ -->
 
       <section class="success-message">
 
@@ -88,7 +465,9 @@
       </section>
 
 
-      <!-- Registration Details -->
+      <!-- ================================================
+           REGISTRATION DETAILS
+           ================================================ -->
 
       <section class="details-section">
 
@@ -106,7 +485,9 @@
       </section>
 
 
-      <!-- Actions -->
+      <!-- ================================================
+           ACTION BUTTONS
+           ================================================ -->
 
       <div class="success-actions">
 
@@ -135,6 +516,10 @@
       </div>
 
 
+      <!-- ================================================
+           NOTE
+           ================================================ -->
+
       <div class="note">
 
         <strong>महत्वपूर्ण:</strong>
@@ -148,12 +533,22 @@
       </div>
 
 
+      <!-- ================================================
+           BACK LINK
+           ================================================ -->
+
       <p class="back-link">
+
         <a href="index.html">
           ← पंजीयन फॉर्म पर वापस जाएँ
         </a>
+
       </p>
 
+
+      <!-- ================================================
+           POWERED BY
+           ================================================ -->
 
       <div class="powered-footer">
         Powered by Aaryan Chiram
@@ -166,9 +561,9 @@
 
   <script>
 
-    /* =========================
-       READ REGISTRATION DATA
-    ========================= */
+    /* =====================================================
+       GET SAVED REGISTRATION
+       ===================================================== */
 
     const details =
       document.getElementById(
@@ -208,15 +603,13 @@
     }
 
 
-    /* =========================
+    /* =====================================================
        ESCAPE HTML
-    ========================= */
+       ===================================================== */
 
     function esc(value) {
 
-      return String(
-        value ?? ""
-      )
+      return String(value ?? "")
         .replace(
           /&/g,
           "&amp;"
@@ -241,16 +634,14 @@
     }
 
 
-    /* =========================
-       FORMAT VALUE
-    ========================= */
+    /* =====================================================
+       VALUE
+       ===================================================== */
 
     function valueOrDash(value) {
 
       const text =
-        String(
-          value ?? ""
-        ).trim();
+        String(value ?? "").trim();
 
       return text
         ? text
@@ -259,17 +650,22 @@
     }
 
 
-    /* =========================
-       DISPLAY DETAILS
-    ========================= */
+    /* =====================================================
+       DISPLAY DATA
+       ===================================================== */
 
     if (!data) {
 
       details.innerHTML = `
+
         <div class="message error">
+
           पंजीयन विवरण उपलब्ध नहीं है।
+
           कृपया पंजीयन फॉर्म से दोबारा प्रयास करें।
+
         </div>
+
       `;
 
       printBtn.style.display = "none";
@@ -397,19 +793,18 @@
     }
 
 
-    /* =========================
-       PRINT
-    ========================= */
+    /* =====================================================
+       PRINT BUTTON
+       ===================================================== */
 
     printBtn.addEventListener(
       "click",
-      () => {
+      function () {
 
         window.print();
 
       }
     );
-
 
   </script>
 

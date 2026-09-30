@@ -1,999 +1,1281 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="hi">
+
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <meta name="theme-color" content="#0f6b68">
-  <meta name="description" content="हल्बा हल्बी समाज पंजीयन एडमिन डैशबोर्ड">
-
-  <title>एडमिन डैशबोर्ड | हल्बा हल्बी समाज</title>
-
-  <!-- Main CSS only. No admin.css required -->
-  <link rel="stylesheet" href="style.css">
-
-  <style>
-    /* =========================================================
-       ADMIN DASHBOARD
-       No external admin.css required
-       ========================================================= */
-
-    .admin-page{
-      min-height:100vh;
-      padding:24px 14px;
-    }
-
-    .admin-page .card{
-      width:min(100%, 1200px);
-      margin:0 auto;
-    }
-
-    .admin-page .hero{
-      display:flex;
-      align-items:center;
-      gap:18px;
-      margin-bottom:20px;
-    }
-
-    .admin-page .logo{
-      width:90px;
-      height:90px;
-      object-fit:contain;
-      flex-shrink:0;
-    }
-
-    .hero-text h1{
-      margin:4px 0;
-      line-height:1.3;
-    }
-
-    .hero-text h2{
-      margin:4px 0;
-    }
-
-    .login-panel{
-      max-width:520px;
-      margin:30px auto;
-      padding:24px;
-      border:1px solid #e1e7e7;
-      border-radius:16px;
-      background:#fff;
-      box-shadow:0 8px 25px rgba(0,0,0,.06);
-    }
-
-    .login-panel h3{
-      margin-top:0;
-      text-align:center;
-    }
-
-    .hidden{
-      display:none !important;
-    }
-
-    .dashboard-heading{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-      margin:22px 0 16px;
-    }
-
-    .dashboard-heading > div{
-      flex:1;
-      min-width:220px;
-    }
-
-    .dashboard-heading h3{
-      margin:0 0 4px;
-    }
-
-    .stats-grid{
-      display:grid;
-      grid-template-columns:repeat(4, 1fr);
-      gap:14px;
-      margin:18px 0;
-    }
-
-    .stat-card{
-      padding:18px;
-      border-radius:14px;
-      background:#f5f9f9;
-      border:1px solid #e0e9e9;
-      text-align:center;
-    }
-
-    .stat-card span{
-      display:block;
-      font-size:.88rem;
-      color:#667;
-      margin-bottom:7px;
-    }
-
-    .stat-card strong{
-      display:block;
-      font-size:1.7rem;
-      color:#0f6b68;
-    }
-
-    .filters{
-      display:grid;
-      grid-template-columns:repeat(4, 1fr);
-      gap:12px;
-      margin:20px 0;
-      padding:16px;
-      border:1px solid #e1e7e7;
-      border-radius:15px;
-      background:#fafcfc;
-    }
-
-    .filters .search-field{
-      grid-column:span 2;
-    }
-
-    .table-heading{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
-      margin:20px 0 12px;
-    }
-
-    .table-heading h3{
-      margin:0;
-    }
-
-    .table-actions{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    .table-wrap{
-      width:100%;
-      overflow-x:auto;
-      -webkit-overflow-scrolling:touch;
-      border:1px solid #dfe6e6;
-      border-radius:14px;
-      background:#fff;
-    }
-
-    #recordsTable{
-      width:100%;
-      min-width:1050px;
-      border-collapse:collapse;
-    }
-
-    #recordsTable th,
-    #recordsTable td{
-      padding:10px 9px;
-      border-bottom:1px solid #e8eeee;
-      text-align:left;
-      vertical-align:middle;
-      white-space:nowrap;
-    }
-
-    #recordsTable th{
-      background:#eef6f5;
-      color:#155d5b;
-      font-weight:800;
-      position:sticky;
-      top:0;
-      z-index:1;
-    }
-
-    #recordsTable tbody tr:hover{
-      background:#fafdfd;
-    }
-
-    .record-print-btn{
-      border:0;
-      border-radius:8px;
-      padding:7px 10px;
-      cursor:pointer;
-      background:#0f6b68;
-      color:#fff;
-      font-weight:700;
-    }
-
-    .record-print-btn:hover{
-      opacity:.9;
-    }
-
-    .location-summary{
-      display:grid;
-      grid-template-columns:repeat(3, 1fr);
-      gap:14px;
-      margin-top:20px;
-    }
-
-    .location-summary section{
-      padding:16px;
-      border:1px solid #e1e7e7;
-      border-radius:14px;
-      background:#fff;
-    }
-
-    .location-summary h3{
-      margin-top:0;
-      font-size:1rem;
-    }
-
-    .summary-list{
-      display:flex;
-      flex-direction:column;
-      gap:7px;
-    }
-
-    .summary-row{
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      padding:7px 9px;
-      border-radius:8px;
-      background:#f7fafa;
-    }
-
-    .summary-row span:first-child{
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-
-    .summary-row strong{
-      flex-shrink:0;
-      color:#0f6b68;
-    }
-
-    .secondary-btn,
-    .logout-btn{
-      border:0;
-      border-radius:9px;
-      padding:10px 14px;
-      cursor:pointer;
-      font-weight:800;
-    }
-
-    .secondary-btn{
-      background:#e9f2f1;
-      color:#0f6b68;
-    }
-
-    .logout-btn{
-      background:#b42318;
-      color:#fff;
-    }
-
-    .secondary-btn:hover,
-    .logout-btn:hover{
-      opacity:.9;
-    }
-
-    .privacy-note{
-      color:#687878;
-      font-size:.85rem;
-    }
-
-    .message{
-      display:none;
-      margin:12px 0;
-      padding:11px 13px;
-      border-radius:9px;
-      font-weight:600;
-    }
-
-    .message.show{
-      display:block;
-    }
-
-    .message.success{
-      background:#e9f8ef;
-      color:#176b39;
-    }
-
-    .message.error{
-      background:#fff0f0;
-      color:#a61b1b;
-    }
-
-    .message.info{
-      background:#edf7ff;
-      color:#075985;
-    }
-
-    .empty-row{
-      text-align:center !important;
-      padding:30px !important;
-      color:#687878;
-    }
-
-    /* Mobile */
-    @media(max-width:900px){
-      .stats-grid{
-        grid-template-columns:repeat(2, 1fr);
-      }
-
-      .filters{
-        grid-template-columns:repeat(2, 1fr);
-      }
-
-      .filters .search-field{
-        grid-column:span 2;
-      }
-
-      .location-summary{
-        grid-template-columns:1fr;
-      }
-    }
-
-    @media(max-width:600px){
-      .admin-page{
-        padding:12px 8px;
-      }
-
-      .admin-page .hero{
-        align-items:flex-start;
-        gap:12px;
-      }
-
-      .admin-page .logo{
-        width:68px;
-        height:68px;
-      }
-
-      .hero-text h1{
-        font-size:1.1rem;
-      }
-
-      .hero-text h2{
-        font-size:1rem;
-      }
-
-      .hero-text .subtitle{
-        font-size:.85rem;
-      }
-
-      .login-panel{
-        padding:18px;
-        margin:20px auto;
-      }
-
-      .dashboard-heading{
-        align-items:stretch;
-      }
-
-      .dashboard-heading > div{
-        width:100%;
-        flex-basis:100%;
-      }
-
-      .dashboard-heading button{
-        flex:1;
-      }
-
-      .stats-grid{
-        grid-template-columns:1fr 1fr;
-        gap:9px;
-      }
-
-      .stat-card{
-        padding:13px 8px;
-      }
-
-      .stat-card strong{
-        font-size:1.4rem;
-      }
-
-      .filters{
-        grid-template-columns:1fr;
-        padding:12px;
-      }
-
-      .filters .search-field{
-        grid-column:auto;
-      }
-
-      .table-heading{
-        align-items:stretch;
-      }
-
-      .table-actions{
-        width:100%;
-      }
-
-      .table-actions button{
-        flex:1;
-      }
-
-      .secondary-btn,
-      .logout-btn{
-        padding:9px 10px;
-      }
-    }
-
-    /* Print */
-    @media print{
-      body{
-        background:#fff !important;
-      }
-
-      .admin-page{
-        padding:0 !important;
-      }
-
-      .admin-page .card{
-        width:100% !important;
-        box-shadow:none !important;
-        border:0 !important;
-      }
-
-      .hero,
-      #loginPanel,
-      .dashboard-heading,
-      .stats-grid,
-      .filters,
-      .table-actions,
-      .location-summary,
-      .privacy-note,
-      .record-print-btn{
-        display:none !important;
-      }
-
-      .table-heading{
-        display:block !important;
-        margin:0 0 10px !important;
-      }
-
-      .table-wrap{
-        overflow:visible !important;
-        border:0 !important;
-      }
-
-      #recordsTable{
-        min-width:0 !important;
-        width:100% !important;
-        font-size:9px !important;
-      }
-
-      #recordsTable th,
-      #recordsTable td{
-        white-space:normal !important;
-        padding:5px 4px !important;
-      }
-
-      #recordsTable th:last-child,
-      #recordsTable td:last-child{
-        display:none !important;
-      }
-    }
-  </style>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
+
+<title>
+हल्बा समाज - Admin Dashboard
+</title>
+
+<link
+  rel="stylesheet"
+  href="style.css"
+>
+
+<script
+  src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js">
+</script>
+
+
+<style>
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+
+  font-family:
+    Arial,
+    "Noto Sans Devanagari",
+    sans-serif;
+
+  background: #f5f6f8;
+
+  color: #222;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.admin-header {
+
+  background:
+    linear-gradient(
+      135deg,
+      #6d2e00,
+      #a94c00
+    );
+
+  color: white;
+
+  padding: 15px 20px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 15px;
+
+  flex-wrap: wrap;
+}
+
+
+.header-left {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+}
+
+
+.header-left img {
+
+  width: 48px;
+
+  height: 48px;
+
+  object-fit: contain;
+
+  background: white;
+
+  border-radius: 50%;
+}
+
+
+.header-title {
+
+  font-size: 20px;
+
+  font-weight: 700;
+}
+
+
+.header-subtitle {
+
+  font-size: 12px;
+
+  opacity: .9;
+}
+
+
+/* =========================================================
+   CONTAINER
+========================================================= */
+
+.container {
+
+  width: min(
+    1600px,
+    96%
+  );
+
+  margin: 20px auto;
+}
+
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+.login-card {
+
+  max-width: 430px;
+
+  margin:
+    70px auto;
+
+  background: white;
+
+  border-radius: 16px;
+
+  padding: 30px;
+
+  box-shadow:
+    0 8px 30px
+    rgba(
+      0,
+      0,
+      0,
+      .12
+    );
+}
+
+
+.login-card h2 {
+
+  margin-top: 0;
+
+  text-align: center;
+}
+
+
+.form-group {
+
+  margin-bottom: 16px;
+}
+
+
+.form-group label {
+
+  display: block;
+
+  font-weight: 600;
+
+  margin-bottom: 7px;
+}
+
+
+.form-group input,
+.filter-box select,
+.filter-box input {
+
+  width: 100%;
+
+  padding: 11px 12px;
+
+  border:
+    1px solid #ccc;
+
+  border-radius: 8px;
+
+  font-size: 14px;
+
+  background: white;
+}
+
+
+.form-group input:focus,
+.filter-box input:focus,
+.filter-box select:focus {
+
+  outline: none;
+
+  border-color: #a94c00;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(
+      169,
+      76,
+      0,
+      .12
+    );
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+button {
+
+  cursor: pointer;
+
+  border: none;
+
+  border-radius: 8px;
+
+  padding: 10px 15px;
+
+  font-size: 14px;
+}
+
+
+.primary-btn {
+
+  width: 100%;
+
+  background: #8b3f00;
+
+  color: white;
+
+  font-weight: 700;
+}
+
+
+.primary-btn:hover {
+
+  background: #6d2e00;
+}
+
+
+.action-btn {
+
+  background: #8b3f00;
+
+  color: white;
+}
+
+
+.secondary-btn {
+
+  background: #eee;
+
+  color: #222;
+}
+
+
+.danger-btn {
+
+  background: #b71c1c;
+
+  color: white;
+}
+
+
+.small-btn {
+
+  background: #6d2e00;
+
+  color: white;
+
+  padding:
+    6px 10px;
+
+  font-size: 12px;
+}
+
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+#adminMessage {
+
+  display: none;
+
+  padding: 12px;
+
+  margin-bottom: 15px;
+
+  border-radius: 8px;
+
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   DASHBOARD TOP
+========================================================= */
+
+.dashboard-top {
+
+  background: white;
+
+  border-radius: 12px;
+
+  padding: 15px;
+
+  margin-bottom: 18px;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  gap: 10px;
+
+  flex-wrap: wrap;
+}
+
+
+.dashboard-top h1 {
+
+  margin: 0;
+
+  font-size: 23px;
+}
+
+
+.dashboard-actions {
+
+  display: flex;
+
+  gap: 8px;
+
+  flex-wrap: wrap;
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+.stats-grid {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      5,
+      1fr
+    );
+
+  gap: 14px;
+
+  margin-bottom: 18px;
+}
+
+
+.stat-card {
+
+  background: white;
+
+  border-radius: 12px;
+
+  padding: 18px;
+
+  box-shadow:
+    0 3px 12px
+    rgba(
+      0,
+      0,
+      0,
+      .06
+    );
+}
+
+
+.stat-label {
+
+  font-size: 13px;
+
+  color: #666;
+}
+
+
+.stat-value {
+
+  font-size: 28px;
+
+  font-weight: 800;
+
+  margin-top: 5px;
+}
+
+
+/* =========================================================
+   FILTERS
+========================================================= */
+
+.filter-box {
+
+  background: white;
+
+  border-radius: 12px;
+
+  padding: 15px;
+
+  margin-bottom: 18px;
+}
+
+
+.filter-box h3 {
+
+  margin-top: 0;
+}
+
+
+.filters {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      6,
+      1fr
+    );
+
+  gap: 10px;
+}
+
+
+.search-box {
+
+  grid-column:
+    span 2;
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.table-card {
+
+  background: white;
+
+  border-radius: 12px;
+
+  padding: 15px;
+
+  overflow: hidden;
+}
+
+
+.table-wrapper {
+
+  width: 100%;
+
+  overflow-x: auto;
+}
+
+
+table {
+
+  width: 100%;
+
+  border-collapse: collapse;
+
+  min-width: 1700px;
+}
+
+
+th,
+td {
+
+  border:
+    1px solid #ddd;
+
+  padding:
+    8px;
+
+  text-align: left;
+
+  font-size: 13px;
+
+  vertical-align: top;
+}
+
+
+th {
+
+  background:
+    #f0e4da;
+
+  white-space: nowrap;
+
+  position: sticky;
+
+  top: 0;
+
+  z-index: 1;
+}
+
+
+tbody tr:hover {
+
+  background:
+    #fffaf6;
+}
+
+
+/* =========================================================
+   SUMMARY
+========================================================= */
+
+.summary-grid {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      4,
+      1fr
+    );
+
+  gap: 15px;
+
+  margin-top: 18px;
+}
+
+
+.summary-card {
+
+  background: white;
+
+  border-radius: 12px;
+
+  padding: 15px;
+}
+
+
+.summary-card h3 {
+
+  margin-top: 0;
+}
+
+
+.summary-row {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 10px;
+
+  padding:
+    7px 0;
+
+  border-bottom:
+    1px solid #eee;
+
+  font-size: 13px;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media
+(max-width: 1000px) {
+
+  .stats-grid {
+
+    grid-template-columns:
+      repeat(
+        2,
+        1fr
+      );
+  }
+
+  .filters {
+
+    grid-template-columns:
+      repeat(
+        2,
+        1fr
+      );
+  }
+
+  .search-box {
+
+    grid-column:
+      span 2;
+  }
+
+  .summary-grid {
+
+    grid-template-columns:
+      repeat(
+        2,
+        1fr
+      );
+  }
+}
+
+
+@media
+(max-width: 600px) {
+
+  .container {
+
+    width: 94%;
+  }
+
+  .stats-grid {
+
+    grid-template-columns:
+      1fr 1fr;
+  }
+
+  .filters {
+
+    grid-template-columns:
+      1fr;
+  }
+
+  .search-box {
+
+    grid-column:
+      span 1;
+  }
+
+  .summary-grid {
+
+    grid-template-columns:
+      1fr;
+  }
+
+  .dashboard-top {
+
+    align-items:
+      flex-start;
+  }
+
+  .dashboard-actions {
+
+    width: 100%;
+  }
+
+  .dashboard-actions button {
+
+    flex: 1;
+  }
+
+  .header-title {
+
+    font-size: 16px;
+  }
+}
+
+</style>
+
 </head>
+
 
 <body>
 
-  <main class="page admin-page">
 
-    <section class="card">
+<!-- =======================================================
+     HEADER
+======================================================= -->
 
-      <!-- Header -->
-      <div class="hero">
+<header class="admin-header">
 
-        <img
-          src="assets/logo.webp"
-          class="logo"
-          alt="हल्बा हल्बी समाज लोगो"
+  <div class="header-left">
+
+    <img
+      src="assets/logo.webp"
+      alt="Halba Samaj"
+      onerror="
+        this.style.display='none';
+      "
+    >
+
+    <div>
+
+      <div class="header-title">
+        अखिल भारतीय आदिवासी हल्बा हल्बी समाज
+      </div>
+
+      <div class="header-subtitle">
+        Registration Administration
+      </div>
+
+    </div>
+
+  </div>
+
+</header>
+
+
+
+<!-- =======================================================
+     CONTAINER
+======================================================= -->
+
+<main class="container">
+
+
+<!-- =======================================================
+     LOGIN PANEL
+======================================================= -->
+
+<section
+  id="loginPanel"
+  class="login-card"
+>
+
+  <h2>
+    🔐 Admin Login
+  </h2>
+
+  <div
+    id="adminMessage"
+  ></div>
+
+
+  <form
+    id="loginForm"
+  >
+
+    <div class="form-group">
+
+      <label
+        for="username"
+      >
+        Admin ID
+      </label>
+
+      <input
+        type="text"
+        id="username"
+        name="username"
+        placeholder="Admin ID"
+        autocomplete="username"
+        required
+      >
+
+    </div>
+
+
+    <div class="form-group">
+
+      <label
+        for="password"
+      >
+        Password
+      </label>
+
+      <input
+        type="password"
+        id="password"
+        name="password"
+        placeholder="Password"
+        autocomplete="current-password"
+        required
+      >
+
+    </div>
+
+
+    <button
+      id="loginBtn"
+      type="submit"
+      class="primary-btn"
+    >
+      Admin Login
+    </button>
+
+  </form>
+
+</section>
+
+
+
+<!-- =======================================================
+     DASHBOARD
+======================================================= -->
+
+<section
+  id="dashboardPanel"
+  style="display:none;"
+>
+
+
+  <div class="dashboard-top">
+
+    <div>
+
+      <h1>
+        📊 Registration Dashboard
+      </h1>
+
+      <small
+        id="lastUpdated"
+      >
+        डेटा लोड हो रहा है...
+      </small>
+
+    </div>
+
+
+    <div class="dashboard-actions">
+
+      <button
+        id="refreshBtn"
+        class="action-btn"
+        type="button"
+      >
+        🔄 Refresh
+      </button>
+
+
+      <button
+        id="printListBtn"
+        class="secondary-btn"
+        type="button"
+      >
+        🖨️ Print List
+      </button>
+
+
+      <button
+        id="downloadExcelBtn"
+        class="action-btn"
+        type="button"
+      >
+        📥 Excel
+      </button>
+
+
+      <button
+        id="logoutBtn"
+        class="danger-btn"
+        type="button"
+      >
+        Logout
+      </button>
+
+    </div>
+
+  </div>
+
+
+
+  <div
+    id="adminMessage"
+    style="display:none;"
+  ></div>
+
+
+
+  <!-- =====================================================
+       STATS
+  ====================================================== -->
+
+  <div class="stats-grid">
+
+    <div class="stat-card">
+
+      <div class="stat-label">
+        कुल पंजीयन
+      </div>
+
+      <div
+        class="stat-value"
+        id="totalCount"
+      >
+        0
+      </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+      <div class="stat-label">
+        पुरुष
+      </div>
+
+      <div
+        class="stat-value"
+        id="maleCount"
+      >
+        0
+      </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+      <div class="stat-label">
+        महिला
+      </div>
+
+      <div
+        class="stat-value"
+        id="femaleCount"
+      >
+        0
+      </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+      <div class="stat-label">
+        अन्य
+      </div>
+
+      <div
+        class="stat-value"
+        id="otherCount"
+      >
+        0
+      </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+      <div class="stat-label">
+        वर्तमान सूची
+      </div>
+
+      <div
+        class="stat-value"
+        id="visibleCount"
+      >
+        0
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- =====================================================
+       FILTERS
+  ====================================================== -->
+
+  <div class="filter-box">
+
+    <h3>
+      🔎 Search & Filter
+    </h3>
+
+
+    <div class="filters">
+
+
+      <div class="search-box">
+
+        <input
+          type="search"
+          id="searchFilter"
+          placeholder="नाम, पिता, मोबाइल, पंजीयन क्रमांक, गाँव..."
         >
 
-        <div class="hero-text">
-
-          <p class="eyebrow">
-            जय माँ दंतेश्वरी • जय जोहार
-          </p>
-
-          <h1>
-            अखिल भारतीय आदिवासी हलबा हलबी समाज
-          </h1>
-
-          <h2>
-            बालोद महासभा
-          </h2>
-
-          <p class="subtitle">
-            एडमिन डैशबोर्ड
-          </p>
-
-        </div>
-
       </div>
 
 
-      <!-- Message -->
-      <div
-        id="adminMessage"
-        class="message"
-        role="status"
-        aria-live="polite">
-      </div>
+      <select
+        id="districtFilter"
+      >
+        <option value="">
+          सभी जिले
+        </option>
+      </select>
 
 
-      <!-- Login -->
-      <section id="loginPanel" class="login-panel">
+      <select
+        id="relatedBlockFilter"
+      >
+        <option value="">
+          सभी संबंधित ब्लॉक
+        </option>
+      </select>
 
-        <h3>एडमिन लॉगिन</h3>
 
-        <form id="loginForm" autocomplete="on">
+      <select
+        id="blockFilter"
+      >
+        <option value="">
+          सभी ब्लॉक
+        </option>
+      </select>
 
-          <label class="field">
 
-            <span>
-              यूज़रनेम
-            </span>
+      <select
+        id="villageFilter"
+      >
+        <option value="">
+          सभी गाँव / नगर
+        </option>
+      </select>
 
-            <input
-              name="username"
-              id="username"
-              type="text"
-              required
-              autocomplete="username"
-              placeholder="यूज़रनेम"
-            >
 
-          </label>
+      <select
+        id="genderFilter"
+      >
+        <option value="">
+          सभी लिंग
+        </option>
 
+        <option value="पुरुष">
+          पुरुष
+        </option>
 
-          <label class="field">
+        <option value="महिला">
+          महिला
+        </option>
 
-            <span>
-              पासवर्ड
-            </span>
+        <option value="अन्य">
+          अन्य
+        </option>
 
-            <input
-              name="password"
-              id="password"
-              type="password"
-              required
-              autocomplete="current-password"
-              placeholder="पासवर्ड"
-            >
+        <option value="Male">
+          Male
+        </option>
 
-          </label>
+        <option value="Female">
+          Female
+        </option>
 
+      </select>
 
-          <button
-            class="submit-btn"
-            id="loginBtn"
-            type="submit">
 
-            <span>
-              लॉगिन करें
-            </span>
+    </div>
 
-            <b>→</b>
+  </div>
 
-          </button>
 
-        </form>
 
-      </section>
+  <!-- =====================================================
+       TABLE
+  ====================================================== -->
 
+  <div class="table-card">
 
-      <!-- Dashboard -->
-      <section
-        id="dashboardPanel"
-        class="hidden">
+    <h3>
+      📋 पंजीयन रिकॉर्ड
+    </h3>
 
 
-        <!-- Dashboard heading -->
-        <div class="dashboard-heading">
+    <div class="table-wrapper">
 
-          <div>
+      <table>
 
-            <h3>
-              पंजीयन डैशबोर्ड
-            </h3>
+        <thead>
 
-            <p
-              id="lastUpdated"
-              class="privacy-note">
-            </p>
+          <tr>
 
-          </div>
+            <th>#</th>
 
+            <th>
+              पंजीयन क्रमांक
+            </th>
 
-          <button
-            type="button"
-            class="secondary-btn"
-            id="refreshBtn">
-            🔄 रीफ्रेश
-          </button>
+            <th>
+              महासभा
+            </th>
 
+            <th>
+              नाम
+            </th>
 
-          <button
-            type="button"
-            class="logout-btn"
-            id="logoutBtn">
-            🚪 लॉगआउट
-          </button>
+            <th>
+              गोत्र
+            </th>
 
-        </div>
+            <th>
+              टोटम
+            </th>
 
+            <th>
+              पिता का नाम
+            </th>
 
-        <!-- Statistics -->
-        <div class="stats-grid">
+            <th>
+              जन्म तिथि
+            </th>
 
-          <article class="stat-card">
-
-            <span>
-              कुल पंजीयन
-            </span>
-
-            <strong id="totalCount">
-              0
-            </strong>
-
-          </article>
-
-
-          <article class="stat-card">
-
-            <span>
-              पुरुष
-            </span>
-
-            <strong id="maleCount">
-              0
-            </strong>
-
-          </article>
-
-
-          <article class="stat-card">
-
-            <span>
-              महिला
-            </span>
-
-            <strong id="femaleCount">
-              0
-            </strong>
-
-          </article>
-
-
-          <article class="stat-card">
-
-            <span>
-              अन्य / नहीं बताया
-            </span>
-
-            <strong id="otherCount">
-              0
-            </strong>
-
-          </article>
-
-        </div>
-
-
-        <!-- Filters -->
-        <div class="filters">
-
-          <label class="field">
-
-            <span>
-              जिला
-            </span>
-
-            <select id="districtFilter">
-
-              <option value="">
-                सभी जिले
-              </option>
-
-            </select>
-
-          </label>
-
-
-          <label class="field">
-
-            <span>
-              संबंधित ब्लॉक
-            </span>
-
-            <select id="relatedBlockFilter">
-
-              <option value="">
-                सभी संबंधित ब्लॉक
-              </option>
-
-            </select>
-
-          </label>
-
-
-          <label class="field">
-
-            <span>
-              ब्लॉक / विकासखंड
-            </span>
-
-            <select id="blockFilter">
-
-              <option value="">
-                सभी ब्लॉक
-              </option>
-
-            </select>
-
-          </label>
-
-
-          <label class="field">
-
-            <span>
-              गाँव / नगर
-            </span>
-
-            <select id="villageFilter">
-
-              <option value="">
-                सभी गाँव
-              </option>
-
-            </select>
-
-          </label>
-
-
-          <label class="field">
-
-            <span>
+            <th>
               लिंग
-            </span>
+            </th>
 
-            <select id="genderFilter">
+            <th>
+              ईमेल
+            </th>
 
-              <option value="">
-                सभी
-              </option>
+            <th>
+              मोबाइल
+            </th>
 
-              <option value="पुरुष">
-                पुरुष
-              </option>
+            <th>
+              जिला
+            </th>
 
-              <option value="महिला">
-                महिला
-              </option>
+            <th>
+              संबंधित ब्लॉक
+            </th>
 
-              <option value="अन्य">
-                अन्य
-              </option>
+            <th>
+              ब्लॉक
+            </th>
 
-              <option value="बताना नहीं चाहते">
-                बताना नहीं चाहते
-              </option>
+            <th>
+              गाँव / नगर
+            </th>
 
-            </select>
+            <th>
+              पता
+            </th>
 
-          </label>
+            <th>
+              स्थिति
+            </th>
+
+            <th>
+              पंजीयन दिनांक
+            </th>
+
+            <th>
+              Print
+            </th>
+
+          </tr>
+
+        </thead>
 
 
-          <label class="field search-field">
+        <tbody
+          id="recordsBody"
+        >
 
-            <span>
-              नाम / पिता / गोत्र / टोटम / ईमेल / मोबाइल खोजें
-            </span>
+          <tr>
 
-            <input
-              id="searchFilter"
-              type="search"
-              placeholder="खोजें..."
-              autocomplete="off"
+            <td
+              colspan="19"
+              style="
+                text-align:center;
+                padding:30px;
+              "
             >
+              Login के बाद डेटा दिखाई देगा।
+            </td>
 
-          </label>
+          </tr>
 
-        </div>
+        </tbody>
 
+      </table>
 
-        <!-- Table heading -->
-        <div class="table-heading">
+    </div>
 
-          <h3>
-            पंजीयन सूची
-            <span id="visibleCount">
-              0
-            </span>
-          </h3>
+  </div>
 
 
-          <div class="table-actions">
 
-            <button
-              type="button"
-              class="secondary-btn"
-              id="downloadExcelBtn">
-              📊 Excel डाउनलोड
-            </button>
+  <!-- =====================================================
+       SUMMARY
+  ====================================================== -->
 
+  <div class="summary-grid">
 
-            <button
-              type="button"
-              class="secondary-btn"
-              id="printListBtn">
-              🖨️ सूची प्रिंट करें
-            </button>
 
-          </div>
+    <div class="summary-card">
 
-        </div>
+      <h3>
+        📍 जिला
+      </h3>
 
-
-        <!-- Registration table -->
-        <div class="table-wrap">
-
-          <table id="recordsTable">
-
-            <thead>
-
-              <tr>
-
-                <th>
-                  क्रम
-                </th>
-
-                <th>
-                  नाम
-                </th>
-
-                <th>
-                  लिंग
-                </th>
-
-                <th>
-                  जिला
-                </th>
-
-                <th>
-                  संबंधित ब्लॉक
-                </th>
-
-                <th>
-                  ब्लॉक
-                </th>
-
-                <th>
-                  गाँव
-                </th>
-
-                <th>
-                  मोबाइल
-                </th>
-
-                <th>
-                  ईमेल
-                </th>
-
-                <th>
-                  प्रिंट
-                </th>
-
-              </tr>
-
-            </thead>
-
-
-            <tbody id="recordsBody">
-
-              <tr>
-
-                <td
-                  colspan="10"
-                  class="empty-row">
-
-                  डेटा लोड नहीं हुआ।
-
-                </td>
-
-              </tr>
-
-            </tbody>
-
-          </table>
-
-        </div>
-
-
-        <!-- Location summary -->
-        <div class="location-summary">
-
-          <section>
-
-            <h3>
-              जिला अनुसार संख्या
-            </h3>
-
-            <div
-              id="districtSummary"
-              class="summary-list">
-            </div>
-
-          </section>
-
-
-          <section>
-
-            <h3>
-              संबंधित ब्लॉक अनुसार संख्या
-            </h3>
-
-            <div
-              id="relatedBlockSummary"
-              class="summary-list">
-            </div>
-
-          </section>
-
-
-          <section>
-
-            <h3>
-              ब्लॉक अनुसार संख्या
-            </h3>
-
-            <div
-              id="blockSummary"
-              class="summary-list">
-            </div>
-
-          </section>
-
-
-          <section>
-
-            <h3>
-              गाँव अनुसार संख्या
-            </h3>
-
-            <div
-              id="villageSummary"
-              class="summary-list">
-            </div>
-
-          </section>
-
-        </div>
-
-      </section>
-
-
-      <p class="privacy-note">
-
-        <a href="index.html">
-          पंजीयन फॉर्म पर वापस जाएँ
-        </a>
-
-      </p>
-
-
-      <div class="powered-footer">
-        Powered by Aaryan Chiram
+      <div
+        id="districtSummary"
+      >
+        <p>कोई डेटा नहीं</p>
       </div>
 
-    </section>
-
-  </main>
+    </div>
 
 
-  <!-- SheetJS for Excel XLSX download -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <div class="summary-card">
 
-  <!-- Admin JavaScript -->
-  <script
-    type="module"
-    src="admin.js">
-  </script>
+      <h3>
+        🏘️ संबंधित ब्लॉक
+      </h3>
+
+      <div
+        id="relatedBlockSummary"
+      >
+        <p>कोई डेटा नहीं</p>
+      </div>
+
+    </div>
+
+
+    <div class="summary-card">
+
+      <h3>
+        🏢 ब्लॉक
+      </h3>
+
+      <div
+        id="blockSummary"
+      >
+        <p>कोई डेटा नहीं</p>
+      </div>
+
+    </div>
+
+
+    <div class="summary-card">
+
+      <h3>
+        🏡 गाँव / नगर
+      </h3>
+
+      <div
+        id="villageSummary"
+      >
+        <p>कोई डेटा नहीं</p>
+      </div>
+
+    </div>
+
+
+  </div>
+
+
+</section>
+
+</main>
+
+
+
+<!-- =======================================================
+     SUPABASE ADMIN JS
+======================================================= -->
+
+<script
+  type="module"
+  src="admin.js"
+></script>
+
 
 </body>
+
 </html>

@@ -944,13 +944,11 @@ async function submitRegistration(
     // --------------------------------------------------------
 
     const {
-      data: insertedData,
+  
       error
     } = await supabase
       .from("registrations")
-      .insert([data])
-      .select()
-      .single();
+      .insert([data]);
 
 
     // --------------------------------------------------------

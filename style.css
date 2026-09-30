@@ -904,3 +904,22 @@ textarea:focus {
     page-break-after: avoid !important;
   }
 }
+/* -------------------------------------------------------
+     table action button
+     ------------------------------------------------------
+.table-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+@media(max-width:700px){
+  .table-actions{
+    width:100%;
+  }
+
+  .table-actions button{
+    flex:1;
+  }
+}

@@ -1,39 +1,909 @@
-*{box-sizing:border-box}
-:root{--teal:#0d6f6c;--teal2:#124e52;--orange:#e76f32;--cream:#fffaf3;--ink:#183536;--muted:#6b7778;--line:#dbe6e3;--white:#fff}
-html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,"Noto Sans Devanagari","Mangal",sans-serif;color:var(--ink);background:#eef5f2}
-body{padding:24px 14px;overflow-x:hidden}
-body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.35;background-image:radial-gradient(circle at 10px 10px,#d4e4df 1px,transparent 1px);background-size:20px 20px}
-.page{max-width:1000px;margin:auto;position:relative}
-.card{position:relative;overflow:hidden;background:rgba(255,255,255,.97);border:1px solid #dce8e5;border-radius:26px;box-shadow:0 20px 60px rgba(18,78,82,.13);padding:28px}
-.hero{position:relative;display:flex;gap:22px;align-items:center;padding:20px 22px;border-radius:20px;background:linear-gradient(135deg,#eff9f5,#fff8ef);border:1px solid #d9ebe5}
-.logo{width:125px;height:125px;object-fit:contain;flex:0 0 auto;filter:drop-shadow(0 8px 12px rgba(0,0,0,.08))}
-.eyebrow{margin:0 0 5px;color:var(--orange);font-weight:800;font-size:.9rem}
-h1{margin:0;color:var(--teal2);font-size:clamp(1.35rem,3.2vw,2.1rem);line-height:1.25}
-h2{margin:5px 0 4px;color:var(--orange);font-size:clamp(1.35rem,3vw,1.9rem)}
-.subtitle{margin:0;color:var(--muted);font-weight:650}
-.watermark{position:absolute;right:-100px;bottom:120px;width:450px;opacity:.035;pointer-events:none}
-.watermark img{width:100%}
-.section-title{display:flex;align-items:center;gap:12px;margin:30px 0 16px}
-.section-title>span{display:grid;place-items:center;width:39px;height:39px;border-radius:12px;background:var(--teal);color:#fff;font-weight:800}
-.section-title b{display:block;font-size:1.05rem}.section-title small{display:block;color:var(--muted);margin-top:2px}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
-.field{display:flex;flex-direction:column;gap:7px;position:relative;z-index:1}
-.field.full{grid-column:1/-1}
-.field>span{font-weight:750;font-size:.94rem}
-.field i{color:#d84e2d;font-style:normal}
-input,select,textarea{width:100%;border:1px solid var(--line);background:#fff;border-radius:13px;padding:13px 14px;font:inherit;color:var(--ink);outline:none;transition:.18s}
-textarea{resize:vertical;min-height:100px}
-input:focus,select:focus,textarea:focus{border-color:#4caaa0;box-shadow:0 0 0 4px rgba(76,170,160,.12)}
-.consent{display:flex;align-items:flex-start;gap:9px;margin:22px 0 18px;color:#445657;font-size:.92rem}
-.consent input{width:18px;height:18px;margin-top:2px;accent-color:var(--teal);flex:0 0 auto}.consent label{line-height:1.55}.consent a{color:var(--teal);font-weight:800;text-decoration:none;border-bottom:1px dashed var(--teal)}.consent a:hover{text-decoration:underline}.consent i{color:#d84e2d;font-style:normal}
-.submit-btn{position:relative;z-index:2;width:100%;border:0;border-radius:15px;padding:15px 18px;background:linear-gradient(100deg,var(--teal2),var(--teal));color:#fff;font:800 1.05rem inherit;display:flex;align-items:center;justify-content:center;gap:15px;cursor:pointer;box-shadow:0 10px 22px rgba(13,111,108,.22);transition:.18s}
-.submit-btn:hover{transform:translateY(-1px)}.submit-btn:disabled{opacity:.6;cursor:wait;transform:none}
-.submit-btn b{font-size:1.35rem}
-.privacy-note{text-align:center;color:#7b8585;font-size:.78rem;margin:12px 0 0}
-.message{display:none;margin:18px 0;padding:14px 16px;border-radius:13px;position:relative;z-index:3;font-weight:650}
-.message.show{display:block}.message.success{background:#e8f7ef;color:#14643d;border:1px solid #bfe7d0}.message.error{background:#fff0ed;color:#8d3025;border:1px solid #f1c5bd}.message.info{background:#edf7f8;color:#145c60;border:1px solid #c5e3e4}
-.hidden{display:none!important}.hidden-frame{display:none}
-.duplicate-box{margin-top:10px;padding:14px;border-radius:12px;background:#fffaf0;border:1px solid #f0d6a8}
-.duplicate-box button{margin-top:10px;border:0;border-radius:9px;padding:10px 14px;background:var(--orange);color:#fff;font-weight:750;cursor:pointer}
-@media(max-width:700px){body{padding:10px}.card{padding:15px;border-radius:20px}.hero{padding:16px;gap:12px;align-items:flex-start}.logo{width:82px;height:82px}.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.section-title{margin-top:24px}}
-.print-btn{border:0;border-radius:10px;padding:10px 14px;background:var(--orange);color:#fff;font:inherit;font-weight:800;cursor:pointer;margin-top:8px}
+/* =========================================================
+   HALBA SAMAJ REGISTRATION
+   FINAL style.css
+   Screen + Mobile + A4 One Page Print
+   ========================================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --teal: #0d6f6c;
+  --teal2: #124e52;
+  --orange: #e76f32;
+  --cream: #fffaf3;
+  --ink: #183536;
+  --muted: #6b7778;
+  --line: #dbe6e3;
+  --white: #fff;
+}
+
+/* =========================================================
+   BASE
+   ========================================================= */
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Noto Sans Devanagari",
+    "Mangal",
+    sans-serif;
+  color: var(--ink);
+  background: #eef5f2;
+}
+
+body {
+  padding: 24px 14px;
+  overflow-x: hidden;
+}
+
+body:before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.35;
+  background-image:
+    radial-gradient(
+      circle at 10px 10px,
+      #d4e4df 1px,
+      transparent 1px
+    );
+  background-size: 20px 20px;
+}
+
+/* =========================================================
+   MAIN PAGE
+   ========================================================= */
+
+.page {
+  max-width: 1000px;
+  margin: auto;
+  position: relative;
+}
+
+.card {
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid #dce8e5;
+  border-radius: 26px;
+  box-shadow: 0 20px 60px rgba(18, 78, 82, 0.13);
+  padding: 28px;
+}
+
+/* =========================================================
+   HERO
+   ========================================================= */
+
+.hero {
+  position: relative;
+  display: flex;
+  gap: 22px;
+  align-items: center;
+  padding: 20px 22px;
+  border-radius: 20px;
+  background: linear-gradient(
+    135deg,
+    #eff9f5,
+    #fff8ef
+  );
+  border: 1px solid #d9ebe5;
+}
+
+.logo {
+  width: 125px;
+  height: 125px;
+  object-fit: contain;
+  flex: 0 0 auto;
+  filter: drop-shadow(
+    0 8px 12px rgba(0, 0, 0, 0.08)
+  );
+}
+
+.eyebrow {
+  margin: 0 0 5px;
+  color: var(--orange);
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
+h1 {
+  margin: 0;
+  color: var(--teal2);
+  font-size: clamp(1.35rem, 3.2vw, 2.1rem);
+  line-height: 1.25;
+}
+
+h2 {
+  margin: 5px 0 4px;
+  color: var(--orange);
+  font-size: clamp(1.35rem, 3vw, 1.9rem);
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 650;
+}
+
+/* =========================================================
+   WATERMARK
+   ========================================================= */
+
+.watermark {
+  position: absolute;
+  right: -100px;
+  bottom: 120px;
+  width: 450px;
+  opacity: 0.035;
+  pointer-events: none;
+}
+
+.watermark img {
+  width: 100%;
+}
+
+/* =========================================================
+   SECTION TITLE
+   ========================================================= */
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 30px 0 16px;
+}
+
+.section-title > span {
+  display: grid;
+  place-items: center;
+  width: 39px;
+  height: 39px;
+  border-radius: 12px;
+  background: var(--teal);
+  color: #fff;
+  font-weight: 800;
+}
+
+.section-title b {
+  display: block;
+  font-size: 1.05rem;
+}
+
+.section-title small {
+  display: block;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* =========================================================
+   FORM GRID
+   ========================================================= */
+
+.grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  position: relative;
+  z-index: 1;
+}
+
+.field.full {
+  grid-column: 1 / -1;
+}
+
+.field > span {
+  font-weight: 750;
+  font-size: 0.94rem;
+}
+
+.field i {
+  color: #d84e2d;
+  font-style: normal;
+}
+
+/* =========================================================
+   FORM CONTROLS
+   ========================================================= */
+
+input,
+select,
+textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 13px;
+  padding: 13px 14px;
+  font: inherit;
+  color: var(--ink);
+  outline: none;
+  transition: 0.18s;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #4caaa0;
+  box-shadow:
+    0 0 0 4px rgba(76, 170, 160, 0.12);
+}
+
+/* =========================================================
+   CONSENT
+   ========================================================= */
+
+.consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 22px 0 18px;
+  color: #445657;
+  font-size: 0.92rem;
+}
+
+.consent input {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: var(--teal);
+  flex: 0 0 auto;
+}
+
+.consent label {
+  line-height: 1.55;
+}
+
+.consent a {
+  color: var(--teal);
+  font-weight: 800;
+  text-decoration: none;
+  border-bottom: 1px dashed var(--teal);
+}
+
+.consent a:hover {
+  text-decoration: underline;
+}
+
+.consent i {
+  color: #d84e2d;
+  font-style: normal;
+}
+
+/* =========================================================
+   SUBMIT BUTTON
+   ========================================================= */
+
+.submit-btn {
+  position: relative;
+  z-index: 2;
+
+  width: 100%;
+
+  border: 0;
+  border-radius: 15px;
+
+  padding: 15px 18px;
+
+  background:
+    linear-gradient(
+      100deg,
+      var(--teal2),
+      var(--teal)
+    );
+
+  color: #fff;
+
+  font: 800 1.05rem inherit;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 15px;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 10px 22px rgba(13, 111, 108, 0.22);
+
+  transition: 0.18s;
+}
+
+.submit-btn:hover {
+  transform: translateY(-1px);
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+  transform: none;
+}
+
+.submit-btn b {
+  font-size: 1.35rem;
+}
+
+/* =========================================================
+   PRIVACY / MESSAGE
+   ========================================================= */
+
+.privacy-note {
+  text-align: center;
+  color: #7b8585;
+  font-size: 0.78rem;
+  margin: 12px 0 0;
+}
+
+.message {
+  display: none;
+  margin: 18px 0;
+  padding: 14px 16px;
+  border-radius: 13px;
+  position: relative;
+  z-index: 3;
+  font-weight: 650;
+}
+
+.message.show {
+  display: block;
+}
+
+.message.success {
+  background: #e8f7ef;
+  color: #14643d;
+  border: 1px solid #bfe7d0;
+}
+
+.message.error {
+  background: #fff0ed;
+  color: #8d3025;
+  border: 1px solid #f1c5bd;
+}
+
+.message.info {
+  background: #edf7f8;
+  color: #145c60;
+  border: 1px solid #c5e3e4;
+}
+
+/* =========================================================
+   UTILITY
+   ========================================================= */
+
+.hidden {
+  display: none !important;
+}
+
+.hidden-frame {
+  display: none;
+}
+
+/* =========================================================
+   DUPLICATE BOX
+   ========================================================= */
+
+.duplicate-box {
+  margin-top: 10px;
+  padding: 14px;
+  border-radius: 12px;
+  background: #fffaf0;
+  border: 1px solid #f0d6a8;
+}
+
+.duplicate-box button {
+  margin-top: 10px;
+  border: 0;
+  border-radius: 9px;
+  padding: 10px 14px;
+  background: var(--orange);
+  color: #fff;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+/* =========================================================
+   PRINT BUTTON
+   ========================================================= */
+
+.print-btn {
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  background: var(--orange);
+  color: #fff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+  body {
+    padding: 10px;
+  }
+
+  .card {
+    padding: 15px;
+    border-radius: 20px;
+  }
+
+  .hero {
+    padding: 16px;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .logo {
+    width: 82px;
+    height: 82px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .field.full {
+    grid-column: auto;
+  }
+
+  .section-title {
+    margin-top: 24px;
+  }
+}
+
+/* =========================================================
+   A4 ONE-PAGE PRINT
+   स्क्रीन DESIGN को प्रभावित नहीं करता
+   ========================================================= */
+
+@page {
+  size: A4 portrait;
+  margin: 5mm;
+}
+
+@media print {
+
+  /* -------------------------------------------------------
+     A4 PAGE
+     ------------------------------------------------------- */
+
+  html,
+  body {
+    width: 210mm !important;
+    min-width: 210mm !important;
+    max-width: 210mm !important;
+
+    height: 297mm !important;
+    min-height: 297mm !important;
+    max-height: 297mm !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    background: #fff !important;
+
+    overflow: hidden !important;
+  }
+
+  body:before {
+    display: none !important;
+  }
+
+  body {
+    font-size: 8px !important;
+    line-height: 1.08 !important;
+  }
+
+  /* -------------------------------------------------------
+     MAIN PRINT AREA
+     ------------------------------------------------------- */
+
+  .page {
+    width: 200mm !important;
+    max-width: 200mm !important;
+
+    height: 287mm !important;
+    min-height: 287mm !important;
+    max-height: 287mm !important;
+
+    margin: 0 auto !important;
+    padding: 0 !important;
+
+    position: relative !important;
+
+    overflow: hidden !important;
+  }
+
+  .card {
+    width: 200mm !important;
+    max-width: 200mm !important;
+
+    height: 287mm !important;
+    min-height: 287mm !important;
+    max-height: 287mm !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    background: #fff !important;
+
+    border: 0 !important;
+    border-radius: 0 !important;
+
+    box-shadow: none !important;
+
+    overflow: hidden !important;
+  }
+
+  /* -------------------------------------------------------
+     HIDE SCREEN-ONLY ITEMS
+     ------------------------------------------------------- */
+
+  #celebration,
+  .success-actions,
+  .note,
+  .back-link,
+  .print-btn,
+  button {
+    display: none !important;
+  }
+
+  /* -------------------------------------------------------
+     HERO
+     ------------------------------------------------------- */
+
+  .hero {
+    width: 100% !important;
+
+    height: 19mm !important;
+    min-height: 19mm !important;
+    max-height: 19mm !important;
+
+    margin: 0 !important;
+    padding: 1mm 3mm !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+    justify-content: center !important;
+
+    gap: 3mm !important;
+
+    background: #fff !important;
+
+    border: 0 !important;
+    border-radius: 0 !important;
+
+    box-sizing: border-box !important;
+  }
+
+  .logo {
+    width: 16mm !important;
+    height: 16mm !important;
+
+    min-width: 16mm !important;
+    min-height: 16mm !important;
+
+    max-width: 16mm !important;
+    max-height: 16mm !important;
+
+    object-fit: contain !important;
+
+    filter: none !important;
+  }
+
+  .eyebrow {
+    margin: 0 0 0.5mm 0 !important;
+    padding: 0 !important;
+
+    font-size: 6.5px !important;
+    line-height: 1 !important;
+  }
+
+  h1,
+  .hero h1 {
+    margin: 0 !important;
+    padding: 0 !important;
+
+    font-size: 13px !important;
+    line-height: 1.05 !important;
+  }
+
+  h2,
+  .hero h2 {
+    margin: 0.6mm 0 0 !important;
+    padding: 0 !important;
+
+    font-size: 9.5px !important;
+    line-height: 1 !important;
+  }
+
+  .subtitle {
+    margin: 0.4mm 0 0 !important;
+    padding: 0 !important;
+
+    font-size: 6.5px !important;
+    line-height: 1 !important;
+  }
+
+  /* -------------------------------------------------------
+     SUCCESS HEADER
+     ------------------------------------------------------- */
+
+  .success-header {
+    width: 100% !important;
+
+    margin: 0 !important;
+
+    padding: 0.8mm 0 1mm !important;
+
+    text-align: center !important;
+  }
+
+  .success-icon {
+    width: 8mm !important;
+    height: 8mm !important;
+
+    min-width: 8mm !important;
+    min-height: 8mm !important;
+
+    margin: 0 auto 0.6mm !important;
+    padding: 0 !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    font-size: 14px !important;
+    line-height: 8mm !important;
+
+    background: #fff !important;
+    color: #0f6b68 !important;
+
+    border: 0.35mm solid #0f6b68 !important;
+    border-radius: 50% !important;
+
+    box-shadow: none !important;
+
+    animation: none !important;
+  }
+
+  .success-header h1 {
+    margin: 0 0 0.6mm !important;
+    padding: 0 !important;
+
+    font-size: 11.5px !important;
+    line-height: 1 !important;
+  }
+
+  .success-header p {
+    margin: 0.2mm 0 !important;
+    padding: 0 !important;
+
+    font-size: 6.5px !important;
+    line-height: 1 !important;
+  }
+
+  /* -------------------------------------------------------
+     REGISTRATION CARD
+     ------------------------------------------------------- */
+
+  .registration-card {
+    width: 100% !important;
+
+    margin: 0.6mm 0 0 !important;
+    padding: 0 !important;
+
+    border: 0.3mm solid #888 !important;
+    border-radius: 1mm !important;
+
+    overflow: hidden !important;
+
+    box-sizing: border-box !important;
+
+    page-break-before: avoid !important;
+    page-break-after: avoid !important;
+    page-break-inside: avoid !important;
+
+    break-before: avoid !important;
+    break-after: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* -------------------------------------------------------
+     REGISTRATION CARD HEADER
+     ------------------------------------------------------- */
+
+  .registration-card-header {
+    width: 100% !important;
+
+    height: 6.5mm !important;
+    min-height: 6.5mm !important;
+    max-height: 6.5mm !important;
+
+    margin: 0 !important;
+    padding: 0.8mm 2.5mm !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+    justify-content: space-between !important;
+
+    background: #f0f7f6 !important;
+
+    box-sizing: border-box !important;
+  }
+
+  .registration-card-header h2 {
+    margin: 0 !important;
+    padding: 0 !important;
+
+    font-size: 8.5px !important;
+    line-height: 1 !important;
+  }
+
+  .registration-id {
+    margin: 0 !important;
+    padding: 0 !important;
+
+    font-size: 6.5px !important;
+    line-height: 1 !important;
+
+    white-space: nowrap !important;
+  }
+
+  /* -------------------------------------------------------
+     DETAILS TABLE
+     ------------------------------------------------------- */
+
+  .details-table {
+    width: 100% !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    border-collapse: collapse !important;
+    border-spacing: 0 !important;
+
+    table-layout: fixed !important;
+
+    font-size: 6.5px !important;
+    line-height: 1 !important;
+  }
+
+  .details-table tbody {
+    width: 100% !important;
+  }
+
+  .details-table tr {
+    height: 5.8mm !important;
+    min-height: 5.8mm !important;
+    max-height: 5.8mm !important;
+
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .details-table th,
+  .details-table td {
+    display: table-cell !important;
+
+    height: 5.8mm !important;
+    min-height: 5.8mm !important;
+    max-height: 5.8mm !important;
+
+    margin: 0 !important;
+
+    padding: 0.65mm 2mm !important;
+
+    vertical-align: middle !important;
+
+    border-bottom: 0.2mm solid #ddd !important;
+
+    box-sizing: border-box !important;
+
+    font-size: 6.5px !important;
+
+    line-height: 1 !important;
+  }
+
+  .details-table th {
+    width: 31% !important;
+
+    background: #fafcfc !important;
+
+    font-weight: 700 !important;
+
+    white-space: nowrap !important;
+  }
+
+  .details-table td {
+    width: 69% !important;
+
+    font-weight: 500 !important;
+
+    /*
+       Long text को एक line में रखकर
+       A4 की height को बढ़ने से रोकता है
+    */
+
+    white-space: nowrap !important;
+
+    overflow: hidden !important;
+
+    text-overflow: ellipsis !important;
+  }
+
+  .details-table tr:last-child th,
+  .details-table tr:last-child td {
+    border-bottom: 0 !important;
+  }
+
+  /* -------------------------------------------------------
+     FOOTER
+     ------------------------------------------------------- */
+
+  .powered-footer {
+    display: block !important;
+
+    width: 100% !important;
+
+    margin: 1mm 0 0 !important;
+    padding: 0 !important;
+
+    text-align: center !important;
+
+    font-size: 6px !important;
+    line-height: 1 !important;
+
+    color: #777 !important;
+  }
+
+  /* -------------------------------------------------------
+     REMOVE ANIMATIONS DURING PRINT
+     ------------------------------------------------------- */
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  /* -------------------------------------------------------
+     PREVENT EXTRA PAGE
+     ------------------------------------------------------- */
+
+  .page,
+  .card,
+  .registration-card,
+  .details-table,
+  .details-table tbody,
+  .details-table tr {
+    page-break-before: avoid !important;
+    page-break-after: avoid !important;
+  }
+}

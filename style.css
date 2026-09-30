@@ -1,7 +1,7 @@
 /* =========================================================
    HALBA SAMAJ REGISTRATION
    FINAL style.css
-   Screen + Mobile + A4 One Page Print
+   Screen + Mobile + Large A4 One Page Print
    ========================================================= */
 
 * {
@@ -294,12 +294,9 @@ textarea:focus {
 .submit-btn {
   position: relative;
   z-index: 2;
-
   width: 100%;
-
   border: 0;
   border-radius: 15px;
-
   padding: 15px 18px;
 
   background:
@@ -475,19 +472,19 @@ textarea:focus {
 }
 
 /* =========================================================
-   A4 ONE-PAGE PRINT
-   स्क्रीन DESIGN को प्रभावित नहीं करता
+   A4 PRINT
+   LARGE + COMPACT + ONE PAGE
    ========================================================= */
 
 @page {
   size: A4 portrait;
-  margin: 5mm;
+  margin: 4mm;
 }
 
 @media print {
 
   /* -------------------------------------------------------
-     A4 PAGE
+     A4 BASE
      ------------------------------------------------------- */
 
   html,
@@ -513,21 +510,21 @@ textarea:focus {
   }
 
   body {
-    font-size: 8px !important;
+    font-size: 9px !important;
     line-height: 1.08 !important;
   }
 
   /* -------------------------------------------------------
-     MAIN PRINT AREA
+     PRINT AREA
      ------------------------------------------------------- */
 
   .page {
-    width: 200mm !important;
-    max-width: 200mm !important;
+    width: 202mm !important;
+    max-width: 202mm !important;
 
-    height: 287mm !important;
-    min-height: 287mm !important;
-    max-height: 287mm !important;
+    height: 289mm !important;
+    min-height: 289mm !important;
+    max-height: 289mm !important;
 
     margin: 0 auto !important;
     padding: 0 !important;
@@ -538,12 +535,12 @@ textarea:focus {
   }
 
   .card {
-    width: 200mm !important;
-    max-width: 200mm !important;
+    width: 202mm !important;
+    max-width: 202mm !important;
 
-    height: 287mm !important;
-    min-height: 287mm !important;
-    max-height: 287mm !important;
+    height: 289mm !important;
+    min-height: 289mm !important;
+    max-height: 289mm !important;
 
     margin: 0 !important;
     padding: 0 !important;
@@ -559,7 +556,7 @@ textarea:focus {
   }
 
   /* -------------------------------------------------------
-     HIDE SCREEN-ONLY ITEMS
+     HIDE PRINT-UNNECESSARY ITEMS
      ------------------------------------------------------- */
 
   #celebration,
@@ -578,19 +575,19 @@ textarea:focus {
   .hero {
     width: 100% !important;
 
-    height: 19mm !important;
-    min-height: 19mm !important;
-    max-height: 19mm !important;
+    height: 23mm !important;
+    min-height: 23mm !important;
+    max-height: 23mm !important;
 
     margin: 0 !important;
-    padding: 1mm 3mm !important;
+    padding: 1.5mm 4mm !important;
 
     display: flex !important;
 
     align-items: center !important;
     justify-content: center !important;
 
-    gap: 3mm !important;
+    gap: 4mm !important;
 
     background: #fff !important;
 
@@ -601,14 +598,14 @@ textarea:focus {
   }
 
   .logo {
-    width: 16mm !important;
-    height: 16mm !important;
+    width: 19mm !important;
+    height: 19mm !important;
 
-    min-width: 16mm !important;
-    min-height: 16mm !important;
+    min-width: 19mm !important;
+    min-height: 19mm !important;
 
-    max-width: 16mm !important;
-    max-height: 16mm !important;
+    max-width: 19mm !important;
+    max-height: 19mm !important;
 
     object-fit: contain !important;
 
@@ -616,10 +613,10 @@ textarea:focus {
   }
 
   .eyebrow {
-    margin: 0 0 0.5mm 0 !important;
+    margin: 0 0 0.8mm 0 !important;
     padding: 0 !important;
 
-    font-size: 6.5px !important;
+    font-size: 8px !important;
     line-height: 1 !important;
   }
 
@@ -628,24 +625,24 @@ textarea:focus {
     margin: 0 !important;
     padding: 0 !important;
 
-    font-size: 15px !important;
-    line-height: 1.05 !important;
+    font-size: 16px !important;
+    line-height: 1.08 !important;
   }
 
   h2,
   .hero h2 {
-    margin: 0.6mm 0 0 !important;
+    margin: 0.8mm 0 0 !important;
     padding: 0 !important;
 
-    font-size: 9.5px !important;
+    font-size: 11px !important;
     line-height: 1 !important;
   }
 
   .subtitle {
-    margin: 0.4mm 0 0 !important;
+    margin: 0.7mm 0 0 !important;
     padding: 0 !important;
 
-    font-size: 6.5px !important;
+    font-size: 8px !important;
     line-height: 1 !important;
   }
 
@@ -658,7 +655,7 @@ textarea:focus {
 
     margin: 0 !important;
 
-    padding: 0.8mm 0 1mm !important;
+    padding: 1mm 0 1.5mm !important;
 
     text-align: center !important;
   }
@@ -670,20 +667,20 @@ textarea:focus {
     min-width: 10mm !important;
     min-height: 10mm !important;
 
-    margin: 0 auto 0.6mm !important;
+    margin: 0 auto 0.8mm !important;
     padding: 0 !important;
 
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
 
-    font-size: 14px !important;
-    line-height: 8mm !important;
+    font-size: 17px !important;
+    line-height: 10mm !important;
 
     background: #fff !important;
     color: #0f6b68 !important;
 
-    border: 0.35mm solid #0f6b68 !important;
+    border: 0.4mm solid #0f6b68 !important;
     border-radius: 50% !important;
 
     box-shadow: none !important;
@@ -692,19 +689,19 @@ textarea:focus {
   }
 
   .success-header h1 {
-    margin: 0 0 0.6mm !important;
+    margin: 0 0 0.8mm !important;
     padding: 0 !important;
 
     font-size: 15px !important;
-    line-height: 1 !important;
+    line-height: 1.05 !important;
   }
 
   .success-header p {
-    margin: 0.2mm 0 !important;
+    margin: 0.3mm 0 !important;
     padding: 0 !important;
 
-    font-size: 10px !important;
-    line-height: 1 !important;
+    font-size: 8px !important;
+    line-height: 1.05 !important;
   }
 
   /* -------------------------------------------------------
@@ -714,11 +711,11 @@ textarea:focus {
   .registration-card {
     width: 100% !important;
 
-    margin: 0.6mm 0 0 !important;
+    margin: 1mm 0 0 !important;
     padding: 0 !important;
 
-    border: 0.3mm solid #888 !important;
-    border-radius: 1mm !important;
+    border: 0.35mm solid #777 !important;
+    border-radius: 1.2mm !important;
 
     overflow: hidden !important;
 
@@ -734,7 +731,7 @@ textarea:focus {
   }
 
   /* -------------------------------------------------------
-     REGISTRATION CARD HEADER
+     CARD HEADER
      ------------------------------------------------------- */
 
   .registration-card-header {
@@ -745,7 +742,7 @@ textarea:focus {
     max-height: 8mm !important;
 
     margin: 0 !important;
-    padding: 0.8mm 2.5mm !important;
+    padding: 1.2mm 3mm !important;
 
     display: flex !important;
 
@@ -761,7 +758,7 @@ textarea:focus {
     margin: 0 !important;
     padding: 0 !important;
 
-    font-size: 10px !important;
+    font-size: 11px !important;
     line-height: 1 !important;
   }
 
@@ -769,7 +766,7 @@ textarea:focus {
     margin: 0 !important;
     padding: 0 !important;
 
-    font-size: 10px !important;
+    font-size: 8px !important;
     line-height: 1 !important;
 
     white-space: nowrap !important;
@@ -790,8 +787,8 @@ textarea:focus {
 
     table-layout: fixed !important;
 
-    font-size: 10px !important;
-    line-height: 1 !important;
+    font-size: 9px !important;
+    line-height: 1.05 !important;
   }
 
   .details-table tbody {
@@ -799,9 +796,9 @@ textarea:focus {
   }
 
   .details-table tr {
-    height: 7mm !important;
-    min-height: 7mm !important;
-    max-height: 7mm !important;
+    height: 7.2mm !important;
+    min-height: 7.2mm !important;
+    max-height: 7.2mm !important;
 
     page-break-inside: avoid !important;
     break-inside: avoid !important;
@@ -811,43 +808,43 @@ textarea:focus {
   .details-table td {
     display: table-cell !important;
 
-    height: 7mm !important;
-    min-height: 7mm !important;
-    max-height: 7mm !important;
+    height: 7.2mm !important;
+    min-height: 7.2mm !important;
+    max-height: 7.2mm !important;
 
     margin: 0 !important;
 
-    padding: 0.65mm 2mm !important;
+    padding: 1mm 3mm !important;
 
     vertical-align: middle !important;
 
-    border-bottom: 0.2mm solid #ddd !important;
+    border-bottom: 0.2mm solid #d4dede !important;
 
     box-sizing: border-box !important;
 
-    font-size: 10px !important;
+    font-size: 9px !important;
 
-    line-height: 1 !important;
+    line-height: 1.05 !important;
   }
 
   .details-table th {
-    width: 31% !important;
+    width: 32% !important;
 
     background: #fafcfc !important;
 
-    font-weight: 700 !important;
+    font-weight: 750 !important;
 
     white-space: nowrap !important;
   }
 
   .details-table td {
-    width: 69% !important;
+    width: 68% !important;
 
-    font-weight: 500 !important;
+    font-weight: 550 !important;
 
     /*
-       Long text को एक line में रखकर
-       A4 की height को बढ़ने से रोकता है
+       Long text को एक ही लाइन में रखता है
+       ताकि row की height न बढ़े
     */
 
     white-space: nowrap !important;
@@ -871,19 +868,19 @@ textarea:focus {
 
     width: 100% !important;
 
-    margin: 1mm 0 0 !important;
+    margin: 1.5mm 0 0 !important;
     padding: 0 !important;
 
     text-align: center !important;
 
-    font-size: 6px !important;
+    font-size: 7px !important;
     line-height: 1 !important;
 
     color: #777 !important;
   }
 
   /* -------------------------------------------------------
-     REMOVE ANIMATIONS DURING PRINT
+     REMOVE ALL ANIMATION / TRANSITION
      ------------------------------------------------------- */
 
   *,
@@ -894,7 +891,7 @@ textarea:focus {
   }
 
   /* -------------------------------------------------------
-     PREVENT EXTRA PAGE
+     PREVENT PAGE BREAK
      ------------------------------------------------------- */
 
   .page,

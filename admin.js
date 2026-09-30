@@ -1,4 +1,25 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+/* ============================================================
+   HALBA HALBI SAMAJ
+   ADMIN DASHBOARD - FINAL VERSION
+
+   Features:
+   - Firebase Authentication
+   - Firestore registrations
+   - Admin username/password login
+   - District / Related Block / Block / Village filters
+   - Search
+   - Statistics
+   - Single record print
+   - Full filtered list print
+   - Excel XLSX download
+   - Mobile responsive UI
+   - No update/delete
+   ============================================================ */
+
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -14,9 +35,10 @@ import {
   orderBy
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
-/* =========================
+
+/* ============================================================
    FIREBASE CONFIG
-========================= */
+   ============================================================ */
 
 const firebaseConfig = {
   apiKey: "AIzaSyDrAvxLdDT9TUbbC9B3p7SsJDTp5XfVuEU",
@@ -28,312 +50,545 @@ const firebaseConfig = {
   measurementId: "G-162MZWB8RB"
 };
 
+
+/* ============================================================
+   INITIALIZE FIREBASE
+   ============================================================ */
+
 const app = initializeApp(firebaseConfig);
+
 const auth = getAuth(app);
+
 const db = getFirestore(app);
 
-/* =========================
+
+/* ============================================================
    ADMIN SETTINGS
-========================= */
+   ============================================================ */
 
 const ADMIN_USERNAME = "admin";
+
 const ADMIN_EMAIL = "admin@halbasamaj.com";
 
-/* =========================
-   DOM
-========================= */
 
-const loginPanel = document.getElementById("loginPanel");
-const dashboardPanel = document.getElementById("dashboardPanel");
+/* ============================================================
+   DISTRICT → BLOCK DATA
+   ============================================================ */
 
-const loginForm = document.getElementById("loginForm");
-const loginBtn = document.getElementById("loginBtn");
+const CG_DISTRICT_BLOCKS = {
 
-const adminMessage = document.getElementById("adminMessage");
+  "बालोद": [
+    "बालोद",
+    "डौंडी",
+    "डौंडी-लोहारा",
+    "गुंडरदेही",
+    "गुरूर"
+  ],
 
-const refreshBtn = document.getElementById("refreshBtn");
-const logoutBtn = document.getElementById("logoutBtn");
+  "बलौदाबाजार-भाटापारा": [
+    "बलौदाबाजार",
+    "भाटापारा",
+    "कसडोल",
+    "पलारी",
+    "सिमगा"
+  ],
 
-const districtFilter = document.getElementById("districtFilter");
-const blockFilter = document.getElementById("blockFilter");
-const villageFilter = document.getElementById("villageFilter");
-const genderFilter = document.getElementById("genderFilter");
-const searchFilter = document.getElementById("searchFilter");
+  "बलरामपुर-रामानुजगंज": [
+    "बलरामपुर",
+    "कुसमी",
+    "राजपुर",
+    "रामचन्द्रपुर",
+    "शंकरगढ़",
+    "वाड्रफनगर"
+  ],
 
-const recordsBody = document.getElementById("recordsBody");
+  "बस्तर": [
+    "जगदलपुर",
+    "बस्तर",
+    "बकावंड",
+    "बस्तानार",
+    "दरभा",
+    "लोहंडीगुड़ा",
+    "तोकापाल"
+  ],
 
-const totalCount = document.getElementById("totalCount");
-const maleCount = document.getElementById("maleCount");
-const femaleCount = document.getElementById("femaleCount");
-const otherCount = document.getElementById("otherCount");
+  "बेमेतरा": [
+    "बेमेतरा",
+    "साजा",
+    "बेरला",
+    "नवागढ़"
+  ],
 
-const visibleCount = document.getElementById("visibleCount");
+  "बीजापुर": [
+    "बीजापुर",
+    "भैरमगढ़",
+    "भोपालपटनम",
+    "उसूर"
+  ],
 
-const districtSummary = document.getElementById("districtSummary");
-const blockSummary = document.getElementById("blockSummary");
-const villageSummary = document.getElementById("villageSummary");
+  "बिलासपुर": [
+    "बिल्हा",
+    "कोटा",
+    "मस्तूरी",
+    "तखतपुर"
+  ],
 
-const lastUpdated = document.getElementById("lastUpdated");
+  "दक्षिण बस्तर दंतेवाड़ा": [
+    "दंतेवाड़ा",
+    "गीदम",
+    "कटेकल्याण",
+    "कुआकोंडा"
+  ],
 
-const printListBtn = document.getElementById("printListBtn");
-const downloadExcelBtn = document.getElementById("downloadExcelBtn");
+  "धमतरी": [
+    "धमतरी",
+    "कुरूद",
+    "मगरलोड",
+    "नगरी"
+  ],
 
-/* =========================
-   DATA
-========================= */
+  "दुर्ग": [
+    "दुर्ग",
+    "धमधा",
+    "पाटन"
+  ],
 
-let records = [];
+  "गरियाबंद": [
+    "गरियाबंद",
+    "फिंगेश्वर",
+    "छुरा",
+    "देवभोग",
+    "मैनपुर"
+  ],
 
-/* =========================
-   MESSAGE
-========================= */
+  "गौरेला-पेंड्रा-मरवाही": [
+    "पेंड्रा रोड",
+    "पेंड्रा",
+    "मरवाही"
+  ],
 
-function showMessage(message, type = "") {
-  if (!adminMessage) return;
+  "जांजगीर-चांपा": [
+    "अकलतरा",
+    "बलौदा",
+    "बम्हनीडीह",
+    "नवागढ़",
+    "पामगढ़"
+  ],
+
+  "कांकेर": [
+    "अंतागढ़",
+    "भानुप्रतापपुर",
+    "चारामा",
+    "दुर्गूकोंदल",
+    "कांकेर",
+    "कोयलीबेड़ा",
+    "नरहरपुर"
+  ],
+
+  "जशपुर": [
+    "जशपुर",
+    "कुनकुरी",
+    "पत्थलगांव",
+    "बगीचा",
+    "दुलदुला",
+    "मनोरा",
+    "कांसाबेल",
+    "फरसाबहार"
+  ],
+
+  "कबीरधाम": [
+    "कवर्धा",
+    "बोड़ला",
+    "सहसपुर लोहारा",
+    "पंडरिया"
+  ],
+
+  "खैरागढ़-छुईखदान-गंडई": [
+    "खैरागढ़",
+    "छुईखदान"
+  ],
+
+  "कोंडागांव": [
+    "कोंडागांव",
+    "केशकाल",
+    "बड़ेराजपुर",
+    "माकड़ी",
+    "फरसगांव"
+  ],
+
+  "कोरबा": [
+    "कोरबा",
+    "कटघोरा",
+    "पाली",
+    "करतला",
+    "पोड़ी-उपरोड़ा"
+  ],
+
+  "कोरिया": [
+    "बैकुंठपुर",
+    "सोनहत"
+  ],
+
+  "महासमुंद": [
+    "महासमुंद",
+    "बसना",
+    "बागबाहरा",
+    "पिथौरा",
+    "सरायपाली"
+  ],
+
+  "मनेन्द्रगढ़-चिरमिरी-भरतपुर": [
+    "भरतपुर",
+    "मनेन्द्रगढ़"
+  ],
+
+  "मोहला-मानपुर-अंबागढ़ चौकी": [
+    "अंबागढ़ चौकी",
+    "मानपुर",
+    "मोहला"
+  ],
+
+  "मुंगेली": [
+    "मुंगेली",
+    "पथरिया",
+    "लोरमी"
+  ],
+
+  "नारायणपुर": [
+    "नारायणपुर",
+    "ओरछा (अबूझमाड़)"
+  ],
+
+  "रायगढ़": [
+    "रायगढ़",
+    "पुसौर",
+    "खरसिया",
+    "घरघोड़ा",
+    "तमनार",
+    "धरमजयगढ़",
+    "लैलूंगा"
+  ],
+
+  "रायपुर": [
+    "आरंग",
+    "अभनपुर",
+    "धरसींवा",
+    "तिल्दा"
+  ],
+
+  "राजनांदगांव": [
+    "राजनांदगांव",
+    "डोंगरगढ़",
+    "डोंगरगांव",
+    "छुरिया"
+  ],
+
+  "सक्ती": [
+    "सक्ती",
+    "जैजैपुर",
+    "मालखरौदा",
+    "डभरा"
+  ],
+
+  "सारंगढ़-बिलाईगढ़": [
+    "सारंगढ़",
+    "बरमकेला",
+    "बिलाईगढ़"
+  ],
+
+  "सुकमा": [
+    "सुकमा",
+    "छिंदगढ़",
+    "कोंटा"
+  ],
+
+  "सूरजपुर": [
+    "सूरजपुर",
+    "प्रेमनगर",
+    "भैयाथान",
+    "ओड़गी",
+    "प्रतापपुर",
+    "रामानुजनगर"
+  ],
+
+  "सरगुजा": [
+    "अंबिकापुर",
+    "लखनपुर",
+    "उदयपुर",
+    "लुंड्रा",
+    "बतौली",
+    "सीतापुर",
+    "मैनपाट"
+  ]
+
+};
+
+
+/* ============================================================
+   DOM ELEMENTS
+   ============================================================ */
+
+const loginPanel =
+  document.getElementById("loginPanel");
+
+const dashboardPanel =
+  document.getElementById("dashboardPanel");
+
+const loginForm =
+  document.getElementById("loginForm");
+
+const loginBtn =
+  document.getElementById("loginBtn");
+
+const adminMessage =
+  document.getElementById("adminMessage");
+
+const refreshBtn =
+  document.getElementById("refreshBtn");
+
+const logoutBtn =
+  document.getElementById("logoutBtn");
+
+const districtFilter =
+  document.getElementById("districtFilter");
+
+const relatedBlockFilter =
+  document.getElementById("relatedBlockFilter");
+
+const blockFilter =
+  document.getElementById("blockFilter");
+
+const villageFilter =
+  document.getElementById("villageFilter");
+
+const genderFilter =
+  document.getElementById("genderFilter");
+
+const searchFilter =
+  document.getElementById("searchFilter");
+
+const recordsBody =
+  document.getElementById("recordsBody");
+
+const totalCount =
+  document.getElementById("totalCount");
+
+const maleCount =
+  document.getElementById("maleCount");
+
+const femaleCount =
+  document.getElementById("femaleCount");
+
+const otherCount =
+  document.getElementById("otherCount");
+
+const visibleCount =
+  document.getElementById("visibleCount");
+
+const lastUpdated =
+  document.getElementById("lastUpdated");
+
+const districtSummary =
+  document.getElementById("districtSummary");
+
+const relatedBlockSummary =
+  document.getElementById("relatedBlockSummary");
+
+const blockSummary =
+  document.getElementById("blockSummary");
+
+const villageSummary =
+  document.getElementById("villageSummary");
+
+const printListBtn =
+  document.getElementById("printListBtn");
+
+const downloadExcelBtn =
+  document.getElementById("downloadExcelBtn");
+
+
+/* ============================================================
+   APPLICATION STATE
+   ============================================================ */
+
+let allRecords = [];
+
+let filteredRecords = [];
+
+
+/* ============================================================
+   HELPER FUNCTIONS
+   ============================================================ */
+
+function showMessage(
+  message,
+  type = "info"
+) {
+
+  if (!adminMessage) {
+    return;
+  }
 
   adminMessage.textContent = message;
-  adminMessage.className = "message";
 
-  if (type) {
-    adminMessage.classList.add(type);
-  }
+  adminMessage.className =
+    `message show ${type}`;
+
 }
 
-/* =========================
-   ESCAPE HTML
-========================= */
 
-function esc(value) {
-  return String(value ?? "")
+function hideMessage() {
+
+  if (!adminMessage) {
+    return;
+  }
+
+  adminMessage.textContent = "";
+
+  adminMessage.className = "message";
+
+}
+
+
+function safeValue(value) {
+
+  if (
+    value === null ||
+    value === undefined
+  ) {
+    return "";
+  }
+
+  return String(value).trim();
+
+}
+
+
+function escapeHtml(value) {
+
+  return safeValue(value)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
+
 }
 
-/* =========================
-   FIRESTORE TIMESTAMP
-========================= */
 
-function formatTimestamp(value) {
-  if (!value) return "";
+function normalizeText(value) {
 
-  try {
-    if (typeof value.toDate === "function") {
-      return value.toDate().toLocaleString("hi-IN");
-    }
+  return safeValue(value)
+    .toLocaleLowerCase("hi-IN")
+    .trim();
 
-    if (value.seconds) {
-      return new Date(value.seconds * 1000).toLocaleString("hi-IN");
-    }
-
-    const date = new Date(value);
-
-    if (!isNaN(date.getTime())) {
-      return date.toLocaleString("hi-IN");
-    }
-  } catch (error) {
-    console.error(error);
-  }
-
-  return String(value);
 }
 
-/* =========================
-   AUTH STATE
-========================= */
 
-onAuthStateChanged(auth, async (user) => {
+function formatDate(value) {
 
-  if (user && user.email === ADMIN_EMAIL) {
-
-    loginPanel.classList.add("hidden");
-    dashboardPanel.classList.remove("hidden");
-
-    showMessage("एडमिन लॉगिन सफल।", "success");
-
-    await loadData();
-
-  } else {
-
-    loginPanel.classList.remove("hidden");
-    dashboardPanel.classList.add("hidden");
-
+  if (!value) {
+    return "";
   }
-
-});
-
-/* =========================
-   LOGIN
-========================= */
-
-loginForm.addEventListener("submit", async (event) => {
-
-  event.preventDefault();
-
-  const formData = new FormData(loginForm);
-
-  const username = String(formData.get("username") || "").trim();
-  const password = String(formData.get("password") || "");
-
-  if (username !== ADMIN_USERNAME) {
-    showMessage("❌ गलत यूज़रनेम।", "error");
-    return;
-  }
-
-  if (!password) {
-    showMessage("❌ पासवर्ड डालें।", "error");
-    return;
-  }
-
-  loginBtn.disabled = true;
-
-  const oldText = loginBtn.innerHTML;
-  loginBtn.innerHTML = "<span>लॉगिन हो रहा है...</span>";
 
   try {
-
-    await signInWithEmailAndPassword(
-      auth,
-      ADMIN_EMAIL,
-      password
-    );
-
-    loginForm.reset();
-
-  } catch (error) {
-
-    console.error(error);
-
-    let message = "❌ लॉगिन असफल।";
 
     if (
-      error.code === "auth/invalid-credential" ||
-      error.code === "auth/wrong-password" ||
-      error.code === "auth/user-not-found"
+      typeof value === "object" &&
+      typeof value.toDate === "function"
     ) {
-      message = "❌ यूज़रनेम या पासवर्ड गलत है।";
-    }
 
-    showMessage(message, "error");
-
-  } finally {
-
-    loginBtn.disabled = false;
-    loginBtn.innerHTML = oldText;
-
-  }
-
-});
-
-/* =========================
-   LOAD FIRESTORE DATA
-========================= */
-
-async function loadData() {
-
-  try {
-
-    showMessage("डेटा लोड हो रहा है...", "info");
-
-    const registrationsRef = collection(db, "registrations");
-
-    let snapshot;
-
-    try {
-
-      const q = query(
-        registrationsRef,
-        orderBy("createdAt", "desc")
-      );
-
-      snapshot = await getDocs(q);
-
-    } catch (error) {
-
-      console.warn(
-        "createdAt order query failed. Loading without order.",
-        error
-      );
-
-      snapshot = await getDocs(registrationsRef);
+      return value
+        .toDate()
+        .toLocaleString("hi-IN");
 
     }
 
-    records = [];
+    if (
+      typeof value === "object" &&
+      value.seconds !== undefined
+    ) {
 
-    snapshot.forEach((docSnap) => {
+      return new Date(
+        Number(value.seconds) * 1000
+      ).toLocaleString("hi-IN");
 
-      records.push({
-        id: docSnap.id,
-        ...docSnap.data()
-      });
+    }
 
-    });
+    const date =
+      new Date(value);
 
-    records.sort((a, b) => {
+    if (
+      !Number.isNaN(date.getTime())
+    ) {
 
-      const aTime = getTimeValue(a.createdAt);
-      const bTime = getTimeValue(b.createdAt);
+      return date.toLocaleString(
+        "hi-IN"
+      );
 
-      return bTime - aTime;
-
-    });
-
-    populateFilters();
-    renderDashboard();
-
-    const now = new Date();
-
-    lastUpdated.textContent =
-      "अंतिम अपडेट: " +
-      now.toLocaleString("hi-IN");
-
-    showMessage(
-      `✅ ${records.length} पंजीयन रिकॉर्ड लोड हुए।`,
-      "success"
-    );
+    }
 
   } catch (error) {
 
-    console.error("Firestore load error:", error);
-
-    showMessage(
-      "❌ डेटा लोड नहीं हो पाया। Firestore Rules और Firebase Config जाँचें।",
-      "error"
+    console.warn(
+      "Date formatting error:",
+      error
     );
 
-    recordsBody.innerHTML =
-      `<tr><td colspan="10">डेटा लोड नहीं हुआ।</td></tr>`;
-
   }
+
+  return safeValue(value);
 
 }
 
-/* =========================
-   TIMESTAMP VALUE
-========================= */
 
-function getTimeValue(value) {
+function getCreatedAtForSort(record) {
 
-  if (!value) return 0;
+  const value =
+    record.createdAt;
+
+  if (!value) {
+    return 0;
+  }
 
   try {
 
-    if (typeof value.toDate === "function") {
+    if (
+      typeof value.toMillis === "function"
+    ) {
+
+      return value.toMillis();
+
+    }
+
+    if (
+      typeof value.toDate === "function"
+    ) {
+
       return value.toDate().getTime();
+
     }
 
-    if (value.seconds) {
+    if (
+      typeof value === "object" &&
+      value.seconds !== undefined
+    ) {
+
       return Number(value.seconds) * 1000;
+
     }
 
-    const time = new Date(value).getTime();
+    const date =
+      new Date(value);
 
-    return isNaN(time) ? 0 : time;
+    const time =
+      date.getTime();
 
-  } catch (error) {
+    return Number.isNaN(time)
+      ? 0
+      : time;
+
+  } catch {
 
     return 0;
 
@@ -341,420 +596,181 @@ function getTimeValue(value) {
 
 }
 
-/* =========================
-   UNIQUE VALUES
-========================= */
 
-function uniqueValues(field) {
+/* ============================================================
+   AUTH STATE
+   ============================================================ */
 
-  return [
-    ...new Set(
-      records
-        .map(record => String(record[field] || "").trim())
-        .filter(Boolean)
-    )
-  ].sort((a, b) =>
-    a.localeCompare(b, "hi")
-  );
+onAuthStateChanged(
+  auth,
+  async (user) => {
 
-}
+    if (
+      user &&
+      user.email === ADMIN_EMAIL
+    ) {
 
-/* =========================
-   POPULATE FILTERS
-========================= */
+      loginPanel?.classList.add("hidden");
 
-function populateFilters() {
+      dashboardPanel?.classList.remove("hidden");
 
-  const oldDistrict = districtFilter.value;
-  const oldBlock = blockFilter.value;
-  const oldVillage = villageFilter.value;
+      hideMessage();
 
-  districtFilter.innerHTML =
-    `<option value="">सभी जिले</option>`;
+      await loadData();
 
-  uniqueValues("district").forEach(value => {
+      return;
+    }
 
-    districtFilter.insertAdjacentHTML(
-      "beforeend",
-      `<option value="${esc(value)}">${esc(value)}</option>`
-    );
 
-  });
+    loginPanel?.classList.remove("hidden");
 
-  districtFilter.value = oldDistrict;
+    dashboardPanel?.classList.add("hidden");
 
-  populateBlockFilter(oldBlock);
-  populateVillageFilter(oldVillage);
-
-}
-
-/* =========================
-   BLOCK FILTER
-========================= */
-
-function populateBlockFilter(selectedValue = "") {
-
-  const selectedDistrict = districtFilter.value;
-
-  let values = records
-    .filter(record => {
-      if (!selectedDistrict) return true;
-      return String(record.district || "") === selectedDistrict;
-    })
-    .map(record =>
-      String(record.block || "").trim()
-    )
-    .filter(Boolean);
-
-  values = [...new Set(values)].sort((a, b) =>
-    a.localeCompare(b, "hi")
-  );
-
-  blockFilter.innerHTML =
-    `<option value="">सभी ब्लॉक</option>`;
-
-  values.forEach(value => {
-
-    blockFilter.insertAdjacentHTML(
-      "beforeend",
-      `<option value="${esc(value)}">${esc(value)}</option>`
-    );
-
-  });
-
-  if (values.includes(selectedValue)) {
-    blockFilter.value = selectedValue;
   }
-
-}
-
-/* =========================
-   VILLAGE FILTER
-========================= */
-
-function populateVillageFilter(selectedValue = "") {
-
-  const selectedDistrict = districtFilter.value;
-  const selectedBlock = blockFilter.value;
-
-  let values = records
-    .filter(record => {
-
-      if (
-        selectedDistrict &&
-        String(record.district || "") !== selectedDistrict
-      ) {
-        return false;
-      }
-
-      if (
-        selectedBlock &&
-        String(record.block || "") !== selectedBlock
-      ) {
-        return false;
-      }
-
-      return true;
-
-    })
-    .map(record =>
-      String(record.village || "").trim()
-    )
-    .filter(Boolean);
-
-  values = [...new Set(values)].sort((a, b) =>
-    a.localeCompare(b, "hi")
-  );
-
-  villageFilter.innerHTML =
-    `<option value="">सभी गाँव</option>`;
-
-  values.forEach(value => {
-
-    villageFilter.insertAdjacentHTML(
-      "beforeend",
-      `<option value="${esc(value)}">${esc(value)}</option>`
-    );
-
-  });
-
-  if (values.includes(selectedValue)) {
-    villageFilter.value = selectedValue;
-  }
-
-}
-
-/* =========================
-   FILTER EVENTS
-========================= */
-
-districtFilter.addEventListener("change", () => {
-
-  populateBlockFilter();
-  populateVillageFilter();
-
-  renderDashboard();
-
-});
-
-blockFilter.addEventListener("change", () => {
-
-  populateVillageFilter();
-
-  renderDashboard();
-
-});
-
-villageFilter.addEventListener(
-  "change",
-  renderDashboard
 );
 
-genderFilter.addEventListener(
-  "change",
-  renderDashboard
-);
 
-searchFilter.addEventListener(
-  "input",
-  renderDashboard
-);
+/* ============================================================
+   LOGIN
+   ============================================================ */
 
-/* =========================
-   FILTERED RECORDS
-========================= */
+loginForm?.addEventListener(
+  "submit",
+  async (event) => {
 
-function filteredRecords() {
+    event.preventDefault();
 
-  const district = districtFilter.value;
-  const block = blockFilter.value;
-  const village = villageFilter.value;
-  const gender = genderFilter.value;
+    hideMessage();
 
-  const search =
-    String(searchFilter.value || "")
-      .trim()
-      .toLowerCase();
+    const formData =
+      new FormData(loginForm);
 
-  return records.filter(record => {
-
-    if (
-      district &&
-      String(record.district || "") !== district
-    ) {
-      return false;
-    }
-
-    if (
-      block &&
-      String(record.block || "") !== block
-    ) {
-      return false;
-    }
-
-    if (
-      village &&
-      String(record.village || "") !== village
-    ) {
-      return false;
-    }
-
-    if (
-      gender &&
-      String(record.gender || "") !== gender
-    ) {
-      return false;
-    }
-
-    if (search) {
-
-      const searchable = [
-        record.participantName,
-        record.email,
-        record.mobile,
-        record.fatherName,
-        record.gotra,
-        record.totem,
-        record.district,
-        record.block,
-        record.relatedBlock,
-        record.village
-      ]
-        .map(value =>
-          String(value || "").toLowerCase()
-        )
-        .join(" ");
-
-      if (!searchable.includes(search)) {
-        return false;
-      }
-
-    }
-
-    return true;
-
-  });
-
-}
-
-/* =========================
-   RENDER DASHBOARD
-========================= */
-
-function renderDashboard() {
-
-  const list = filteredRecords();
-
-  visibleCount.textContent = list.length;
-
-  totalCount.textContent = records.length;
-
-  maleCount.textContent =
-    records.filter(
-      r => String(r.gender || "") === "पुरुष"
-    ).length;
-
-  femaleCount.textContent =
-    records.filter(
-      r => String(r.gender || "") === "महिला"
-    ).length;
-
-  otherCount.textContent =
-    records.filter(r => {
-
-      const gender = String(r.gender || "");
-
-      return (
-        gender !== "पुरुष" &&
-        gender !== "महिला"
+    const username =
+      safeValue(
+        formData.get("username")
       );
 
-    }).length;
+    const password =
+      safeValue(
+        formData.get("password")
+      );
 
-  renderTable(list);
-  renderSummary(list);
 
-}
+    if (!username || !password) {
 
-/* =========================
-   RENDER TABLE
-========================= */
+      showMessage(
+        "यूज़रनेम और पासवर्ड दर्ज करें।",
+        "error"
+      );
 
-function renderTable(list) {
+      return;
+    }
 
-  if (!list.length) {
 
-    recordsBody.innerHTML =
-      `<tr>
-        <td colspan="10">
-          कोई रिकॉर्ड नहीं मिला।
-        </td>
-      </tr>`;
+    if (
+      username !== ADMIN_USERNAME
+    ) {
 
-    return;
+      showMessage(
+        "गलत एडमिन यूज़रनेम।",
+        "error"
+      );
+
+      return;
+    }
+
+
+    try {
+
+      loginBtn.disabled = true;
+
+      loginBtn.innerHTML =
+        "<span>लॉगिन हो रहा है...</span><b>…</b>";
+
+
+      await signInWithEmailAndPassword(
+        auth,
+        ADMIN_EMAIL,
+        password
+      );
+
+
+      showMessage(
+        "एडमिन लॉगिन सफल।",
+        "success"
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "Admin login error:",
+        error
+      );
+
+
+      let message =
+        "लॉगिन असफल हुआ।";
+
+
+      if (
+        error.code ===
+        "auth/invalid-credential"
+      ) {
+
+        message =
+          "यूज़रनेम या पासवर्ड गलत है।";
+
+      } else if (
+        error.code ===
+        "auth/user-not-found"
+      ) {
+
+        message =
+          "एडमिन Firebase Authentication में नहीं मिला।";
+
+      } else if (
+        error.code ===
+        "auth/wrong-password"
+      ) {
+
+        message =
+          "पासवर्ड गलत है।";
+
+      } else if (
+        error.code ===
+        "auth/too-many-requests"
+      ) {
+
+        message =
+          "बहुत अधिक प्रयास किए गए हैं। थोड़ी देर बाद पुनः प्रयास करें।";
+
+      }
+
+
+      showMessage(
+        message,
+        "error"
+      );
+
+    } finally {
+
+      loginBtn.disabled = false;
+
+      loginBtn.innerHTML =
+        "<span>लॉगिन करें</span><b>→</b>";
+
+    }
 
   }
-
-  recordsBody.innerHTML = list
-    .map((record, index) => {
-
-      return `
-        <tr>
-          <td>${index + 1}</td>
-
-          <td>
-            <strong>${esc(record.participantName)}</strong>
-          </td>
-
-          <td>${esc(record.gender)}</td>
-
-          <td>${esc(record.district)}</td>
-
-          <td>${esc(record.block)}</td>
-
-          <td>${esc(record.village)}</td>
-
-          <td>${esc(record.mobile)}</td>
-
-          <td>${esc(record.email)}</td>
-
-          <td>
-            <button
-              type="button"
-              class="secondary-btn"
-              onclick="window.printRegistration('${esc(record.id)}')"
-            >
-              प्रिंट
-            </button>
-          </td>
-
-        </tr>
-      `;
-
-    })
-    .join("");
-
-}
-
-/* =========================
-   SUMMARY
-========================= */
-
-function makeSummary(list, field) {
-
-  const map = {};
-
-  list.forEach(record => {
-
-    const value =
-      String(record[field] || "नहीं बताया").trim();
-
-    map[value] = (map[value] || 0) + 1;
-
-  });
-
-  return Object.entries(map)
-    .sort((a, b) => b[1] - a[1])
-    .map(([name, count]) =>
-      `<div class="summary-row">
-        <span>${esc(name)}</span>
-        <strong>${count}</strong>
-      </div>`
-    )
-    .join("");
-
-}
-
-function renderSummary(list) {
-
-  districtSummary.innerHTML =
-    makeSummary(list, "district") ||
-    "<p>कोई डेटा नहीं।</p>";
-
-  blockSummary.innerHTML =
-    makeSummary(list, "block") ||
-    "<p>कोई डेटा नहीं।</p>";
-
-  villageSummary.innerHTML =
-    makeSummary(list, "village") ||
-    "<p>कोई डेटा नहीं।</p>";
-
-}
-
-/* =========================
-   REFRESH
-========================= */
-
-refreshBtn.addEventListener(
-  "click",
-  loadData
 );
 
-/* =========================
-   LOGOUT
-========================= */
 
-logoutBtn.addEventListener(
+/* ============================================================
+   LOGOUT
+   ============================================================ */
+
+logoutBtn?.addEventListener(
   "click",
   async () => {
 
@@ -762,17 +778,24 @@ logoutBtn.addEventListener(
 
       await signOut(auth);
 
+      allRecords = [];
+
+      filteredRecords = [];
+
       showMessage(
-        "आप सफलतापूर्वक लॉगआउट हो गए।",
+        "लॉगआउट सफल।",
         "success"
       );
 
     } catch (error) {
 
-      console.error(error);
+      console.error(
+        "Logout error:",
+        error
+      );
 
       showMessage(
-        "❌ लॉगआउट नहीं हो पाया।",
+        "लॉगआउट नहीं हो पाया।",
         "error"
       );
 
@@ -781,190 +804,1528 @@ logoutBtn.addEventListener(
   }
 );
 
-/* =========================
-   PRINT SINGLE RECORD
-========================= */
 
-window.printRegistration = function (id) {
+/* ============================================================
+   LOAD FIRESTORE DATA
+   ============================================================ */
 
-  const record = records.find(
-    item => item.id === id
-  );
+async function loadData() {
 
-  if (!record) {
+  if (!auth.currentUser) {
+    return;
+  }
+
+
+  if (
+    auth.currentUser.email !==
+    ADMIN_EMAIL
+  ) {
 
     showMessage(
-      "❌ रिकॉर्ड नहीं मिला।",
+      "एडमिन अनुमति आवश्यक है।",
       "error"
     );
 
     return;
+  }
+
+
+  try {
+
+    showMessage(
+      "पंजीयन डेटा लोड हो रहा है...",
+      "info"
+    );
+
+
+    let snapshot;
+
+
+    /*
+      पहले createdAt descending order
+      से data लोड करने का प्रयास।
+    */
+
+    try {
+
+      const orderedQuery =
+        query(
+          collection(
+            db,
+            "registrations"
+          ),
+          orderBy(
+            "createdAt",
+            "desc"
+          )
+        );
+
+      snapshot =
+        await getDocs(
+          orderedQuery
+        );
+
+    } catch (orderError) {
+
+      console.warn(
+        "Ordered query failed. Loading without order:",
+        orderError
+      );
+
+
+      /*
+        अगर पुराने documents या index के कारण
+        orderBy query fail हो तो बिना order
+        पूरा collection पढ़ेंगे।
+      */
+
+      snapshot =
+        await getDocs(
+          collection(
+            db,
+            "registrations"
+          )
+        );
+
+    }
+
+
+    allRecords =
+      snapshot.docs.map(
+        (doc, index) => {
+
+          const data =
+            doc.data() || {};
+
+          return {
+
+            id: doc.id,
+
+            ...data,
+
+            /*
+              पुराने documents में
+              relatedBlock नहीं होगा।
+            */
+
+            relatedBlock:
+              safeValue(
+                data.relatedBlock
+              ),
+
+            /*
+              Internal fallback number.
+            */
+
+            _index: index
+
+          };
+
+        }
+      );
+
+
+    /*
+      अगर बिना order query data आया है
+      तो client-side createdAt sorting।
+    */
+
+    allRecords.sort(
+      (a, b) =>
+        getCreatedAtForSort(b) -
+        getCreatedAtForSort(a)
+    );
+
+
+    populateDistrictFilter();
+
+    populateRelatedBlockFilter();
+
+    populateBlockFilter();
+
+    populateVillageFilter();
+
+
+    applyFilters();
+
+
+    lastUpdated.textContent =
+      `अंतिम अपडेट: ${new Date().toLocaleString("hi-IN")}`;
+
+
+    showMessage(
+      `कुल ${allRecords.length} पंजीयन लोड हुए।`,
+      "success"
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Firestore load error:",
+      error
+    );
+
+
+    allRecords = [];
+
+    filteredRecords = [];
+
+    renderTable();
+
+    showMessage(
+      "Firestore से डेटा लोड नहीं हो पाया। Firebase Rules और Admin Login जाँचें।",
+      "error"
+    );
 
   }
 
+}
+
+
+/* ============================================================
+   UNIQUE SORTED VALUES
+   ============================================================ */
+
+function uniqueSorted(
+  records,
+  field
+) {
+
+  return [
+    ...new Set(
+      records
+        .map(
+          record =>
+            safeValue(
+              record[field]
+            )
+        )
+        .filter(Boolean)
+    )
+  ].sort(
+    (a, b) =>
+      a.localeCompare(
+        b,
+        "hi"
+      )
+  );
+
+}
+
+
+/* ============================================================
+   POPULATE DISTRICT FILTER
+   ============================================================ */
+
+function populateDistrictFilter() {
+
+  if (!districtFilter) {
+    return;
+  }
+
+
+  const current =
+    districtFilter.value;
+
+
+  const districts =
+    uniqueSorted(
+      allRecords,
+      "district"
+    );
+
+
+  districtFilter.innerHTML =
+    `<option value="">सभी जिले</option>`;
+
+
+  districts.forEach(
+    district => {
+
+      const option =
+        document.createElement(
+          "option"
+        );
+
+      option.value =
+        district;
+
+      option.textContent =
+        district;
+
+      districtFilter.appendChild(
+        option
+      );
+
+    }
+  );
+
+
+  if (
+    districts.includes(current)
+  ) {
+
+    districtFilter.value =
+      current;
+
+  }
+
+}
+
+
+/* ============================================================
+   POPULATE RELATED BLOCK FILTER
+   ============================================================ */
+
+function populateRelatedBlockFilter(
+  records = allRecords
+) {
+
+  if (!relatedBlockFilter) {
+    return;
+  }
+
+
+  const current =
+    relatedBlockFilter.value;
+
+
+  const relatedBlocks =
+    uniqueSorted(
+      records,
+      "relatedBlock"
+    );
+
+
+  relatedBlockFilter.innerHTML =
+    `<option value="">सभी संबंधित ब्लॉक</option>`;
+
+
+  relatedBlocks.forEach(
+    relatedBlock => {
+
+      const option =
+        document.createElement(
+          "option"
+        );
+
+      option.value =
+        relatedBlock;
+
+      option.textContent =
+        relatedBlock;
+
+      relatedBlockFilter.appendChild(
+        option
+      );
+
+    }
+  );
+
+
+  if (
+    relatedBlocks.includes(current)
+  ) {
+
+    relatedBlockFilter.value =
+      current;
+
+  }
+
+}
+
+
+/* ============================================================
+   POPULATE BLOCK FILTER
+   ============================================================ */
+
+function populateBlockFilter() {
+
+  if (!blockFilter) {
+    return;
+  }
+
+
+  const district =
+    safeValue(
+      districtFilter?.value
+    );
+
+
+  const current =
+    blockFilter.value;
+
+
+  let blocks = [];
+
+
+  if (
+    district &&
+    CG_DISTRICT_BLOCKS[district]
+  ) {
+
+    blocks =
+      CG_DISTRICT_BLOCKS[district];
+
+  } else {
+
+    blocks =
+      uniqueSorted(
+        allRecords,
+        "block"
+      );
+
+  }
+
+
+  /*
+    Firestore में मौजूद block को भी
+    include करेंगे ताकि कोई नया block
+    data में हो तो वह गायब न हो।
+  */
+
+  const firestoreBlocks =
+    uniqueSorted(
+      allRecords
+        .filter(
+          record =>
+            !district ||
+            safeValue(
+              record.district
+            ) === district
+        ),
+      "block"
+    );
+
+
+  blocks =
+    [
+      ...new Set(
+        [
+          ...blocks,
+          ...firestoreBlocks
+        ]
+      )
+    ].sort(
+      (a, b) =>
+        a.localeCompare(
+          b,
+          "hi"
+        )
+    );
+
+
+  blockFilter.innerHTML =
+    `<option value="">सभी ब्लॉक</option>`;
+
+
+  blocks.forEach(
+    block => {
+
+      const option =
+        document.createElement(
+          "option"
+        );
+
+      option.value =
+        block;
+
+      option.textContent =
+        block;
+
+      blockFilter.appendChild(
+        option
+      );
+
+    }
+  );
+
+
+  if (
+    blocks.includes(current)
+  ) {
+
+    blockFilter.value =
+      current;
+
+  }
+
+}
+
+
+/* ============================================================
+   POPULATE VILLAGE FILTER
+   ============================================================ */
+
+function populateVillageFilter(
+  records = allRecords
+) {
+
+  if (!villageFilter) {
+    return;
+  }
+
+
+  const current =
+    villageFilter.value;
+
+
+  const villages =
+    uniqueSorted(
+      records,
+      "village"
+    );
+
+
+  villageFilter.innerHTML =
+    `<option value="">सभी गाँव</option>`;
+
+
+  villages.forEach(
+    village => {
+
+      const option =
+        document.createElement(
+          "option"
+        );
+
+      option.value =
+        village;
+
+      option.textContent =
+        village;
+
+      villageFilter.appendChild(
+        option
+      );
+
+    }
+  );
+
+
+  if (
+    villages.includes(current)
+  ) {
+
+    villageFilter.value =
+      current;
+
+  }
+
+}
+
+
+/* ============================================================
+   FILTER EVENT LISTENERS
+   ============================================================ */
+
+districtFilter?.addEventListener(
+  "change",
+  () => {
+
+    populateBlockFilter();
+
+    applyFilters();
+
+  }
+);
+
+
+relatedBlockFilter?.addEventListener(
+  "change",
+  applyFilters
+);
+
+
+blockFilter?.addEventListener(
+  "change",
+  applyFilters
+);
+
+
+villageFilter?.addEventListener(
+  "change",
+  applyFilters
+);
+
+
+genderFilter?.addEventListener(
+  "change",
+  applyFilters
+);
+
+
+searchFilter?.addEventListener(
+  "input",
+  applyFilters
+);
+
+
+/* ============================================================
+   APPLY FILTERS
+   ============================================================ */
+
+function applyFilters() {
+
+  const district =
+    normalizeText(
+      districtFilter?.value
+    );
+
+  const relatedBlock =
+    normalizeText(
+      relatedBlockFilter?.value
+    );
+
+  const block =
+    normalizeText(
+      blockFilter?.value
+    );
+
+  const village =
+    normalizeText(
+      villageFilter?.value
+    );
+
+  const gender =
+    normalizeText(
+      genderFilter?.value
+    );
+
+  const search =
+    normalizeText(
+      searchFilter?.value
+    );
+
+
+  filteredRecords =
+    allRecords.filter(
+      record => {
+
+        const recordDistrict =
+          normalizeText(
+            record.district
+          );
+
+        const recordRelatedBlock =
+          normalizeText(
+            record.relatedBlock
+          );
+
+        const recordBlock =
+          normalizeText(
+            record.block
+          );
+
+        const recordVillage =
+          normalizeText(
+            record.village
+          );
+
+        const recordGender =
+          normalizeText(
+            record.gender
+          );
+
+
+        if (
+          district &&
+          recordDistrict !== district
+        ) {
+
+          return false;
+
+        }
+
+
+        if (
+          relatedBlock &&
+          recordRelatedBlock !==
+            relatedBlock
+        ) {
+
+          return false;
+
+        }
+
+
+        if (
+          block &&
+          recordBlock !== block
+        ) {
+
+          return false;
+
+        }
+
+
+        if (
+          village &&
+          recordVillage !== village
+        ) {
+
+          return false;
+
+        }
+
+
+        if (
+          gender &&
+          recordGender !== gender
+        ) {
+
+          return false;
+
+        }
+
+
+        if (search) {
+
+          const searchable = [
+
+            record.participantName,
+
+            record.fatherName,
+
+            record.gotra,
+
+            record.gotraName,
+
+            record.totem,
+
+            record.email,
+
+            record.mobile,
+
+            record.alternateMobile,
+
+            record.district,
+
+            record.relatedBlock,
+
+            record.block,
+
+            record.village,
+
+            record.address,
+
+            record.mahasabha,
+
+            record.otherMahasabha,
+
+            record.registrationId,
+
+            record.id
+
+          ]
+            .map(
+              normalizeText
+            )
+            .join(" ");
+
+
+          if (
+            !searchable.includes(
+              search
+            )
+          ) {
+
+            return false;
+
+          }
+
+        }
+
+
+        return true;
+
+      }
+    );
+
+
+  /*
+    Dependent filters के options को
+    वर्तमान district के अनुसार update करें।
+  */
+
+  const districtFiltered =
+    allRecords.filter(
+      record => {
+
+        if (!district) {
+          return true;
+        }
+
+        return (
+          normalizeText(
+            record.district
+          ) === district
+        );
+
+      }
+    );
+
+
+  populateRelatedBlockFilter(
+    districtFiltered
+  );
+
+  populateVillageFilter(
+    districtFiltered
+  );
+
+
+  renderStats(
+    filteredRecords
+  );
+
+  renderTable(
+    filteredRecords
+  );
+
+  renderSummaries(
+    filteredRecords
+  );
+
+}
+
+
+/* ============================================================
+   RENDER STATISTICS
+   ============================================================ */
+
+function renderStats(
+  records
+) {
+
+  const total =
+    records.length;
+
+
+  const male =
+    records.filter(
+      record =>
+        normalizeText(
+          record.gender
+        ) === "पुरुष"
+    ).length;
+
+
+  const female =
+    records.filter(
+      record =>
+        normalizeText(
+          record.gender
+        ) === "महिला"
+    ).length;
+
+
+  const other =
+    total -
+    male -
+    female;
+
+
+  if (totalCount) {
+    totalCount.textContent =
+      total;
+  }
+
+  if (maleCount) {
+    maleCount.textContent =
+      male;
+  }
+
+  if (femaleCount) {
+    femaleCount.textContent =
+      female;
+  }
+
+  if (otherCount) {
+    otherCount.textContent =
+      Math.max(
+        0,
+        other
+      );
+  }
+
+}
+
+
+/* ============================================================
+   RENDER TABLE
+   ============================================================ */
+
+function renderTable(
+  records = filteredRecords
+) {
+
+  if (!recordsBody) {
+    return;
+  }
+
+
+  if (visibleCount) {
+
+    visibleCount.textContent =
+      records.length;
+
+  }
+
+
+  if (!records.length) {
+
+    recordsBody.innerHTML = `
+      <tr>
+        <td
+          colspan="10"
+          class="empty-row">
+          कोई पंजीयन नहीं मिला।
+        </td>
+      </tr>
+    `;
+
+    return;
+  }
+
+
+  recordsBody.innerHTML =
+    records
+      .map(
+        (record, index) => {
+
+          const name =
+            safeValue(
+              record.participantName
+            ) ||
+            "—";
+
+
+          const gender =
+            safeValue(
+              record.gender
+            ) ||
+            "—";
+
+
+          const district =
+            safeValue(
+              record.district
+            ) ||
+            "—";
+
+
+          const relatedBlock =
+            safeValue(
+              record.relatedBlock
+            ) ||
+            "—";
+
+
+          const block =
+            safeValue(
+              record.block
+            ) ||
+            "—";
+
+
+          const village =
+            safeValue(
+              record.village
+            ) ||
+            "—";
+
+
+          const mobile =
+            safeValue(
+              record.mobile
+            ) ||
+            "—";
+
+
+          const email =
+            safeValue(
+              record.email
+            ) ||
+            "—";
+
+
+          return `
+
+            <tr>
+
+              <td>
+                ${index + 1}
+              </td>
+
+              <td>
+                ${escapeHtml(name)}
+              </td>
+
+              <td>
+                ${escapeHtml(gender)}
+              </td>
+
+              <td>
+                ${escapeHtml(district)}
+              </td>
+
+              <td>
+                ${escapeHtml(relatedBlock)}
+              </td>
+
+              <td>
+                ${escapeHtml(block)}
+              </td>
+
+              <td>
+                ${escapeHtml(village)}
+              </td>
+
+              <td>
+                ${escapeHtml(mobile)}
+              </td>
+
+              <td>
+                ${escapeHtml(email)}
+              </td>
+
+              <td>
+
+                <button
+                  type="button"
+                  class="record-print-btn"
+                  data-print-id="${escapeHtml(record.id)}">
+                  🖨️
+                </button>
+
+              </td>
+
+            </tr>
+
+          `;
+
+        }
+      )
+      .join("");
+
+
+  /*
+    Single record print buttons
+  */
+
+  recordsBody
+    .querySelectorAll(
+      ".record-print-btn"
+    )
+    .forEach(
+      button => {
+
+        button.addEventListener(
+          "click",
+          () => {
+
+            const id =
+              button.dataset.printId;
+
+            const record =
+              allRecords.find(
+                item =>
+                  item.id === id
+              );
+
+            if (record) {
+
+              printSingleRecord(
+                record
+              );
+
+            }
+
+          }
+        );
+
+      }
+    );
+
+}
+
+
+/* ============================================================
+   SUMMARY
+   ============================================================ */
+
+function createSummary(
+  records,
+  field
+) {
+
+  const counts = {};
+
+
+  records.forEach(
+    record => {
+
+      const value =
+        safeValue(
+          record[field]
+        ) ||
+        "नहीं बताया";
+
+
+      counts[value] =
+        (counts[value] || 0) + 1;
+
+    }
+  );
+
+
+  const entries =
+    Object.entries(
+      counts
+    ).sort(
+      (a, b) =>
+        b[1] - a[1] ||
+        a[0].localeCompare(
+          b[0],
+          "hi"
+        )
+    );
+
+
+  if (!entries.length) {
+
+    return `
+      <div class="summary-row">
+        <span>कोई डेटा नहीं</span>
+        <strong>0</strong>
+      </div>
+    `;
+
+  }
+
+
+  return entries
+    .map(
+      ([name, count]) => `
+
+        <div class="summary-row">
+
+          <span>
+            ${escapeHtml(name)}
+          </span>
+
+          <strong>
+            ${count}
+          </strong>
+
+        </div>
+
+      `
+    )
+    .join("");
+
+}
+
+
+function renderSummaries(
+  records
+) {
+
+  if (districtSummary) {
+
+    districtSummary.innerHTML =
+      createSummary(
+        records,
+        "district"
+      );
+
+  }
+
+
+  if (relatedBlockSummary) {
+
+    relatedBlockSummary.innerHTML =
+      createSummary(
+        records,
+        "relatedBlock"
+      );
+
+  }
+
+
+  if (blockSummary) {
+
+    blockSummary.innerHTML =
+      createSummary(
+        records,
+        "block"
+      );
+
+  }
+
+
+  if (villageSummary) {
+
+    villageSummary.innerHTML =
+      createSummary(
+        records,
+        "village"
+      );
+
+  }
+
+}
+
+
+/* ============================================================
+   REFRESH
+   ============================================================ */
+
+refreshBtn?.addEventListener(
+  "click",
+  async () => {
+
+    await loadData();
+
+  }
+);
+
+
+/* ============================================================
+   SINGLE RECORD PRINT
+   ============================================================ */
+
+function printSingleRecord(
+  record
+) {
+
+  const html =
+    buildPrintableRecordHtml(
+      record
+    );
+
+
+  openPrintWindow(
+    html,
+    "पंजीयन विवरण"
+  );
+
+}
+
+
+/* ============================================================
+   PRINTABLE SINGLE RECORD HTML
+   ============================================================ */
+
+function buildPrintableRecordHtml(
+  record
+) {
+
   const rows = [
-    ["पंजीयन ID", record.id],
-    ["महासभा", record.mahasabha],
-    ["अन्य महासभा", record.otherMahasabha],
-    ["प्रतिभागी का नाम", record.participantName],
-    ["गोत्र", record.gotra],
-    ["टोटम", record.totem],
-    ["पिता का नाम", record.fatherName],
-    ["जन्मतिथि", record.dob],
-    ["लिंग", record.gender],
-    ["ईमेल", record.email],
-    ["कॉन्टेक्ट नम्बर", record.mobile],
-    ["जिला", record.district],
-    ["संबंधित ब्लॉक", record.relatedBlock],
-    ["ब्लॉक / विकासखंड", record.block],
-    ["गाँव / नगर", record.village],
-    ["पूरा पता", record.address],
-    ["नियम एवं शर्तें", record.termsAccepted],
-    ["जानकारी पुष्टि", record.informationConfirmed],
-    ["स्थिति", record.status],
-    ["पंजीयन समय", formatTimestamp(record.createdAt)]
+
+    [
+      "पंजीयन ID",
+      record.registrationId ||
+      record.id
+    ],
+
+    [
+      "महासभा",
+      record.mahasabha
+    ],
+
+    [
+      "अन्य महासभा",
+      record.otherMahasabha
+    ],
+
+    [
+      "प्रतिभागी का नाम",
+      record.participantName
+    ],
+
+    [
+      "गोत्र",
+      record.gotra ||
+      record.gotraName
+    ],
+
+    [
+      "टोटम",
+      record.totem
+    ],
+
+    [
+      "पिता का नाम",
+      record.fatherName
+    ],
+
+    [
+      "जन्मतिथि",
+      record.dob
+    ],
+
+    [
+      "लिंग",
+      record.gender
+    ],
+
+    [
+      "ईमेल",
+      record.email
+    ],
+
+    [
+      "मोबाइल",
+      record.mobile
+    ],
+
+    [
+      "जिला",
+      record.district
+    ],
+
+    [
+      "संबंधित ब्लॉक",
+      record.relatedBlock
+    ],
+
+    [
+      "ब्लॉक / विकासखंड",
+      record.block
+    ],
+
+    [
+      "गाँव / नगर",
+      record.village
+    ],
+
+    [
+      "पूरा पता",
+      record.address
+    ],
+
+    [
+      "नियम एवं शर्तें",
+      record.termsAccepted
+    ],
+
+    [
+      "जानकारी पुष्टि",
+      record.informationConfirmed
+    ],
+
+    [
+      "पंजीयन समय",
+      formatDate(
+        record.createdAt
+      )
+    ]
+
   ];
 
-  const html = `
+
+  const tableRows =
+    rows
+      .map(
+        ([label, value]) => `
+
+          <tr>
+
+            <th>
+              ${escapeHtml(label)}
+            </th>
+
+            <td>
+              ${escapeHtml(
+                safeValue(value) || "—"
+              )}
+            </td>
+
+          </tr>
+
+        `
+      )
+      .join("");
+
+
+  return `
+
     <!doctype html>
+
     <html lang="hi">
+
     <head>
+
       <meta charset="utf-8">
-      <title>पंजीयन विवरण</title>
+
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1">
+
+      <title>
+        पंजीयन विवरण
+      </title>
 
       <style>
-        @page {
-          size: A4 portrait;
-          margin: 12mm;
+
+        *{
+          box-sizing:border-box;
         }
 
-        * {
-          box-sizing: border-box;
-        }
-
-        body {
+        body{
+          margin:0;
           font-family:
             Arial,
             "Noto Sans Devanagari",
             sans-serif;
-
-          margin: 0;
-          color: #222;
+          background:#fff;
+          color:#222;
         }
 
-        h1 {
-          text-align: center;
-          margin: 0 0 4px;
-          font-size: 22px;
+        .page{
+          width:100%;
+          padding:18px;
         }
 
-        h2 {
-          text-align: center;
-          margin: 0 0 18px;
-          font-size: 16px;
+        .header{
+          text-align:center;
+          border-bottom:2px solid #0f6b68;
+          padding-bottom:12px;
+          margin-bottom:15px;
         }
 
-        table {
-          width: 100%;
-          border-collapse: collapse;
+        h1{
+          margin:0;
+          font-size:20px;
+          color:#0f6b68;
+        }
+
+        h2{
+          margin:5px 0 0;
+          font-size:15px;
+        }
+
+        .sub{
+          margin:5px 0 0;
+          font-size:12px;
+        }
+
+        table{
+          width:100%;
+          border-collapse:collapse;
+          font-size:11px;
         }
 
         th,
-        td {
-          border: 1px solid #777;
-          padding: 7px 9px;
-          text-align: left;
-          vertical-align: top;
+        td{
+          border:1px solid #999;
+          padding:7px;
+          vertical-align:top;
         }
 
-        th {
-          width: 30%;
-          background: #f2f2f2;
+        th{
+          width:27%;
+          background:#eef6f5;
+          text-align:left;
         }
 
-        .footer {
-          margin-top: 18px;
-          text-align: center;
-          font-size: 11px;
+        .footer{
+          text-align:center;
+          margin-top:18px;
+          font-size:10px;
+          color:#777;
         }
+
+        @page{
+          size:A4 portrait;
+          margin:10mm;
+        }
+
+        @media print{
+
+          .page{
+            padding:0;
+          }
+
+        }
+
       </style>
+
     </head>
 
     <body>
 
-      <h1>अखिल भारतीय आदिवासी हलबा हलबी समाज</h1>
-      <h2>पंजीयन विवरण</h2>
+      <div class="page">
 
-      <table>
-        ${rows.map(([label, value]) => `
-          <tr>
-            <th>${esc(label)}</th>
-            <td>${esc(value)}</td>
-          </tr>
-        `).join("")}
-      </table>
+        <div class="header">
 
-      <div class="footer">
-        Powered by Aaryan Chiram
+          <h1>
+            अखिल भारतीय आदिवासी हलबा हलबी समाज
+          </h1>
+
+          <h2>
+            पंजीयन विवरण
+          </h2>
+
+          <p class="sub">
+            जय माँ दंतेश्वरी • जय जोहार
+          </p>
+
+        </div>
+
+
+        <table>
+
+          <tbody>
+
+            ${tableRows}
+
+          </tbody>
+
+        </table>
+
+
+        <div class="footer">
+          Powered by Aaryan Chiram
+        </div>
+
       </div>
 
+
       <script>
-        window.onload = function() {
+
+        window.onload = function(){
+
           window.print();
+
         };
+
       <\/script>
 
     </body>
+
     </html>
+
   `;
-
-  printHtml(html);
-
-};
-
-/* =========================
-   PRINT HTML
-========================= */
-
-function printHtml(html) {
-
-  const printWindow = window.open(
-    "",
-    "_blank",
-    "width=900,height=700"
-  );
-
-  if (!printWindow) {
-
-    showMessage(
-      "❌ Popup blocked है। Browser में popup allow करें।",
-      "error"
-    );
-
-    return;
-
-  }
-
-  printWindow.document.open();
-  printWindow.document.write(html);
-  printWindow.document.close();
 
 }
 
-/* =========================
-   PRINT LIST
-========================= */
 
-printListBtn.addEventListener(
+/* ============================================================
+   PRINT FILTERED LIST
+   ============================================================ */
+
+printListBtn?.addEventListener(
   "click",
   () => {
 
-    const list = filteredRecords();
-
-    if (!list.length) {
+    if (!filteredRecords.length) {
 
       showMessage(
-        "❌ प्रिंट करने के लिए कोई रिकॉर्ड नहीं है।",
+        "प्रिंट करने के लिए कोई रिकॉर्ड नहीं है।",
         "error"
       );
 
@@ -972,164 +2333,352 @@ printListBtn.addEventListener(
 
     }
 
-    const rows = list
-      .map((record, index) => `
-        <tr>
-          <td>${index + 1}</td>
-          <td>${esc(record.participantName)}</td>
-          <td>${esc(record.gender)}</td>
-          <td>${esc(record.district)}</td>
-          <td>${esc(record.relatedBlock)}</td>
-          <td>${esc(record.block)}</td>
-          <td>${esc(record.village)}</td>
-          <td>${esc(record.mobile)}</td>
-          <td>${esc(record.email)}</td>
-        </tr>
-      `)
+
+    const html =
+      buildPrintableListHtml(
+        filteredRecords
+      );
+
+
+    openPrintWindow(
+      html,
+      "पंजीयन सूची"
+    );
+
+  }
+);
+
+
+/* ============================================================
+   PRINTABLE LIST
+   ============================================================ */
+
+function buildPrintableListHtml(
+  records
+) {
+
+  const rows =
+    records
+      .map(
+        (record, index) => `
+
+          <tr>
+
+            <td>
+              ${index + 1}
+            </td>
+
+            <td>
+              ${escapeHtml(
+                record.registrationId ||
+                record.id ||
+                "—"
+              )}
+            </td>
+
+            <td>
+              ${escapeHtml(
+                record.participantName ||
+                "—"
+              )}
+            </td>
+
+            <td>
+              ${escapeHtml(
+                record.gender ||
+                "—"
+              )}
+            </td>
+
+            <td>
+              ${escapeHtml(
+                record.district ||
+                "—"
+              )}
+            </td>
+
+            <td>
+              ${escapeHtml(
+                record.relatedBlock ||
+                "—"
+              )}
+            </td>
+
+            <td>
+              ${escapeHtml(
+                record.block ||
+                "—"
+              )}
+            </td>
+
+            <td>
+              ${escapeHtml(
+                record.village ||
+                "—"
+              )}
+            </td>
+
+            <td>
+              ${escapeHtml(
+                record.mobile ||
+                "—"
+              )}
+            </td>
+
+            <td>
+              ${escapeHtml(
+                record.email ||
+                "—"
+              )}
+            </td>
+
+          </tr>
+
+        `
+      )
       .join("");
 
-    const html = `
-      <!doctype html>
-      <html lang="hi">
 
-      <head>
+  return `
 
-        <meta charset="utf-8">
+    <!doctype html>
 
-        <title>पंजीयन सूची</title>
+    <html lang="hi">
 
-        <style>
+    <head>
 
-          @page {
-            size: A4 landscape;
-            margin: 8mm;
+      <meta charset="utf-8">
+
+      <title>
+        पंजीयन सूची
+      </title>
+
+      <style>
+
+        *{
+          box-sizing:border-box;
+        }
+
+        body{
+          margin:0;
+          font-family:
+            Arial,
+            "Noto Sans Devanagari",
+            sans-serif;
+          color:#222;
+          background:#fff;
+        }
+
+        .page{
+          width:100%;
+          padding:10px;
+        }
+
+        .header{
+          text-align:center;
+          margin-bottom:10px;
+        }
+
+        h1{
+          margin:0;
+          font-size:18px;
+          color:#0f6b68;
+        }
+
+        h2{
+          margin:4px 0;
+          font-size:14px;
+        }
+
+        .meta{
+          font-size:10px;
+          color:#555;
+        }
+
+        table{
+          width:100%;
+          border-collapse:collapse;
+          font-size:8px;
+        }
+
+        th,
+        td{
+          border:1px solid #888;
+          padding:4px;
+          text-align:left;
+          vertical-align:top;
+        }
+
+        th{
+          background:#eef6f5;
+          color:#155d5b;
+        }
+
+        .footer{
+          text-align:center;
+          margin-top:8px;
+          font-size:8px;
+          color:#777;
+        }
+
+        @page{
+          size:A4 landscape;
+          margin:7mm;
+        }
+
+        @media print{
+
+          .page{
+            padding:0;
           }
 
-          * {
-            box-sizing: border-box;
+          thead{
+            display:table-header-group;
           }
 
-          body {
-            font-family:
-              Arial,
-              "Noto Sans Devanagari",
-              sans-serif;
-
-            margin: 0;
-            color: #222;
+          tr{
+            page-break-inside:avoid;
           }
 
-          h1 {
-            text-align: center;
-            margin: 0 0 3px;
-            font-size: 20px;
-          }
+        }
 
-          h2 {
-            text-align: center;
-            margin: 0 0 12px;
-            font-size: 14px;
-          }
+      </style>
 
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 9px;
-          }
+    </head>
 
-          th,
-          td {
-            border: 1px solid #777;
-            padding: 4px;
-            vertical-align: top;
-          }
+    <body>
 
-          th {
-            background: #f2f2f2;
-          }
+      <div class="page">
 
-          .footer {
-            text-align: center;
-            margin-top: 10px;
-            font-size: 9px;
-          }
+        <div class="header">
 
-        </style>
+          <h1>
+            अखिल भारतीय आदिवासी हलबा हलबी समाज
+          </h1>
 
-      </head>
+          <h2>
+            पंजीयन सूची
+          </h2>
 
-      <body>
+          <div class="meta">
+            कुल रिकॉर्ड: ${records.length}
+            |
+            प्रिंट समय:
+            ${escapeHtml(
+              new Date()
+                .toLocaleString("hi-IN")
+            )}
+          </div>
 
-        <h1>
-          अखिल भारतीय आदिवासी हलबा हलबी समाज
-        </h1>
+        </div>
 
-        <h2>
-          पंजीयन सूची — कुल ${list.length} रिकॉर्ड
-        </h2>
 
         <table>
 
           <thead>
+
             <tr>
-              <th>क्रम</th>
-              <th>नाम</th>
-              <th>लिंग</th>
-              <th>जिला</th>
-              <th>संबंधित ब्लॉक</th>
-              <th>ब्लॉक</th>
-              <th>गाँव</th>
-              <th>मोबाइल</th>
-              <th>ईमेल</th>
+
+              <th>
+                क्रम
+              </th>
+
+              <th>
+                पंजीयन ID
+              </th>
+
+              <th>
+                नाम
+              </th>
+
+              <th>
+                लिंग
+              </th>
+
+              <th>
+                जिला
+              </th>
+
+              <th>
+                संबंधित ब्लॉक
+              </th>
+
+              <th>
+                ब्लॉक
+              </th>
+
+              <th>
+                गाँव
+              </th>
+
+              <th>
+                मोबाइल
+              </th>
+
+              <th>
+                ईमेल
+              </th>
+
             </tr>
+
           </thead>
 
           <tbody>
+
             ${rows}
+
           </tbody>
 
         </table>
+
 
         <div class="footer">
           Powered by Aaryan Chiram
         </div>
 
-        <script>
-          window.onload = function() {
-            window.print();
-          };
-        <\/script>
+      </div>
 
-      </body>
-      </html>
-    `;
 
-    printHtml(html);
+      <script>
 
-  }
-);
+        window.onload = function(){
 
-/* =========================
-   EXCEL DOWNLOAD
-========================= */
+          window.print();
 
-if (downloadExcelBtn) {
+        };
 
-  downloadExcelBtn.addEventListener(
-    "click",
-    downloadExcel
-  );
+      <\/script>
+
+    </body>
+
+    </html>
+
+  `;
 
 }
 
-function downloadExcel() {
 
-  const list = filteredRecords();
+/* ============================================================
+   OPEN PRINT WINDOW
+   ============================================================ */
 
-  if (!list.length) {
+function openPrintWindow(
+  html,
+  title
+) {
+
+  const printWindow =
+    window.open(
+      "",
+      "_blank",
+      "width=1200,height=800"
+    );
+
+
+  if (!printWindow) {
 
     showMessage(
-      "❌ डाउनलोड करने के लिए कोई रिकॉर्ड नहीं है।",
+      "Print window नहीं खुली। Browser में pop-up अनुमति दें।",
       "error"
     );
 
@@ -1137,14 +2686,44 @@ function downloadExcel() {
 
   }
 
-  /* SheetJS library check */
+
+  printWindow.document.open();
+
+  printWindow.document.write(
+    html
+  );
+
+  printWindow.document.close();
+
+}
+
+
+/* ============================================================
+   EXCEL DOWNLOAD
+   ============================================================ */
+
+downloadExcelBtn?.addEventListener(
+  "click",
+  () => {
+
+    downloadExcel();
+
+  }
+);
+
+
+/* ============================================================
+   CREATE EXCEL FILE
+   ============================================================ */
+
+function downloadExcel() {
 
   if (
     typeof XLSX === "undefined"
   ) {
 
     showMessage(
-      "❌ Excel Library लोड नहीं हुई। Internet connection जाँचें।",
+      "Excel library लोड नहीं हुई। इंटरनेट कनेक्शन जाँचें और पेज पुनः लोड करें।",
       "error"
     );
 
@@ -1152,119 +2731,282 @@ function downloadExcel() {
 
   }
 
-  const exportData = list.map(
-    (record, index) => ({
 
-      "क्रम": index + 1,
+  if (!filteredRecords.length) {
 
-      "पंजीयन ID":
-        record.id || "",
+    showMessage(
+      "डाउनलोड करने के लिए कोई रिकॉर्ड नहीं है।",
+      "error"
+    );
 
-      "महासभा":
-        record.mahasabha || "",
+    return;
 
-      "अन्य महासभा":
-        record.otherMahasabha || "",
+  }
 
-      "प्रतिभागी का नाम":
-        record.participantName || "",
 
-      "गोत्र":
-        record.gotra || "",
+  try {
 
-      "टोटम":
-        record.totem || "",
+    /*
+      Excel में वर्तमान filtered list जाएगी।
+    */
 
-      "पिता का नाम":
-        record.fatherName || "",
+    const excelData =
+      filteredRecords.map(
+        (record, index) => ({
 
-      "जन्मतिथि":
-        record.dob || "",
+          "क्रम":
+            index + 1,
 
-      "लिंग":
-        record.gender || "",
+          "पंजीयन ID":
+            safeValue(
+              record.registrationId
+            ) ||
+            safeValue(
+              record.id
+            ),
 
-      "ईमेल":
-        record.email || "",
+          "महासभा":
+            safeValue(
+              record.mahasabha
+            ),
 
-      "मोबाइल":
-        record.mobile || "",
+          "अन्य महासभा":
+            safeValue(
+              record.otherMahasabha
+            ),
 
-      "जिला":
-        record.district || "",
+          "प्रतिभागी का नाम":
+            safeValue(
+              record.participantName
+            ),
 
-      "संबंधित ब्लॉक":
-        record.relatedBlock || "",
+          "गोत्र":
+            safeValue(
+              record.gotra
+            ) ||
+            safeValue(
+              record.gotraName
+            ),
 
-      "ब्लॉक / विकासखंड":
-        record.block || "",
+          "टोटम":
+            safeValue(
+              record.totem
+            ),
 
-      "गाँव / नगर":
-        record.village || "",
+          "पिता का नाम":
+            safeValue(
+              record.fatherName
+            ),
 
-      "पूरा पता":
-        record.address || "",
+          "जन्मतिथि":
+            safeValue(
+              record.dob
+            ),
 
-      "नियम एवं शर्तें":
-        record.termsAccepted || "",
+          "लिंग":
+            safeValue(
+              record.gender
+            ),
 
-      "जानकारी पुष्टि":
-        record.informationConfirmed || "",
+          "ईमेल":
+            safeValue(
+              record.email
+            ),
 
-      "स्थिति":
-        record.status || "",
+          "मोबाइल":
+            safeValue(
+              record.mobile
+            ),
 
-      "पंजीयन समय":
-        formatTimestamp(record.createdAt)
+          "वैकल्पिक मोबाइल":
+            safeValue(
+              record.alternateMobile
+            ),
 
-    })
-  );
+          "जिला":
+            safeValue(
+              record.district
+            ),
 
-  const worksheet =
-    XLSX.utils.json_to_sheet(exportData);
+          "संबंधित ब्लॉक":
+            safeValue(
+              record.relatedBlock
+            ),
 
-  const workbook =
-    XLSX.utils.book_new();
+          "ब्लॉक / विकासखंड":
+            safeValue(
+              record.block
+            ),
 
-  XLSX.utils.book_append_sheet(
-    workbook,
-    worksheet,
-    "पंजीयन डेटा"
-  );
+          "गाँव / नगर":
+            safeValue(
+              record.village
+            ),
 
-  /* Column widths */
+          "पूरा पता":
+            safeValue(
+              record.address
+            ),
 
-  const headers =
-    Object.keys(exportData[0]);
+          "नियम एवं शर्तें":
+            safeValue(
+              record.termsAccepted
+            ),
 
-  worksheet["!cols"] =
-    headers.map(header => ({
-      wch: Math.min(
-        Math.max(header.length + 5, 12),
-        30
-      )
-    }));
+          "जानकारी पुष्टि":
+            safeValue(
+              record.informationConfirmed
+            ),
 
-  /* Freeze first row */
+          "स्थिति":
+            safeValue(
+              record.status
+            ),
 
-  worksheet["!freeze"] = {
-    xSplit: 0,
-    ySplit: 1
-  };
+          "पंजीयन समय":
+            formatDate(
+              record.createdAt
+            )
 
-  const date = new Date();
+        })
+      );
 
-  const dateText =
-    date.toISOString().slice(0, 10);
 
-  XLSX.writeFile(
-    workbook,
-    `Halba-Samaj-Registration-${dateText}.xlsx`
-  );
+    /*
+      JSON → worksheet
+    */
 
-  showMessage(
-    `✅ ${list.length} रिकॉर्ड Excel में डाउनलोड हो गए।`,
-    "success"
-  );
+    const worksheet =
+      XLSX.utils.json_to_sheet(
+        excelData
+      );
+
+
+    /*
+      Column widths
+    */
+
+    worksheet["!cols"] = [
+
+      { wch: 7 },
+      { wch: 25 },
+      { wch: 20 },
+      { wch: 20 },
+      { wch: 28 },
+      { wch: 18 },
+      { wch: 18 },
+      { wch: 25 },
+      { wch: 14 },
+      { wch: 14 },
+      { wch: 30 },
+      { wch: 16 },
+      { wch: 18 },
+      { wch: 25 },
+      { wch: 25 },
+      { wch: 22 },
+      { wch: 25 },
+      { wch: 45 },
+      { wch: 20 },
+      { wch: 20 },
+      { wch: 15 },
+      { wch: 23 }
+
+    ];
+
+
+    /*
+      Workbook
+    */
+
+    const workbook =
+      XLSX.utils.book_new();
+
+
+    XLSX.utils.book_append_sheet(
+      workbook,
+      worksheet,
+      "Registration"
+    );
+
+
+    /*
+      Date filename
+    */
+
+    const now =
+      new Date();
+
+
+    const year =
+      now.getFullYear();
+
+
+    const month =
+      String(
+        now.getMonth() + 1
+      ).padStart(
+        2,
+        "0"
+      );
+
+
+    const day =
+      String(
+        now.getDate()
+      ).padStart(
+        2,
+        "0"
+      );
+
+
+    const filename =
+      `Halba-Samaj-Registration-${year}-${month}-${day}.xlsx`;
+
+
+    /*
+      Download XLSX
+    */
+
+    XLSX.writeFile(
+      workbook,
+      filename
+    );
+
+
+    showMessage(
+      `${filteredRecords.length} रिकॉर्ड Excel में डाउनलोड किए गए।`,
+      "success"
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Excel export error:",
+      error
+    );
+
+    showMessage(
+      "Excel बनाने में समस्या हुई।",
+      "error"
+    );
+
+  }
 
 }
+
+
+/* ============================================================
+   INITIAL UI
+   ============================================================ */
+
+renderStats([]);
+
+renderTable([]);
+
+renderSummaries([]);
+
+
+/* ============================================================
+   END
+   ============================================================ */

@@ -4,6 +4,7 @@
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0f6b68"><title>एडमिन डैशबोर्ड | बालोद महासभा</title>
   <link rel="stylesheet" href="style.css"><link rel="stylesheet" href="admin.css">
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
   <main class="page admin-page">
@@ -36,7 +37,20 @@
           <label class="field"><span>लिंग</span><select id="genderFilter"><option value="">सभी</option><option>पुरुष</option><option>महिला</option><option>अन्य</option><option>बताना नहीं चाहते</option></select></label>
           <label class="field search-field"><span>नाम / ईमेल / मोबाइल खोजें</span><input id="searchFilter" placeholder="खोजें..."></label>
         </div>
-        <div class="table-heading"><h3>पंजीयन सूची <span id="visibleCount">0</span></h3><button type="button" class="secondary-btn" id="printListBtn">सूची प्रिंट करें</button></div>
+        
+        <div class="table-heading">
+  <h3>पंजीयन सूची <span id="visibleCount">0</span></h3>
+
+  <div class="table-actions">
+    <button type="button" class="secondary-btn" id="downloadExcelBtn">
+      📥 Excel डाउनलोड
+    </button>
+
+    <button type="button" class="secondary-btn" id="printListBtn">
+      🖨️ सूची प्रिंट करें
+    </button>
+  </div>
+</div> 
         <div class="table-wrap"><table id="recordsTable"><thead><tr><th>क्रम</th><th>नाम</th><th>लिंग</th><th>जिला</th><th>ब्लॉक</th><th>गाँव</th><th>मोबाइल</th><th>ईमेल</th><th>प्रिंट</th></tr></thead><tbody id="recordsBody"><tr><td colspan="9">डेटा लोड नहीं हुआ।</td></tr></tbody></table></div>
         <div class="location-summary"><section><h3>जिला अनुसार संख्या</h3><div id="districtSummary"></div></section><section><h3>ब्लॉक अनुसार संख्या</h3><div id="blockSummary"></div></section><section><h3>गाँव अनुसार संख्या</h3><div id="villageSummary"></div></section></div>
       </section>

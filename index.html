@@ -93,13 +93,18 @@
             <span>कॉन्टेक्ट नम्बर <i>*</i></span>
             <input type="tel" id="mobile" name="mobile" required inputmode="numeric" maxlength="10" pattern="[6-9][0-9]{9}" placeholder="10 अंकों का मोबाइल नम्बर">
           </label>
+<label class="field">
+  <span>जिला <i>*</i></span>
 
-          <label class="field">
-            <span>जिला <i>*</i></span>
-            <select id="district" name="district" required>
-              <option value="">-- जिला चुनें --</option>
-            </select>
-          </label>
+  <select
+    name="district"
+    id="district"
+    required
+  >
+    <option value="">जिला चुनें</option>
+  </select>
+</label>
+         
           <label class="field">
             <span>ब्लॉक / विकासखंड <i>*</i></span>
             <select id="block" name="block" required disabled>

@@ -1,14 +1,10 @@
-// ============================================================
-// HALBA SAMAJ - SUPABASE REGISTRATION
-// GitHub Pages + Supabase
-// ============================================================
-
-import { createClient } from
-  "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+import {
+  createClient
+} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
 
 // ============================================================
-// SUPABASE CONFIG
+// SUPABASE CONFIGURATION
 // ============================================================
 
 const SUPABASE_URL =
@@ -17,6 +13,7 @@ const SUPABASE_URL =
 const SUPABASE_PUBLISHABLE_KEY =
   "sb_publishable_Bj-VKmQBUTGs0zKuCRMTgg_apvB0LKe";
 
+
 const supabase = createClient(
   SUPABASE_URL,
   SUPABASE_PUBLISHABLE_KEY
@@ -24,7 +21,7 @@ const supabase = createClient(
 
 
 // ============================================================
-// CHHATTISGARH DISTRICT / BLOCK
+// CHHATTISGARH DISTRICT → BLOCK MAPPING
 // ============================================================
 
 const CG_DISTRICT_BLOCKS = {
@@ -272,77 +269,53 @@ const CG_DISTRICT_BLOCKS = {
     "सीतापुर",
     "मैनपाट"
   ]
+
 };
 
 
 // ============================================================
-// HELPERS
+// HELPER FUNCTIONS
 // ============================================================
 
-function $(selector) {
-  return document.querySelector(selector);
-}
-
-function getValue(name) {
-
-  const element =
-    document.querySelector(`[name="${name}"]`) ||
-    document.getElementById(name);
-
-  if (!element) return "";
-
-  return String(element.value || "").trim();
+function $(id) {
+  return document.getElementById(id);
 }
 
 
-function getChecked(id, name) {
+function getValue(id) {
 
-  const element =
-    document.getElementById(id) ||
-    document.querySelector(`[name="${name}"]`);
+  const element = $(id);
 
-  return element ? Boolean(element.checked) : false;
+  if (!element) {
+    return "";
+  }
+
+  return element.value.trim();
 }
 
 
-function showMessage(message, type = "info") {
+function getChecked(id) {
 
-  let box =
-    document.getElementById("formMessage") ||
-    document.getElementById("message");
+  const element = $(id);
+
+  return element
+    ? element.checked
+    : false;
+}
+
+
+function showMessage(message, type = "error") {
+
+  const box = $("formMessage");
 
   if (!box) {
-
-    box = document.createElement("div");
-
-    box.id = "formMessage";
-
-    const form =
-      document.querySelector("#registrationForm") ||
-      document.querySelector("form");
-
-    if (form) {
-      form.prepend(box);
-    }
+    return;
   }
 
   box.textContent = message;
 
-  box.style.display = "block";
-  box.style.padding = "12px";
-  box.style.marginBottom = "15px";
-  box.style.borderRadius = "8px";
-
-  if (type === "success") {
-    box.style.background = "#e8f5e9";
-    box.style.color = "#1b5e20";
-  } else if (type === "error") {
-    box.style.background = "#ffebee";
-    box.style.color = "#b71c1c";
-  } else {
-    box.style.background = "#fff8e1";
-    box.style.color = "#795548";
-  }
+  box.className =
+    "message " + type;
 
   box.scrollIntoView({
     behavior: "smooth",
@@ -353,65 +326,80 @@ function showMessage(message, type = "info") {
 
 function clearMessage() {
 
-  const box =
-    document.getElementById("formMessage") ||
-    document.getElementById("message");
+  const box = $("formMessage");
 
-  if (box) {
-    box.textContent = "";
-    box.style.display = "none";
+  if (!box) {
+    return;
   }
+
+  box.textContent = "";
+
+  box.className = "message";
 }
 
 
 // ============================================================
-// REGISTRATION ID
+// REGISTRATION ID GENERATOR
 // ============================================================
 
 function generateRegistrationId() {
 
-  const date = new Date();
+  const now = new Date();
 
-  const y = date.getFullYear();
+  const year =
+    now.getFullYear();
 
-  const m = String(date.getMonth() + 1)
-    .padStart(2, "0");
+  const month =
+    String(
+      now.getMonth() + 1
+    ).padStart(2, "0");
 
-  const d = String(date.getDate())
-    .padStart(2, "0");
+  const day =
+    String(
+      now.getDate()
+    ).padStart(2, "0");
 
-  const random = Math.random()
-    .toString(36)
-    .substring(2, 8)
-    .toUpperCase();
 
-  return `HS-${y}${m}${d}-${random}`;
+  const randomPart =
+    Math.random()
+      .toString(36)
+      .substring(2, 8)
+      .toUpperCase();
+
+
+  return `HS-${year}${month}${day}-${randomPart}`;
 }
 
 
 // ============================================================
-// DISTRICT / BLOCK DROPDOWN
+// DISTRICT + BLOCK SETUP
 // ============================================================
 
 function setupDistrictBlock() {
 
   const district =
-    document.getElementById("district");
+    $("district");
 
   const block =
-    document.getElementById("block");
+    $("block");
+
 
   if (!district) {
-    console.error("District field नहीं मिला।");
+
+    console.error(
+      "District field नहीं मिला।"
+    );
+
     return;
   }
 
 
-  // ========================================================
-  // DISTRICT OPTIONS
-  // ========================================================
+  // ----------------------------------------------------------
+  // जिला dropdown भरना
+  // ----------------------------------------------------------
 
   district.innerHTML = "";
+
 
   const defaultDistrict =
     document.createElement("option");
@@ -421,8 +409,6 @@ function setupDistrictBlock() {
   defaultDistrict.textContent =
     "जिला चुनें";
 
-  defaultDistrict.disabled = false;
-
   defaultDistrict.selected = true;
 
   district.appendChild(
@@ -430,34 +416,48 @@ function setupDistrictBlock() {
   );
 
 
-  Object.keys(CG_DISTRICT_BLOCKS)
-    .sort((a, b) =>
-      a.localeCompare(b, "hi")
+  Object.keys(
+    CG_DISTRICT_BLOCKS
+  )
+    .sort(
+      (a, b) =>
+        a.localeCompare(
+          b,
+          "hi"
+        )
     )
-    .forEach(districtName => {
+    .forEach(
+      districtName => {
 
-      const option =
-        document.createElement("option");
+        const option =
+          document.createElement(
+            "option"
+          );
 
-      option.value =
-        districtName;
+        option.value =
+          districtName;
 
-      option.textContent =
-        districtName;
+        option.textContent =
+          districtName;
 
-      district.appendChild(
-        option
-      );
-    });
+        district.appendChild(
+          option
+        );
+
+      }
+    );
 
 
-  // ========================================================
-  // BLOCK OPTIONS
-  // ========================================================
+  // ----------------------------------------------------------
+  // ब्लॉक अपडेट करना
+  // ----------------------------------------------------------
 
   function updateBlocks() {
 
-    if (!block) return;
+    if (!block) {
+      return;
+    }
+
 
     const selectedDistrict =
       district.value;
@@ -465,17 +465,25 @@ function setupDistrictBlock() {
 
     block.innerHTML = "";
 
+
     const defaultBlock =
-      document.createElement("option");
+      document.createElement(
+        "option"
+      );
+
 
     defaultBlock.value = "";
+
 
     defaultBlock.textContent =
       selectedDistrict
         ? "ब्लॉक चुनें"
         : "पहले जिला चुनें";
 
-    defaultBlock.selected = true;
+
+    defaultBlock.selected =
+      true;
+
 
     block.appendChild(
       defaultBlock
@@ -488,26 +496,29 @@ function setupDistrictBlock() {
       ] || [];
 
 
-    blocks.forEach(blockName => {
+    blocks.forEach(
+      blockName => {
 
-      const option =
-        document.createElement("option");
+        const option =
+          document.createElement(
+            "option"
+          );
 
-      option.value =
-        blockName;
+        option.value =
+          blockName;
 
-      option.textContent =
-        blockName;
+        option.textContent =
+          blockName;
 
-      block.appendChild(
-        option
-      );
+        block.appendChild(
+          option
+        );
 
-    });
+      }
+    );
+
   }
 
-
-  // District बदलने पर Block बदलेगा
 
   district.addEventListener(
     "change",
@@ -516,190 +527,340 @@ function setupDistrictBlock() {
 
 
   // Initial state
-
   updateBlocks();
 }
+
+
 // ============================================================
-// FORM SUBMIT
+// OTHER MAHASABHA SHOW / HIDE
 // ============================================================
 
-async function submitRegistration(event) {
+function setupMahasabha() {
+
+  const mahasabha =
+    $("mahasabha");
+
+  const otherField =
+    $("otherMahasabhaField");
+
+  const otherInput =
+    $("otherMahasabha");
+
+
+  if (
+    !mahasabha ||
+    !otherField ||
+    !otherInput
+  ) {
+    return;
+  }
+
+
+  function updateOtherMahasabha() {
+
+    if (
+      mahasabha.value ===
+      "अन्य"
+    ) {
+
+      otherField.style.display =
+        "flex";
+
+      otherInput.required =
+        true;
+
+    } else {
+
+      otherField.style.display =
+        "none";
+
+      otherInput.required =
+        false;
+
+      otherInput.value =
+        "";
+
+    }
+
+  }
+
+
+  mahasabha.addEventListener(
+    "change",
+    updateOtherMahasabha
+  );
+
+
+  updateOtherMahasabha();
+}
+
+
+// ============================================================
+// MOBILE INPUT VALIDATION
+// ============================================================
+
+function setupMobileInputs() {
+
+  const mobile =
+    $("mobile");
+
+  const alternate =
+    $("alternateMobile");
+
+
+  function onlyDigits(event) {
+
+    event.target.value =
+      event.target.value
+        .replace(/\D/g, "")
+        .substring(0, 10);
+
+  }
+
+
+  if (mobile) {
+
+    mobile.addEventListener(
+      "input",
+      onlyDigits
+    );
+
+  }
+
+
+  if (alternate) {
+
+    alternate.addEventListener(
+      "input",
+      onlyDigits
+    );
+
+  }
+
+}
+
+
+// ============================================================
+// VALIDATION
+// ============================================================
+
+function validateForm() {
+
+  const participantName =
+    getValue("participantName");
+
+  const fatherName =
+    getValue("fatherName");
+
+  const mobile =
+    getValue("mobile");
+
+  const alternateMobile =
+    getValue("alternateMobile");
+
+  const district =
+    getValue("district");
+
+  const relatedBlock =
+    getValue("relatedBlock");
+
+  const block =
+    getValue("block");
+
+  const village =
+    getValue("village");
+
+  const termsAccepted =
+    getChecked("termsAccepted");
+
+  const informationConfirmed =
+    getChecked(
+      "informationConfirmed"
+    );
+
+
+  if (!participantName) {
+
+    showMessage(
+      "कृपया प्रतिभागी का नाम दर्ज करें।"
+    );
+
+    $("participantName")?.focus();
+
+    return false;
+  }
+
+
+  if (!fatherName) {
+
+    showMessage(
+      "कृपया पिता का नाम दर्ज करें।"
+    );
+
+    $("fatherName")?.focus();
+
+    return false;
+  }
+
+
+  if (
+    !/^[0-9]{10}$/.test(
+      mobile
+    )
+  ) {
+
+    showMessage(
+      "कृपया 10 अंकों का सही मोबाइल नंबर दर्ज करें।"
+    );
+
+    $("mobile")?.focus();
+
+    return false;
+  }
+
+
+  if (
+    alternateMobile &&
+    !/^[0-9]{10}$/.test(
+      alternateMobile
+    )
+  ) {
+
+    showMessage(
+      "वैकल्पिक मोबाइल नंबर 10 अंकों का होना चाहिए।"
+    );
+
+    $("alternateMobile")?.focus();
+
+    return false;
+  }
+
+
+  if (!district) {
+
+    showMessage(
+      "कृपया जिला चुनें।"
+    );
+
+    $("district")?.focus();
+
+    return false;
+  }
+
+
+  if (!relatedBlock) {
+
+    showMessage(
+      "कृपया संबंधित ब्लॉक दर्ज करें।"
+    );
+
+    $("relatedBlock")?.focus();
+
+    return false;
+  }
+
+
+  if (!block) {
+
+    showMessage(
+      "कृपया ब्लॉक चुनें।"
+    );
+
+    $("block")?.focus();
+
+    return false;
+  }
+
+
+  if (!village) {
+
+    showMessage(
+      "कृपया गाँव / नगर का नाम दर्ज करें।"
+    );
+
+    $("village")?.focus();
+
+    return false;
+  }
+
+
+  if (!termsAccepted) {
+
+    showMessage(
+      "कृपया घोषणा को स्वीकार करें।"
+    );
+
+    return false;
+  }
+
+
+  if (!informationConfirmed) {
+
+    showMessage(
+      "कृपया जानकारी की पुष्टि करें।"
+    );
+
+    return false;
+  }
+
+
+  return true;
+}
+
+
+// ============================================================
+// SUBMIT REGISTRATION
+// ============================================================
+
+async function submitRegistration(
+  event
+) {
 
   event.preventDefault();
 
   clearMessage();
 
-  const form = event.currentTarget;
 
-  const submitButton =
-    form.querySelector(
-      'button[type="submit"], input[type="submit"]'
-    );
+  // Validate
+  if (!validateForm()) {
+    return;
+  }
 
-  const originalText =
-    submitButton
-      ? submitButton.textContent
-      : "";
+
+  const submitBtn =
+    $("submitBtn");
+
+  const loadingMessage =
+    $("loadingMessage");
+
 
   try {
 
     // --------------------------------------------------------
-    // BASIC VALIDATION
+    // UI LOCK
     // --------------------------------------------------------
 
-    const participantName =
-      getValue("participantName");
+    if (submitBtn) {
 
-    const fatherName =
-      getValue("fatherName");
+      submitBtn.disabled =
+        true;
 
-    const mobile =
-      getValue("mobile");
-
-    const district =
-      getValue("district");
-
-    const relatedBlock =
-      getValue("relatedBlock");
-
-    const block =
-      getValue("block");
-
-    const village =
-      getValue("village");
-
-    const termsAccepted =
-      getChecked(
-        "termsAccepted",
-        "termsAccepted"
-      );
-
-    const informationConfirmed =
-      getChecked(
-        "informationConfirmed",
-        "informationConfirmed"
-      );
-
-
-    if (!participantName) {
-      showMessage(
-        "कृपया नाम दर्ज करें।",
-        "error"
-      );
-      return;
-    }
-
-
-    if (!fatherName) {
-      showMessage(
-        "कृपया पिता का नाम दर्ज करें।",
-        "error"
-      );
-      return;
-    }
-
-
-    if (!mobile) {
-      showMessage(
-        "कृपया मोबाइल नंबर दर्ज करें।",
-        "error"
-      );
-      return;
-    }
-
-
-    if (!/^[0-9]{10}$/.test(mobile)) {
-
-      showMessage(
-        "मोबाइल नंबर 10 अंकों का होना चाहिए।",
-        "error"
-      );
-
-      return;
-    }
-
-
-    if (!district) {
-
-      showMessage(
-        "कृपया जिला चुनें।",
-        "error"
-      );
-
-      return;
-    }
-
-
-    if (!relatedBlock) {
-
-      showMessage(
-        "कृपया संबंधित ब्लॉक दर्ज करें।",
-        "error"
-      );
-
-      return;
-    }
-
-
-    if (!block) {
-
-      showMessage(
-        "कृपया ब्लॉक दर्ज/चुनें।",
-        "error"
-      );
-
-      return;
-    }
-
-
-    if (!village) {
-
-      showMessage(
-        "कृपया गाँव / नगर दर्ज करें।",
-        "error"
-      );
-
-      return;
-    }
-
-
-    if (!termsAccepted) {
-
-      showMessage(
-        "कृपया नियम एवं शर्तें स्वीकार करें।",
-        "error"
-      );
-
-      return;
-    }
-
-
-    if (!informationConfirmed) {
-
-      showMessage(
-        "कृपया जानकारी की पुष्टि करें।",
-        "error"
-      );
-
-      return;
-    }
-
-
-    // --------------------------------------------------------
-    // BUTTON LOADING
-    // --------------------------------------------------------
-
-    if (submitButton) {
-
-      submitButton.disabled = true;
-
-      submitButton.textContent =
+      submitBtn.textContent =
         "पंजीयन हो रहा है...";
+
+    }
+
+
+    if (loadingMessage) {
+
+      loadingMessage.style.display =
+        "block";
+
     }
 
 
     // --------------------------------------------------------
-    // FORM VALUES
+    // FORM DATA
     // --------------------------------------------------------
 
     const registrationId =
@@ -718,7 +879,7 @@ async function submitRegistration(event) {
         getValue("otherMahasabha"),
 
       participant_name:
-        participantName,
+        getValue("participantName"),
 
       gotra:
         getValue("gotra"),
@@ -727,7 +888,7 @@ async function submitRegistration(event) {
         getValue("totem"),
 
       father_name:
-        fatherName,
+        getValue("fatherName"),
 
       dob:
         getValue("dob") || null,
@@ -739,171 +900,234 @@ async function submitRegistration(event) {
         getValue("email"),
 
       mobile:
-        mobile,
+        getValue("mobile"),
 
       alternate_mobile:
         getValue("alternateMobile"),
 
       district:
-        district,
+        getValue("district"),
 
       related_block:
-        relatedBlock,
+        getValue("relatedBlock"),
 
       block:
-        block,
+        getValue("block"),
 
       village:
-        village,
+        getValue("village"),
 
       address:
         getValue("address"),
 
       terms_accepted:
-        termsAccepted,
+        getChecked("termsAccepted"),
 
       information_confirmed:
-        informationConfirmed,
+        getChecked(
+          "informationConfirmed"
+        ),
 
       status:
         "Submitted"
     };
 
 
+    console.log(
+      "Supabase registration data:",
+      data
+    );
+
+
     // --------------------------------------------------------
     // INSERT INTO SUPABASE
     // --------------------------------------------------------
 
-    const { data: insertedData, error } =
-      await supabase
-        .from("registrations")
-        .insert([data])
-        .select()
-        .single();
+    const {
+      data: insertedData,
+      error
+    } = await supabase
+      .from("registrations")
+      .insert([data])
+      .select()
+      .single();
 
+
+    // --------------------------------------------------------
+    // ERROR
+    // --------------------------------------------------------
 
     if (error) {
 
       console.error(
-        "Supabase registration error:",
+        "Supabase insert error:",
         error
       );
 
+
+      // Unique registration ID
       if (
-        error.code === "23505"
+        error.code ===
+        "23505"
       ) {
 
         showMessage(
-          "यह पंजीयन पहले से मौजूद है। कृपया पुनः प्रयास करें।",
-          "error"
+          "पंजीयन क्रमांक पहले से मौजूद है। कृपया दोबारा प्रयास करें।"
         );
 
-      } else {
+      }
+
+      // RLS / permission
+      else if (
+        error.code ===
+        "42501"
+      ) {
 
         showMessage(
-          "पंजीयन जमा नहीं हो सका। " +
-          (error.message || "कृपया पुनः प्रयास करें।"),
-          "error"
+          "डेटाबेस अनुमति में समस्या है। Supabase RLS Policy जाँचें।"
         );
+
       }
+
+      else {
+
+        showMessage(
+          "पंजीयन सुरक्षित नहीं हो सका। कृपया कुछ देर बाद पुनः प्रयास करें।"
+        );
+
+      }
+
 
       return;
     }
 
 
     // --------------------------------------------------------
-    // SUCCESS DATA
+    // SUCCESS
     // --------------------------------------------------------
 
-    const successData = {
+    console.log(
+      "Registration successful:",
+      insertedData
+    );
 
-      registrationId:
-        insertedData?.registration_id ||
+
+    const savedRegistration = {
+
+      registration_id:
         registrationId,
 
-      participantName:
-        participantName,
+      participant_name:
+        data.participant_name,
 
-      fatherName:
-        fatherName,
+      father_name:
+        data.father_name,
 
       mobile:
-        mobile,
+        data.mobile,
 
       district:
-        district,
-
-      relatedBlock:
-        relatedBlock,
+        data.district,
 
       block:
-        block,
+        data.block,
 
       village:
-        village,
+        data.village,
 
-      createdAt:
+      created_at:
         insertedData?.created_at ||
         new Date().toISOString()
+
     };
 
 
+    // Session storage
     sessionStorage.setItem(
       "halbaRegistrationSuccess",
-      JSON.stringify(successData)
+      JSON.stringify(
+        savedRegistration
+      )
     );
 
 
     // --------------------------------------------------------
-    // SUCCESS PAGE
+    // REDIRECT TO SUCCESS PAGE
     // --------------------------------------------------------
 
     window.location.href =
       "success.html";
 
+  }
 
-  } catch (error) {
+  catch (error) {
 
     console.error(
-      "Registration error:",
+      "Unexpected registration error:",
       error
     );
 
+
     showMessage(
-      "कुछ तकनीकी समस्या हुई। कृपया थोड़ी देर बाद पुनः प्रयास करें।",
-      "error"
+      "अचानक तकनीकी समस्या हुई। कृपया इंटरनेट कनेक्शन जाँचकर पुनः प्रयास करें।"
     );
 
-  } finally {
-
-    if (submitButton) {
-
-      submitButton.disabled = false;
-
-      submitButton.textContent =
-        originalText || "पंजीयन करें";
-    }
   }
+
+  finally {
+
+    if (submitBtn) {
+
+      submitBtn.disabled =
+        false;
+
+      submitBtn.textContent =
+        "पंजीयन करें";
+
+    }
+
+
+    if (loadingMessage) {
+
+      loadingMessage.style.display =
+        "none";
+
+    }
+
+  }
+
 }
 
 
 // ============================================================
-// INITIALIZE
+// PAGE INITIALIZATION
 // ============================================================
 
 document.addEventListener(
   "DOMContentLoaded",
   () => {
 
+    console.log(
+      "Halba Samaj registration page loaded."
+    );
+
+
+    // जिला + ब्लॉक
     setupDistrictBlock();
 
+
+    // महासभा
+    setupMahasabha();
+
+
+    // Mobile
+    setupMobileInputs();
+
+
+    // Registration form
     const form =
-      document.getElementById(
-        "registrationForm"
-      ) ||
-      document.querySelector(
-        "form"
-      );
+      $("registrationForm");
+
 
     if (form) {
 
@@ -911,6 +1135,26 @@ document.addEventListener(
         "submit",
         submitRegistration
       );
+
+    } else {
+
+      console.error(
+        "registrationForm नहीं मिला।"
+      );
+
+    }
+
+
+    // Current year
+    const year =
+      $("currentYear");
+
+
+    if (year) {
+
+      year.textContent =
+        new Date().getFullYear();
+
     }
 
   }

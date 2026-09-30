@@ -1,15 +1,54 @@
-/* Paste your deployed Google Apps Script Web App /exec URL here. */
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyZzoNhze1DmHdhbsQ4uGIJo3fOBSwM-wdpBoMGvuyZb3rl_qmL8WsXh921wHcxp2xS/exec";
+// ============================================================
+// HALBA SAMAJ REGISTRATION - FIREBASE VERSION
+// Google Apps Script की जरूरत नहीं
+// ============================================================
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+import {
+  getFirestore,
+  doc,
+  runTransaction,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+// ============================================================
+// FIREBASE CONFIG
+// ============================================================
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDrAvxLdDT9TUabC9B3p7SsJDTp5XfVuEU",
+  authDomain: "halba-register-b23bb.firebaseapp.com",
+  projectId: "halba-register-b23bb",
+  storageBucket: "halba-register-b23bb.firebasestorage.app",
+  messagingSenderId: "514620312693",
+  appId: "1:514620312693:web:5259d7df657e96911b3c3c",
+  measurementId: "G-162MZWB8RB"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+
+// ============================================================
+// HTML ELEMENTS
+// ============================================================
+
 const form = document.getElementById("registrationForm");
 const message = document.getElementById("message");
 const submitBtn = document.getElementById("submitBtn");
+
 const mahasabha = document.getElementById("mahasabha");
 const otherWrap = document.getElementById("otherMahasabhaWrap");
 const otherInput = document.getElementById("otherMahasabha");
-let pendingPayload = null;
-let currentRequestId = "";
 
-// छत्तीसगढ़: जिला → विकासखंड cascading dropdown
+const districtSelect = document.getElementById("district");
+const blockSelect = document.getElementById("block");
+
+
+// ============================================================
+// CHHATTISGARH DISTRICT → BLOCK
+// ============================================================
+
 const CG_DISTRICT_BLOCKS = {
   "बालोद": ["बालोद", "डौंडी", "डौंडी-लोहारा", "गुंडरदेही", "गुरूर"],
   "बलौदाबाजार-भाटापारा": ["बलौदाबाजार", "भाटापारा", "कसडोल", "पलारी", "सिमगा"],
@@ -46,118 +85,504 @@ const CG_DISTRICT_BLOCKS = {
   "सरगुजा": ["अंबिकापुर", "लखनपुर", "उदयपुर", "लुंड्रा", "बतौली", "सीतापुर", "मैनपाट"]
 };
 
-const districtSelect = document.getElementById("district");
-const blockSelect = document.getElementById("block");
+
+// ============================================================
+// DISTRICT DROPDOWN
+// ============================================================
 
 function initDistrictBlockDropdowns() {
+
   if (!districtSelect || !blockSelect) return;
+
   Object.keys(CG_DISTRICT_BLOCKS).forEach((district, i) => {
+
     const option = document.createElement("option");
+
     option.value = district;
     option.textContent = `${i + 1}. ${district}`;
+
     districtSelect.appendChild(option);
+
   });
+
   districtSelect.addEventListener("change", updateBlocks);
 }
 
+
+// ============================================================
+// BLOCK DROPDOWN
+// ============================================================
+
 function updateBlocks() {
+
   const district = districtSelect.value;
+
   blockSelect.innerHTML = "";
+
   if (!district) {
+
     blockSelect.disabled = true;
-    blockSelect.innerHTML = '<option value="">-- पहले जिला चुनें --</option>';
+
+    blockSelect.innerHTML =
+      '<option value="">-- पहले जिला चुनें --</option>';
+
     return;
   }
+
   const first = document.createElement("option");
+
   first.value = "";
   first.textContent = "-- ब्लॉक / विकासखंड चुनें --";
+
   blockSelect.appendChild(first);
+
   CG_DISTRICT_BLOCKS[district].forEach((block, i) => {
+
     const option = document.createElement("option");
+
     option.value = block;
     option.textContent = `${i + 1}. ${block}`;
+
     blockSelect.appendChild(option);
+
   });
+
   blockSelect.disabled = false;
 }
 
 initDistrictBlockDropdowns();
 
 
+// ============================================================
+// OTHER MAHASABHA
+// ============================================================
+
 mahasabha.addEventListener("change", () => {
+
   const isOther = mahasabha.value === "अन्य";
+
   otherWrap.classList.toggle("hidden", !isOther);
+
   otherInput.required = isOther;
-  if (!isOther) otherInput.value = "";
+
+  if (!isOther) {
+    otherInput.value = "";
+  }
+
 });
 
-window.addEventListener("message", (event) => {
-  const data = event.data;
-  if (!data || data.source !== "halba-balod-registration" || data.requestId !== currentRequestId) return;
-  submitBtn.disabled = false;
-  submitBtn.innerHTML = "<span>पंजीयन सबमिट करें</span><b>→</b>";
 
-  if (data.status === "duplicate") {
-    if (data.canPrint && data.record) {
-      showMessage("<strong>यह पंजीयन पहले से मौजूद है। नया फॉर्म जमा नहीं होगा।</strong><p>पुराने पंजीयन की प्रति प्रिंट करने के लिए नीचे बटन दबाएँ।</p><button type=\"button\" id=\"printExistingBtn\" class=\"print-btn\">पुराना पंजीयन प्रिंट करें</button>", "info", true);
-      document.getElementById("printExistingBtn").onclick = () => printExistingRecord(data.record);
-    } else {
-      showMessage("<strong>यह ईमेल या मोबाइल नंबर पहले से पंजीकृत है।</strong><p>सुरक्षा के लिए पुराने रिकॉर्ड की प्रति तभी दिखाई जाएगी जब ईमेल और मोबाइल दोनों पुराने रिकॉर्ड से मेल खाते हों। नया पंजीयन स्वीकार नहीं होगा।</p>", "error", true);
-    }
-    return;
-  }
-  if (data.status === "success") {
-    showMessage("पंजीयन सफलतापूर्वक सेव हो गया। आपका डेटा Google Sheet में दर्ज कर दिया गया है।", "success");
-    form.reset(); otherWrap.classList.add("hidden"); otherInput.required = false;
-    window.scrollTo({top:0, behavior:"smooth"});
-  } else {
-    showMessage(data.message || "डेटा सेव नहीं हो सका। कृपया पुनः प्रयास करें।", "error");
-  }
-});
+// ============================================================
+// MESSAGE
+// ============================================================
 
-function showMessage(html, type, raw=false) { message.className = "message show " + type; message.innerHTML = html; }
-function clearMessage() { message.className = "message"; message.innerHTML = ""; }
-function cleanMobile(v) { return String(v || "").replace(/\D/g, ""); }
-function getPayload() {
-  const payload = Object.fromEntries(new FormData(form).entries());
-  payload.action = "submit";
-  payload.mobile = cleanMobile(payload.mobile);
-  payload.requestId = makeRequestId();
-  return payload;
+function showMessage(html, type) {
+
+  message.className = "message show " + type;
+
+  message.innerHTML = html;
+
 }
-function makeRequestId() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+
+function clearMessage() {
+
+  message.className = "message";
+
+  message.innerHTML = "";
+
+}
+
+
+// ============================================================
+// MOBILE CLEAN
+// ============================================================
+
+function cleanMobile(value) {
+
+  return String(value || "").replace(/\D/g, "");
+
+}
+
+
+// ============================================================
+// FORM PAYLOAD
+// ============================================================
+
+function getPayload() {
+
+  const payload =
+    Object.fromEntries(new FormData(form).entries());
+
+  payload.mobile = cleanMobile(payload.mobile);
+
+  return payload;
+
+}
+
+
+// ============================================================
+// LOCAL VALIDATION
+// ============================================================
+
 function validateLocal(payload) {
-  if (APPS_SCRIPT_URL.includes("PASTE_YOUR_")) { showMessage("पहले script.js में Google Apps Script Web App URL डालें।", "error"); return false; }
-  if (!/^[6-9]\d{9}$/.test(payload.mobile)) { showMessage("कृपया 10 अंकों का सही मोबाइल नंबर दर्ज करें।", "error"); return false; }
-  if (payload.mahasabha === "अन्य" && !payload.otherMahasabha.trim()) { showMessage("कृपया अन्य महासभा का नाम लिखें।", "error"); otherInput.focus(); return false; }
+
+  if (!/^[6-9]\d{9}$/.test(payload.mobile)) {
+
+    showMessage(
+      "❌ कृपया 10 अंकों का सही मोबाइल नंबर दर्ज करें।",
+      "error"
+    );
+
+    document.getElementById("mobile").focus();
+
+    return false;
+  }
+
+
+  if (
+    payload.mahasabha === "अन्य" &&
+    !String(payload.otherMahasabha || "").trim()
+  ) {
+
+    showMessage(
+      "❌ कृपया अन्य महासभा का नाम लिखें।",
+      "error"
+    );
+
+    otherInput.focus();
+
+    return false;
+  }
+
+
+  if (!payload.email || !payload.email.includes("@")) {
+
+    showMessage(
+      "❌ कृपया सही ईमेल दर्ज करें।",
+      "error"
+    );
+
+    return false;
+  }
+
+
   return true;
 }
-function submitData() { if (!pendingPayload) pendingPayload = getPayload(); sendToAppsScript(pendingPayload); }
-function sendToAppsScript(payload) {
-  submitBtn.disabled = true; submitBtn.innerHTML = "<span>जाँच/सेव हो रहा है…</span><b>…</b>"; clearMessage();
-  currentRequestId = payload.requestId;
-  const tempForm = document.createElement("form"); tempForm.method = "POST"; tempForm.action = APPS_SCRIPT_URL; tempForm.target = "appsScriptFrame"; tempForm.style.display = "none";
-  Object.entries(payload).forEach(([key, value]) => { const input = document.createElement("input"); input.type = "hidden"; input.name = key; input.value = value ?? ""; tempForm.appendChild(input); });
-  document.body.appendChild(tempForm); tempForm.submit(); tempForm.remove();
-}
-form.addEventListener("submit", (e) => {
-  e.preventDefault(); pendingPayload = getPayload();
-  if (!validateLocal(pendingPayload)) return;
-  submitData();
-});
 
-function esc(value) { return String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
-function printExistingRecord(r) {
-  const fields = [
-    ["महासभा", "महासभा"], ["अन्य महासभा", "अन्य महासभा"], ["प्रतिभागी का नाम", "प्रतिभागी का नाम"],
-    ["गोत्र", "गोत्र"], ["टोटम", "टोटम"], ["पिता का नाम", "पिता का नाम"], ["जन्मतिथि", "जन्मतिथि"],
-    ["ईमेल", "ईमेल"], ["कॉन्टेक्ट नम्बर", "मोबाइल"], ["लिंग", "लिंग"], ["जिला", "जिला"],
-    ["ब्लॉक", "ब्लॉक / विकासखंड"], ["गाँव", "गाँव / नगर"], ["पूरा पता", "पूरा पता"]
-  ];
-  const rows = fields.map(([key, label]) => `<tr><th>${esc(label)}</th><td>${esc(r[key] || "—")}</td></tr>`).join("");
-  const logoUrl = new URL("assets/logo.webp", window.location.href).href;
-  const win = window.open("", "_blank", "width=800,height=900");
-  if (!win) { showMessage("प्रिंट विंडो नहीं खुली। कृपया ब्राउज़र में पॉप-अप की अनुमति दें।", "error"); return; }
-  win.document.write(`<!doctype html><html lang="hi"><head><meta charset="utf-8"><title>पंजीयन प्रति</title><style>body{font-family:Arial,'Noto Sans Devanagari',sans-serif;padding:28px;color:#163b39}header{text-align:center;border-bottom:2px solid #0d6f6c;padding-bottom:12px}header img{width:85px;height:85px;object-fit:contain}h1{font-size:22px;margin:8px 0}p{text-align:center}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border:1px solid #bbb;padding:9px;text-align:left;vertical-align:top}th{width:34%;background:#f0f7f6}@media print{.noprint{display:none}body{padding:0}}</style></head><body><header><img src="${logoUrl}"><h1>अखिल भारतीय आदिवासी हलबा हलबी समाज</h1><h2>बालोद महासभा</h2><p>पुराने पंजीयन की प्रिंट प्रति</p></header><table>${rows}</table><p class="noprint"><button onclick="window.print()">प्रिंट करें</button></p><script>window.onload=()=>setTimeout(()=>window.print(),300);<\/script></body></html>`);
-  win.document.close();
+
+// ============================================================
+// SHA-256 HASH
+// Duplicate key बनाने के लिए
+// ============================================================
+
+async function sha256(value) {
+
+  const encoder = new TextEncoder();
+
+  const data =
+    encoder.encode(String(value).trim().toLowerCase());
+
+  const hashBuffer =
+    await crypto.subtle.digest("SHA-256", data);
+
+  const hashArray =
+    Array.from(new Uint8Array(hashBuffer));
+
+  return hashArray
+    .map(b => b.toString(16).padStart(2, "0"))
+    .join("");
+
 }
+
+
+// ============================================================
+// FIRESTORE REGISTRATION
+// ============================================================
+
+async function saveRegistration(payload) {
+
+  const mobileKey =
+    await sha256("mobile:" + payload.mobile);
+
+  const emailKey =
+    await sha256("email:" + payload.email);
+
+
+  const registrationRef =
+    doc(db, "registrations", mobileKey);
+
+  const mobileKeyRef =
+    doc(db, "registration_keys", mobileKey);
+
+  const emailKeyRef =
+    doc(db, "registration_keys", emailKey);
+
+
+  await runTransaction(db, async (transaction) => {
+
+    // --------------------------------------------
+    // DUPLICATE MOBILE CHECK
+    // --------------------------------------------
+
+    const mobileKeyDoc =
+      await transaction.get(mobileKeyRef);
+
+    if (mobileKeyDoc.exists()) {
+
+      throw new Error(
+        "DUPLICATE_MOBILE"
+      );
+
+    }
+
+
+    // --------------------------------------------
+    // DUPLICATE EMAIL CHECK
+    // --------------------------------------------
+
+    const emailKeyDoc =
+      await transaction.get(emailKeyRef);
+
+    if (emailKeyDoc.exists()) {
+
+      throw new Error(
+        "DUPLICATE_EMAIL"
+      );
+
+    }
+
+
+    // --------------------------------------------
+    // REGISTRATION DATA
+    // --------------------------------------------
+
+    const registrationData = {
+
+      mahasabha:
+        payload.mahasabha || "",
+
+      otherMahasabha:
+        payload.otherMahasabha || "",
+
+      participantName:
+        payload.participantName || "",
+
+      gotra:
+        payload.gotra || "",
+
+      totem:
+        payload.totem || "",
+
+      fatherName:
+        payload.fatherName || "",
+
+      dob:
+        payload.dob || "",
+
+      gender:
+        payload.gender || "",
+
+      email:
+        String(payload.email || "").trim().toLowerCase(),
+
+      mobile:
+        payload.mobile || "",
+
+      district:
+        payload.district || "",
+
+      block:
+        payload.block || "",
+
+      village:
+        payload.village || "",
+
+      address:
+        payload.address || "",
+
+      termsAccepted:
+        payload.termsAccepted || "",
+
+      informationConfirmed:
+        payload.informationConfirmed || "",
+
+      status:
+        "pending",
+
+      createdAt:
+        serverTimestamp()
+
+    };
+
+
+    // --------------------------------------------
+    // SAVE REGISTRATION
+    // --------------------------------------------
+
+    transaction.set(
+      registrationRef,
+      registrationData
+    );
+
+
+    // --------------------------------------------
+    // MOBILE UNIQUE KEY
+    // --------------------------------------------
+
+    transaction.set(
+      mobileKeyRef,
+      {
+        type: "mobile",
+        createdAt: serverTimestamp()
+      }
+    );
+
+
+    // --------------------------------------------
+    // EMAIL UNIQUE KEY
+    // --------------------------------------------
+
+    transaction.set(
+      emailKeyRef,
+      {
+        type: "email",
+        createdAt: serverTimestamp()
+      }
+    );
+
+  });
+
+}
+
+
+// ============================================================
+// SUBMIT
+// ============================================================
+
+form.addEventListener("submit", async (event) => {
+
+  event.preventDefault();
+
+  clearMessage();
+
+
+  // Browser required validation
+
+  if (!form.checkValidity()) {
+
+    form.reportValidity();
+
+    return;
+  }
+
+
+  const payload = getPayload();
+
+
+  // Local validation
+
+  if (!validateLocal(payload)) {
+
+    return;
+  }
+
+
+  // Button loading
+
+  submitBtn.disabled = true;
+
+  submitBtn.innerHTML =
+    "<span>सेव हो रहा है...</span><b>…</b>";
+
+
+  try {
+
+    await saveRegistration(payload);
+
+
+    // --------------------------------------------
+    // SUCCESS
+    // --------------------------------------------
+
+    showMessage(
+      "✅ <strong>पंजीयन सफलतापूर्वक सबमिट हो गया।</strong><p>आपका पंजीयन Firebase में सुरक्षित रूप से दर्ज हो गया है।</p>",
+      "success"
+    );
+
+
+    form.reset();
+
+    otherWrap.classList.add("hidden");
+
+    otherInput.required = false;
+
+    blockSelect.innerHTML =
+      '<option value="">-- पहले जिला चुनें --</option>';
+
+    blockSelect.disabled = true;
+
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+
+
+  } catch (error) {
+
+    console.error(
+      "Firebase Registration Error:",
+      error
+    );
+
+
+    // --------------------------------------------
+    // DUPLICATE MOBILE
+    // --------------------------------------------
+
+    if (error.message === "DUPLICATE_MOBILE") {
+
+      showMessage(
+        "<strong>⚠️ यह मोबाइल नंबर पहले से पंजीकृत है।</strong><p>इस मोबाइल नंबर से नया पंजीयन स्वीकार नहीं किया जाएगा।</p>",
+        "error"
+      );
+
+      return;
+    }
+
+
+    // --------------------------------------------
+    // DUPLICATE EMAIL
+    // --------------------------------------------
+
+    if (error.message === "DUPLICATE_EMAIL") {
+
+      showMessage(
+        "<strong>⚠️ यह ईमेल पहले से पंजीकृत है।</strong><p>इस ईमेल से नया पंजीयन स्वीकार नहीं किया जाएगा।</p>",
+        "error"
+      );
+
+      return;
+    }
+
+
+    // --------------------------------------------
+    // OTHER FIREBASE ERROR
+    // --------------------------------------------
+
+    showMessage(
+      "❌ <strong>डेटा सेव नहीं हो पाया।</strong><p>कृपया इंटरनेट कनेक्शन जाँचकर दोबारा प्रयास करें।</p>",
+      "error"
+    );
+
+
+  } finally {
+
+    submitBtn.disabled = false;
+
+    submitBtn.innerHTML =
+      "<span>पंजीयन सबमिट करें</span><b>→</b>";
+
+  }
+
+});

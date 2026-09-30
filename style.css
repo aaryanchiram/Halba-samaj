@@ -449,7 +449,7 @@ textarea:focus {
 
   .hero {
     padding: 16px;
-    gap: 12px;
+    gap: 15px;
     align-items: flex-start;
   }
 
@@ -494,7 +494,7 @@ textarea:focus {
     max-width: 210mm !important;
 
     height: 500mm !important;
-    min-height: 297mm !important;
+    min-height: 500mm !important;
     max-height: 500mm !important;
 
     margin: 0 !important;
@@ -510,8 +510,8 @@ textarea:focus {
   }
 
   body {
-    font-size: 14px !important;
-    line-height: 1.08 !important;
+    font-size: 16px !important;
+    line-height: 2 !important;
   }
 
   /* -------------------------------------------------------
@@ -523,7 +523,7 @@ textarea:focus {
     max-width: 202mm !important;
 
     height: 500mm !important;
-    min-height: 289mm !important;
+    min-height: 500mm !important;
     max-height: 500mm !important;
 
     margin: 0 auto !important;
@@ -539,7 +539,7 @@ textarea:focus {
     max-width: 202mm !important;
 
     height: 500mm !important;
-    min-height: 289mm !important;
+    min-height: 500mm !important;
     max-height: 500mm !important;
 
     margin: 0 !important;

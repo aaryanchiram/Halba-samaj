@@ -947,57 +947,29 @@ const { error } = await supabase
   .from("registrations")
   .insert([data]);
 
-
-// --------------------------------------------------------
-// ERROR
-// --------------------------------------------------------
-
 if (error) {
-
-  console.error(
-    "Supabase insert error:",
-    error
+  console.error("Supabase error:", error);
+  showMessage(
+    "पंजीयन जमा नहीं हो सका। कृपया पुनः प्रयास करें।"
   );
-
-  console.error(
-    "Supabase error code:",
-    error.code
-  );
-
-  console.error(
-    "Supabase error message:",
-    error.message
-  );
-
-
-  if (error.code === "23505") {
-
-    showMessage(
-      "पंजीयन क्रमांक पहले से मौजूद है। कृपया दोबारा प्रयास करें।"
-    );
-
-  }
-
-  else if (
-    error.code === "42501"
-  ) {
-
-    showMessage(
-      "Supabase में database permission/RLS की समस्या है।"
-    );
-
-  }
-
-  else {
-
-    showMessage(
-      "पंजीयन सुरक्षित नहीं हो सका। कृपया कुछ देर बाद पुनः प्रयास करें।"
-    );
-
-  }
-
   return;
 }
+
+sessionStorage.setItem(
+  "halbaRegistrationSuccess",
+  JSON.stringify({
+    registration_id: registrationId,
+    participant_name: data.participant_name,
+    father_name: data.father_name,
+    mobile: data.mobile,
+    district: data.district,
+    block: data.block,
+    village: data.village,
+    created_at: new Date().toISOString()
+  })
+);
+
+window.location.href = "success.html";
 
 
 // --------------------------------------------------------

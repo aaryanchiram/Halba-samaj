@@ -2,6 +2,7 @@
 <html lang="hi">
 
 <head>
+
   <meta charset="utf-8">
 
   <meta
@@ -25,172 +26,668 @@
 
   <style>
 
+    /* =====================================================
+       SUCCESS PAGE
+    ===================================================== */
+
     .success-page{
       max-width:900px;
       margin:auto;
+      position:relative;
+      z-index:2;
     }
+
+
+    /* =====================================================
+       SUCCESS HEADER
+    ===================================================== */
 
     .success-header{
       text-align:center;
       padding:10px 10px 25px;
     }
 
+
     .success-icon{
       width:78px;
       height:78px;
       border-radius:50%;
       margin:0 auto 15px;
+
       display:flex;
       align-items:center;
       justify-content:center;
+
       background:#0f6b68;
       color:#fff;
+
       font-size:42px;
       font-weight:bold;
+
+      box-shadow:
+        0 0 0 8px rgba(15,107,104,.10),
+        0 8px 25px rgba(15,107,104,.25);
+
+      animation:
+        successPop .7s ease-out;
     }
+
+
+    @keyframes successPop{
+
+      0%{
+        transform:scale(0);
+        opacity:0;
+      }
+
+      60%{
+        transform:scale(1.2);
+      }
+
+      100%{
+        transform:scale(1);
+        opacity:1;
+      }
+
+    }
+
 
     .success-header h1{
       margin:8px 0;
       color:#0f6b68;
     }
 
+
     .success-header p{
       margin:6px 0;
     }
 
+
+    /* =====================================================
+       REGISTRATION CARD
+    ===================================================== */
+
     .registration-card{
+
       border:1px solid #d8e5e4;
+
       border-radius:16px;
+
       overflow:hidden;
+
       background:#fff;
+
       margin-top:20px;
+
+      position:relative;
+
+      z-index:3;
+
     }
+
 
     .registration-card-header{
+
       background:#f0f7f6;
+
       padding:16px 20px;
+
       display:flex;
+
       justify-content:space-between;
+
       align-items:center;
+
       gap:15px;
+
       flex-wrap:wrap;
+
     }
+
 
     .registration-card-header h2{
+
       margin:0;
+
       font-size:20px;
+
       color:#0f6b68;
+
     }
+
 
     .registration-id{
+
       font-weight:bold;
+
       color:#163b39;
+
     }
 
+
+    /* =====================================================
+       DETAILS TABLE
+    ===================================================== */
+
     .details-table{
+
       width:100%;
+
       border-collapse:collapse;
+
     }
+
 
     .details-table th,
     .details-table td{
+
       padding:12px 15px;
+
       border-bottom:1px solid #e4eeee;
+
       text-align:left;
+
       vertical-align:top;
+
     }
 
+
     .details-table th{
+
       width:35%;
+
       background:#fafcfc;
+
       font-weight:600;
+
     }
+
 
     .details-table tr:last-child th,
     .details-table tr:last-child td{
+
       border-bottom:0;
+
     }
 
+
+    /* =====================================================
+       BUTTONS
+    ===================================================== */
+
     .success-actions{
+
       display:flex;
+
       justify-content:center;
+
       gap:12px;
+
       flex-wrap:wrap;
+
       margin-top:25px;
+
     }
+
 
     .success-actions button,
     .success-actions a{
+
       border:0;
+
       border-radius:10px;
+
       padding:12px 20px;
+
       cursor:pointer;
+
       text-decoration:none;
+
       font-size:15px;
+
       font-weight:600;
+
     }
+
 
     .print-btn{
+
       background:#0f6b68;
+
       color:#fff;
+
     }
+
 
     .new-btn{
+
       background:#eaf4f3;
+
       color:#0f6b68;
+
     }
 
+
     .note{
+
       text-align:center;
+
       margin-top:20px;
+
       font-size:13px;
+
       color:#667;
+
     }
+
+
+    /* =====================================================
+       BALLOON ANIMATION AREA
+    ===================================================== */
+
+    #celebration{
+
+      position:fixed;
+
+      inset:0;
+
+      width:100%;
+
+      height:100%;
+
+      overflow:hidden;
+
+      pointer-events:none;
+
+      z-index:9999;
+
+    }
+
+
+    /* =====================================================
+       BALLOONS
+    ===================================================== */
+
+    .balloon{
+
+      position:absolute;
+
+      bottom:-120px;
+
+      width:55px;
+
+      height:68px;
+
+      border-radius:50% 50% 48% 48%;
+
+      opacity:0;
+
+      animation:
+        balloonRise 3.2s ease-out forwards;
+
+    }
+
+
+    .balloon::before{
+
+      content:"";
+
+      position:absolute;
+
+      width:7px;
+
+      height:10px;
+
+      bottom:-6px;
+
+      left:24px;
+
+      background:inherit;
+
+      clip-path:
+        polygon(
+          0 0,
+          100% 0,
+          50% 100%
+        );
+
+    }
+
+
+    .balloon::after{
+
+      content:"";
+
+      position:absolute;
+
+      top:68px;
+
+      left:27px;
+
+      width:1px;
+
+      height:130px;
+
+      background:rgba(80,80,80,.35);
+
+    }
+
+
+    .balloon.b1{
+
+      left:8%;
+
+      background:#e74c3c;
+
+      animation-delay:.05s;
+
+    }
+
+
+    .balloon.b2{
+
+      left:23%;
+
+      background:#f1c40f;
+
+      animation-delay:.20s;
+
+    }
+
+
+    .balloon.b3{
+
+      left:43%;
+
+      background:#3498db;
+
+      animation-delay:.10s;
+
+    }
+
+
+    .balloon.b4{
+
+      left:64%;
+
+      background:#9b59b6;
+
+      animation-delay:.25s;
+
+    }
+
+
+    .balloon.b5{
+
+      left:82%;
+
+      background:#2ecc71;
+
+      animation-delay:.15s;
+
+    }
+
+
+    @keyframes balloonRise{
+
+      0%{
+
+        transform:
+          translateY(0)
+          rotate(-5deg)
+          scale(.7);
+
+        opacity:0;
+
+      }
+
+      15%{
+
+        opacity:1;
+
+      }
+
+      70%{
+
+        opacity:1;
+
+      }
+
+      100%{
+
+        transform:
+          translateY(-115vh)
+          rotate(12deg)
+          scale(1);
+
+        opacity:0;
+
+      }
+
+    }
+
+
+    /* =====================================================
+       BALLOON POP
+    ===================================================== */
+
+    .pop{
+
+      position:absolute;
+
+      width:8px;
+
+      height:8px;
+
+      border-radius:50%;
+
+      opacity:0;
+
+      animation:
+        popBurst .65s ease-out forwards;
+
+    }
+
+
+    @keyframes popBurst{
+
+      0%{
+
+        transform:scale(.3);
+
+        opacity:1;
+
+      }
+
+      100%{
+
+        transform:
+          translate(
+            var(--x),
+            var(--y)
+          )
+          scale(1.8);
+
+        opacity:0;
+
+      }
+
+    }
+
+
+    /* =====================================================
+       FLYING PAPER / CONFETTI
+    ===================================================== */
+
+    .paper{
+
+      position:absolute;
+
+      top:-30px;
+
+      width:10px;
+
+      height:16px;
+
+      opacity:0;
+
+      animation:
+        paperFall var(--duration)
+        linear
+        forwards;
+
+      transform:
+        rotate(var(--rotate));
+
+    }
+
+
+    @keyframes paperFall{
+
+      0%{
+
+        transform:
+          translate3d(
+            0,
+            -30px,
+            0
+          )
+          rotate(0deg);
+
+        opacity:0;
+
+      }
+
+      10%{
+
+        opacity:1;
+
+      }
+
+      100%{
+
+        transform:
+          translate3d(
+            var(--moveX),
+            115vh,
+            0
+          )
+          rotate(
+            var(--rotation)
+          );
+
+        opacity:0;
+
+      }
+
+    }
+
+
+    /* =====================================================
+       MOBILE
+    ===================================================== */
 
     @media(max-width:600px){
 
       .details-table th,
       .details-table td{
+
         display:block;
+
         width:auto;
+
       }
+
 
       .details-table th{
+
         padding-bottom:5px;
+
         border-bottom:0;
+
       }
 
+
       .details-table td{
+
         padding-top:5px;
+
+      }
+
+
+      .balloon{
+
+        width:42px;
+
+        height:54px;
+
+      }
+
+
+      .balloon::after{
+
+        top:54px;
+
       }
 
     }
 
+
+    /* =====================================================
+       PRINT
+    ===================================================== */
+
     @media print{
 
       body{
+
         background:#fff !important;
+
       }
+
+
+      #celebration{
+
+        display:none !important;
+
+      }
+
 
       .success-actions,
       .note,
       .back-link{
+
         display:none !important;
+
       }
+
 
       .card{
+
         box-shadow:none !important;
+
         border:0 !important;
+
       }
+
 
       .registration-card{
+
         border:1px solid #999;
+
       }
 
+
       .success-icon{
+
         background:#fff;
+
         color:#0f6b68;
+
         border:2px solid #0f6b68;
+
+        box-shadow:none;
+
       }
 
     }
@@ -201,6 +698,30 @@
 
 
 <body>
+
+
+<!-- =======================================================
+     CELEBRATION ANIMATION
+======================================================== -->
+
+<div id="celebration">
+
+  <div class="balloon b1"></div>
+
+  <div class="balloon b2"></div>
+
+  <div class="balloon b3"></div>
+
+  <div class="balloon b4"></div>
+
+  <div class="balloon b5"></div>
+
+</div>
+
+
+<!-- =======================================================
+     MAIN
+======================================================== -->
 
 <main class="page success-page">
 
@@ -259,7 +780,7 @@
   </div>
 
 
-  <!-- REGISTRATION DETAILS -->
+  <!-- REGISTRATION -->
 
   <div class="registration-card">
 
@@ -270,10 +791,13 @@
       </h2>
 
       <div class="registration-id">
+
         पंजीयन ID:
+
         <span id="registrationId">
           —
         </span>
+
       </div>
 
     </div>
@@ -281,9 +805,7 @@
 
     <table class="details-table">
 
-      <tbody id="detailsBody">
-
-      </tbody>
+      <tbody id="detailsBody"></tbody>
 
     </table>
 
@@ -314,11 +836,17 @@
 
 
   <p class="note">
-    प्रिंट बटन से आप इस पंजीयन को प्रिंट या PDF के रूप में सुरक्षित कर सकते हैं।
+
+    प्रिंट बटन से आप इस पंजीयन को
+    प्रिंट या PDF के रूप में सुरक्षित कर सकते हैं।
+
   </p>
 
 
-  <p class="privacy-note back-link" style="text-align:center">
+  <p
+    class="privacy-note back-link"
+    style="text-align:center"
+  >
 
     <a href="admin.html">
       एडमिन लॉगिन
@@ -332,12 +860,11 @@
 </main>
 
 
+<!-- =======================================================
+     SUCCESS DATA
+======================================================== -->
+
 <script>
-
-
-// ============================================================
-// LOAD REGISTRATION DATA
-// ============================================================
 
 const data =
   JSON.parse(
@@ -347,9 +874,9 @@ const data =
   );
 
 
-// ============================================================
-// IF DATA NOT FOUND
-// ============================================================
+/* ==========================================================
+   NO DATA
+========================================================== */
 
 if (!data) {
 
@@ -359,8 +886,10 @@ if (!data) {
 
     <tr>
 
-      <td colspan="2"
-          style="text-align:center;padding:30px">
+      <td
+        colspan="2"
+        style="text-align:center;padding:30px"
+      >
 
         पंजीयन विवरण उपलब्ध नहीं है।
 
@@ -379,9 +908,9 @@ if (!data) {
 }
 
 
-// ============================================================
-// SHOW DATA
-// ============================================================
+/* ==========================================================
+   SHOW DATA
+========================================================== */
 
 if (data) {
 
@@ -393,90 +922,39 @@ if (data) {
 
   const fields = [
 
-    [
-      "महासभा",
-      data.mahasabha
-    ],
+    ["महासभा", data.mahasabha],
 
-    [
-      "अन्य महासभा",
-      data.otherMahasabha
-    ],
+    ["अन्य महासभा", data.otherMahasabha],
 
-    [
-      "प्रतिभागी का नाम",
-      data.participantName
-    ],
+    ["प्रतिभागी का नाम", data.participantName],
 
-    [
-      "गोत्र",
-      data.gotra
-    ],
+    ["गोत्र", data.gotra],
 
-    [
-      "टोटम",
-      data.totem
-    ],
+    ["टोटम", data.totem],
 
-    [
-      "पिता का नाम",
-      data.fatherName
-    ],
+    ["पिता का नाम", data.fatherName],
 
-    [
-      "जन्मतिथि",
-      data.dob
-    ],
+    ["जन्मतिथि", data.dob],
 
-    [
-      "लिंग",
-      data.gender
-    ],
+    ["लिंग", data.gender],
 
-    [
-      "ईमेल",
-      data.email
-    ],
+    ["ईमेल", data.email],
 
-    [
-      "कॉन्टेक्ट नम्बर",
-      data.mobile
-    ],
+    ["कॉन्टेक्ट नम्बर", data.mobile],
 
-    [
-      "जिला",
-      data.district
-    ],
+    ["जिला", data.district],
 
-    [
-      "ब्लॉक / विकासखंड",
-      data.block
-    ],
+    ["ब्लॉक / विकासखंड", data.block],
 
-    [
-      "गाँव / नगर",
-      data.village
-    ],
+    ["गाँव / नगर", data.village],
 
-    [
-      "पूरा पता",
-      data.address
-    ],
+    ["पूरा पता", data.address],
 
-    [
-      "नियम एवं शर्तें",
-      data.termsAccepted
-    ],
+    ["नियम एवं शर्तें", data.termsAccepted],
 
-    [
-      "जानकारी पुष्टि",
-      data.informationConfirmed
-    ],
+    ["जानकारी पुष्टि", data.informationConfirmed],
 
-    [
-      "पंजीयन समय",
-      data.registrationTime
-    ]
+    ["पंजीयन समय", data.registrationTime]
 
   ];
 
@@ -486,12 +964,16 @@ if (data) {
   ).innerHTML =
 
     fields
+
       .filter(
         ([label, value]) =>
+
           value !== undefined &&
           value !== null &&
           value !== ""
+
       )
+
       .map(
         ([label, value]) => `
 
@@ -509,35 +991,308 @@ if (data) {
 
         `
       )
+
       .join("");
 
 }
 
 
-// ============================================================
-// HTML ESCAPE
-// ============================================================
+/* ==========================================================
+   HTML SECURITY
+========================================================== */
 
 function escapeHtml(value) {
 
   return String(value ?? "")
+
     .replace(
       /[&<>"']/g,
+
       char => ({
 
         "&": "&amp;",
+
         "<": "&lt;",
+
         ">": "&gt;",
+
         '"': "&quot;",
+
         "'": "&#39;"
 
       }[char])
+
     );
+
+}
+
+
+/* ==========================================================
+   CELEBRATION
+========================================================== */
+
+function startCelebration() {
+
+  const container =
+    document.getElementById(
+      "celebration"
+    );
+
+
+  /* --------------------------------------------------------
+     FLYING PAPERS / CONFETTI
+  -------------------------------------------------------- */
+
+  for (
+    let i = 0;
+    i < 90;
+    i++
+  ) {
+
+    const paper =
+      document.createElement(
+        "div"
+      );
+
+
+    paper.className =
+      "paper";
+
+
+    paper.style.left =
+      Math.random() * 100 + "%";
+
+
+    paper.style.width =
+      (6 + Math.random() * 9) + "px";
+
+
+    paper.style.height =
+      (9 + Math.random() * 13) + "px";
+
+
+    paper.style.background =
+      [
+        "#e74c3c",
+        "#f1c40f",
+        "#3498db",
+        "#2ecc71",
+        "#9b59b6",
+        "#e67e22"
+      ][
+        Math.floor(
+          Math.random() * 6
+        )
+      ];
+
+
+    paper.style.setProperty(
+      "--moveX",
+      (
+        Math.random() * 400 - 200
+      ) + "px"
+    );
+
+
+    paper.style.setProperty(
+      "--rotation",
+      (
+        Math.random() * 1000 - 500
+      ) + "deg"
+    );
+
+
+    paper.style.setProperty(
+      "--duration",
+      (
+        2.5 + Math.random() * 3
+      ) + "s"
+    );
+
+
+    paper.style.animationDelay =
+      (
+        Math.random() * .9
+      ) + "s";
+
+
+    container.appendChild(
+      paper
+    );
+
+  }
+
+
+  /* --------------------------------------------------------
+     BALLOON POP EFFECT
+  -------------------------------------------------------- */
+
+  setTimeout(
+    createPopEffect,
+    2300
+  );
+
+
+  /* --------------------------------------------------------
+     REMOVE ANIMATION
+  -------------------------------------------------------- */
+
+  setTimeout(
+    () => {
+
+      container.innerHTML = "";
+
+    },
+    6500
+  );
+
+}
+
+
+/* ==========================================================
+   POP EFFECT
+========================================================== */
+
+function createPopEffect() {
+
+  const container =
+    document.getElementById(
+      "celebration"
+    );
+
+
+  const positions = [
+
+    {
+      x: "13vw",
+      y: "25vh"
+    },
+
+    {
+      x: "28vw",
+      y: "18vh"
+    },
+
+    {
+      x: "48vw",
+      y: "20vh"
+    },
+
+    {
+      x: "69vw",
+      y: "18vh"
+    },
+
+    {
+      x: "86vw",
+      y: "24vh"
+    }
+
+  ];
+
+
+  positions.forEach(
+    position => {
+
+      for (
+        let i = 0;
+        i < 14;
+        i++
+      ) {
+
+        const pop =
+          document.createElement(
+            "span"
+          );
+
+
+        pop.className =
+          "pop";
+
+
+        pop.style.left =
+          position.x;
+
+
+        pop.style.top =
+          position.y;
+
+
+        pop.style.background =
+          [
+            "#e74c3c",
+            "#f1c40f",
+            "#3498db",
+            "#2ecc71",
+            "#9b59b6"
+          ][
+            Math.floor(
+              Math.random() * 5
+            )
+          ];
+
+
+        pop.style.setProperty(
+          "--x",
+          (
+            Math.random() * 180 - 90
+          ) + "px"
+        );
+
+
+        pop.style.setProperty(
+          "--y",
+          (
+            Math.random() * 180 - 90
+          ) + "px"
+        );
+
+
+        pop.style.animationDelay =
+          (
+            Math.random() * .15
+          ) + "s";
+
+
+        container.appendChild(
+          pop
+        );
+
+      }
+
+    }
+  );
+
+}
+
+
+/* ==========================================================
+   START
+========================================================== */
+
+if (data) {
+
+  startCelebration();
 
 }
 
 </script>
 
+
 </body>
 
 </html>
+
+अब "script.js" में कोई बदलाव नहीं करना है। आपने जो पिछला पूरा "script.js" लगाया है, उसमें यह पहले से मौजूद है:
+
+sessionStorage.setItem(
+  "halbaRegistration",
+  JSON.stringify(successData)
+);
+
+window.location.href =
+  "success.html";
+
+इसलिए जैसे ही Firebase में registration सफल होगा, "success.html" खुलेगा और गुब्बारे + उड़ते कागज + pop/confetti effect शुरू हो जाएगा। 🎈🎊
+
+Print करने पर animation दिखाई नहीं देगा, ताकि पंजीयन की प्रिंट कॉपी साफ रहे।

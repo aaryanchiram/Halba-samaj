@@ -1,745 +1,588 @@
-<!DOCTYPE html>
-<html lang="hi">
-<head>
-  <meta charset="UTF-8">
+// ============================================================
+// HALBA SAMAJ REGISTRATION - FIREBASE VERSION
+// Google Apps Script की जरूरत नहीं
+// ============================================================
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+import {
+  getFirestore,
+  doc,
+  runTransaction,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
-  <meta
-    name="description"
-    content="अखिल भारतीय आदिवासी हल्बा हल्बी समाज छत्तीसगढ़ - सदस्य पंजीयन"
-  >
+// ============================================================
+// FIREBASE CONFIG
+// ============================================================
 
-  <title>हल्बा-हल्बी समाज | पंजीयन</title>
+const firebaseConfig = {
+  apiKey: "AIzaSyDrAvxLdDT9TUabC9B3p7SsJDTp5XfVuEU",
+  authDomain: "halba-register-b23bb.firebaseapp.com",
+  projectId: "halba-register-b23bb",
+  storageBucket: "halba-register-b23bb.firebasestorage.app",
+  messagingSenderId: "514620312693",
+  appId: "1:514620312693:web:5259d7df657e96911b3c3c",
+  measurementId: "G-162MZWB8RB"
+};
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+
+// ============================================================
+// HTML ELEMENTS
+// ============================================================
+
+const form = document.getElementById("registrationForm");
+const message = document.getElementById("message");
+const submitBtn = document.getElementById("submitBtn");
+
+const mahasabha = document.getElementById("mahasabha");
+const otherWrap = document.getElementById("otherMahasabhaWrap");
+const otherInput = document.getElementById("otherMahasabha");
+
+const districtSelect = document.getElementById("district");
+const blockSelect = document.getElementById("block");
+
+
+// ============================================================
+// CHHATTISGARH DISTRICT → BLOCK
+// ============================================================
+
+const CG_DISTRICT_BLOCKS = {
+  "बालोद": ["बालोद", "डौंडी", "डौंडी-लोहारा", "गुंडरदेही", "गुरूर"],
+  "बलौदाबाजार-भाटापारा": ["बलौदाबाजार", "भाटापारा", "कसडोल", "पलारी", "सिमगा"],
+  "बलरामपुर-रामानुजगंज": ["बलरामपुर", "कुसमी", "राजपुर", "रामचन्द्रपुर", "शंकरगढ़", "वाड्रफनगर"],
+  "बस्तर": ["जगदलपुर", "बस्तर", "बकावंड", "बस्तानार", "दरभा", "लोहंडीगुड़ा", "तोकापाल"],
+  "बेमेतरा": ["बेमेतरा", "साजा", "बेरला", "नवागढ़"],
+  "बीजापुर": ["बीजापुर", "भैरमगढ़", "भोपालपटनम", "उसूर"],
+  "बिलासपुर": ["बिल्हा", "कोटा", "मस्तूरी", "तखतपुर"],
+  "दक्षिण बस्तर दंतेवाड़ा": ["दंतेवाड़ा", "गीदम", "कटेकल्याण", "कुआकोंडा"],
+  "धमतरी": ["धमतरी", "कुरूद", "मगरलोड", "नगरी"],
+  "दुर्ग": ["दुर्ग", "धमधा", "पाटन"],
+  "गरियाबंद": ["गरियाबंद", "फिंगेश्वर", "छुरा", "देवभोग", "मैनपुर"],
+  "गौरेला-पेंड्रा-मरवाही": ["पेंड्रा रोड", "पेंड्रा", "मरवाही"],
+  "जांजगीर-चांपा": ["अकलतरा", "बलौदा", "बम्हनीडीह", "नवागढ़", "पामगढ़"],
+  "कांकेर": ["अंतागढ़", "भानुप्रतापपुर", "चारामा", "दुर्गूकोंदल", "कांकेर", "कोयलीबेड़ा", "नरहरपुर"],
+  "जशपुर": ["जशपुर", "कुनकुरी", "पत्थलगांव", "बगीचा", "दुलदुला", "मनोरा", "कांसाबेल", "फरसाबहार"],
+  "कबीरधाम": ["कवर्धा", "बोड़ला", "सहसपुर लोहारा", "पंडरिया"],
+  "खैरागढ़-छुईखदान-गंडई": ["खैरागढ़", "छुईखदान"],
+  "कोंडागांव": ["कोंडागांव", "केशकाल", "बड़ेराजपुर", "माकड़ी", "फरसगांव"],
+  "कोरबा": ["कोरबा", "कटघोरा", "पाली", "करतला", "पोड़ी-उपरोड़ा"],
+  "कोरिया": ["बैकुंठपुर", "सोनहत"],
+  "महासमुंद": ["महासमुंद", "बसना", "बागबाहरा", "पिथौरा", "सरायपाली"],
+  "मनेन्द्रगढ़-चिरमिरी-भरतपुर": ["भरतपुर", "मनेन्द्रगढ़"],
+  "मोहला-मानपुर-अंबागढ़ चौकी": ["अंबागढ़ चौकी", "मानपुर", "मोहला"],
+  "मुंगेली": ["मुंगेली", "पथरिया", "लोरमी"],
+  "नारायणपुर": ["नारायणपुर", "ओरछा (अबूझमाड़)"],
+  "रायगढ़": ["रायगढ़", "पुसौर", "खरसिया", "घरघोड़ा", "तमनार", "धरमजयगढ़", "लैलूंगा"],
+  "रायपुर": ["आरंग", "अभनपुर", "धरसींवा", "तिल्दा"],
+  "राजनांदगांव": ["राजनांदगांव", "डोंगरगढ़", "डोंगरगांव", "छुरिया"],
+  "सक्ती": ["सक्ती", "जैजैपुर", "मालखरौदा", "डभरा"],
+  "सारंगढ़-बिलाईगढ़": ["सारंगढ़", "बरमकेला", "बिलाईगढ़"],
+  "सुकमा": ["सुकमा", "छिंदगढ़", "कोंटा"],
+  "सूरजपुर": ["सूरजपुर", "प्रेमनगर", "भैयाथान", "ओड़गी", "प्रतापपुर", "रामानुजनगर"],
+  "सरगुजा": ["अंबिकापुर", "लखनपुर", "उदयपुर", "लुंड्रा", "बतौली", "सीतापुर", "मैनपाट"]
+};
+
+
+// ============================================================
+// DISTRICT DROPDOWN
+// ============================================================
+
+function initDistrictBlockDropdowns() {
+
+  if (!districtSelect || !blockSelect) return;
+
+  Object.keys(CG_DISTRICT_BLOCKS).forEach((district, i) => {
+
+    const option = document.createElement("option");
+
+    option.value = district;
+    option.textContent = `${i + 1}. ${district}`;
+
+    districtSelect.appendChild(option);
+
+  });
+
+  districtSelect.addEventListener("change", updateBlocks);
+}
+
+
+// ============================================================
+// BLOCK DROPDOWN
+// ============================================================
+
+function updateBlocks() {
+
+  const district = districtSelect.value;
+
+  blockSelect.innerHTML = "";
+
+  if (!district) {
+
+    blockSelect.disabled = true;
+
+    blockSelect.innerHTML =
+      '<option value="">-- पहले जिला चुनें --</option>';
+
+    return;
+  }
+
+  const first = document.createElement("option");
+
+  first.value = "";
+  first.textContent = "-- ब्लॉक / विकासखंड चुनें --";
+
+  blockSelect.appendChild(first);
+
+  CG_DISTRICT_BLOCKS[district].forEach((block, i) => {
+
+    const option = document.createElement("option");
+
+    option.value = block;
+    option.textContent = `${i + 1}. ${block}`;
+
+    blockSelect.appendChild(option);
+
+  });
+
+  blockSelect.disabled = false;
+}
+
+initDistrictBlockDropdowns();
+
+
+// ============================================================
+// OTHER MAHASABHA
+// ============================================================
+
+mahasabha.addEventListener("change", () => {
+
+  const isOther = mahasabha.value === "अन्य";
+
+  otherWrap.classList.toggle("hidden", !isOther);
+
+  otherInput.required = isOther;
+
+  if (!isOther) {
+    otherInput.value = "";
+  }
+
+});
+
+
+// ============================================================
+// MESSAGE
+// ============================================================
+
+function showMessage(html, type) {
+
+  message.className = "message show " + type;
+
+  message.innerHTML = html;
+
+}
+
+function clearMessage() {
+
+  message.className = "message";
+
+  message.innerHTML = "";
+
+}
+
+
+// ============================================================
+// MOBILE CLEAN
+// ============================================================
+
+function cleanMobile(value) {
+
+  return String(value || "").replace(/\D/g, "");
+
+}
+
+
+// ============================================================
+// FORM PAYLOAD
+// ============================================================
+
+function getPayload() {
+
+  const payload =
+    Object.fromEntries(new FormData(form).entries());
+
+  payload.mobile = cleanMobile(payload.mobile);
+
+  return payload;
+
+}
+
+
+// ============================================================
+// LOCAL VALIDATION
+// ============================================================
+
+function validateLocal(payload) {
+
+  if (!/^[6-9]\d{9}$/.test(payload.mobile)) {
+
+    showMessage(
+      "❌ कृपया 10 अंकों का सही मोबाइल नंबर दर्ज करें।",
+      "error"
+    );
+
+    document.getElementById("mobile").focus();
+
+    return false;
+  }
+
+
+  if (
+    payload.mahasabha === "अन्य" &&
+    !String(payload.otherMahasabha || "").trim()
+  ) {
+
+    showMessage(
+      "❌ कृपया अन्य महासभा का नाम लिखें।",
+      "error"
+    );
+
+    otherInput.focus();
+
+    return false;
+  }
+
+
+  if (!payload.email || !payload.email.includes("@")) {
+
+    showMessage(
+      "❌ कृपया सही ईमेल दर्ज करें।",
+      "error"
+    );
+
+    return false;
+  }
+
+
+  return true;
+}
+
+
+// ============================================================
+// SHA-256 HASH
+// Duplicate key बनाने के लिए
+// ============================================================
+
+async function sha256(value) {
+
+  const encoder = new TextEncoder();
+
+  const data =
+    encoder.encode(String(value).trim().toLowerCase());
+
+  const hashBuffer =
+    await crypto.subtle.digest("SHA-256", data);
+
+  const hashArray =
+    Array.from(new Uint8Array(hashBuffer));
+
+  return hashArray
+    .map(b => b.toString(16).padStart(2, "0"))
+    .join("");
+
+}
+
+
+// ============================================================
+// FIRESTORE REGISTRATION
+// ============================================================
+
+async function saveRegistration(payload) {
+
+  const mobileKey =
+    await sha256("mobile:" + payload.mobile);
+
+  const emailKey =
+    await sha256("email:" + payload.email);
+
+
+  const registrationRef =
+    doc(db, "registrations", mobileKey);
+
+  const mobileKeyRef =
+    doc(db, "registration_keys", mobileKey);
+
+  const emailKeyRef =
+    doc(db, "registration_keys", emailKey);
+
+
+  await runTransaction(db, async (transaction) => {
+
+    // --------------------------------------------
+    // DUPLICATE MOBILE CHECK
+    // --------------------------------------------
+
+    const mobileKeyDoc =
+      await transaction.get(mobileKeyRef);
+
+    if (mobileKeyDoc.exists()) {
+
+      throw new Error(
+        "DUPLICATE_MOBILE"
+      );
+
     }
 
-    body {
-      font-family:
-        "Noto Sans Devanagari",
-        "Nirmala UI",
-        Arial,
-        sans-serif;
 
-      background:
-        linear-gradient(
-          135deg,
-          #fff8ec,
-          #f7efe2
-        );
+    // --------------------------------------------
+    // DUPLICATE EMAIL CHECK
+    // --------------------------------------------
 
-      color: #2f241b;
-      min-height: 100vh;
+    const emailKeyDoc =
+      await transaction.get(emailKeyRef);
+
+    if (emailKeyDoc.exists()) {
+
+      throw new Error(
+        "DUPLICATE_EMAIL"
+      );
+
     }
 
-    .page {
-      width: 100%;
-      max-width: 1050px;
-      margin: auto;
-      padding: 20px;
-    }
 
-    .header {
-      background: #6d3b19;
-      color: #fff;
-      border-radius: 18px;
-      padding: 22px;
-      text-align: center;
-      box-shadow:
-        0 8px 25px rgba(0,0,0,.12);
-      margin-bottom: 20px;
-    }
+    // --------------------------------------------
+    // REGISTRATION DATA
+    // --------------------------------------------
 
-    .logo {
-      width: 82px;
-      height: 82px;
-      object-fit: contain;
-      border-radius: 50%;
-      background: #fff;
-      padding: 5px;
-      margin-bottom: 10px;
-    }
+    const registrationData = {
 
-    .header h1 {
-      font-size: 28px;
-      margin-bottom: 6px;
-    }
+      mahasabha:
+        payload.mahasabha || "",
 
-    .header p {
-      font-size: 15px;
-      opacity: .95;
-    }
+      otherMahasabha:
+        payload.otherMahasabha || "",
 
-    .form-card {
-      background: #fff;
-      border-radius: 18px;
-      padding: 25px;
-      box-shadow:
-        0 8px 30px rgba(0,0,0,.08);
-    }
+      participantName:
+        payload.participantName || "",
 
-    .section-title {
-      background: #f5e4ce;
-      color: #6d3b19;
-      border-left: 5px solid #9b5b25;
-      padding: 12px 15px;
-      border-radius: 8px;
-      margin: 20px 0 15px;
-      font-size: 19px;
-      font-weight: 700;
-    }
+      gotra:
+        payload.gotra || "",
 
-    .section-title:first-child {
-      margin-top: 0;
-    }
+      totem:
+        payload.totem || "",
 
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
-    }
+      fatherName:
+        payload.fatherName || "",
 
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-    }
+      dob:
+        payload.dob || "",
 
-    .field.full {
-      grid-column: 1 / -1;
-    }
+      gender:
+        payload.gender || "",
 
-    .field span {
-      font-weight: 600;
-      font-size: 15px;
-    }
+      email:
+        String(payload.email || "").trim().toLowerCase(),
 
-    .field i {
-      color: #c62828;
-      font-style: normal;
-    }
+      mobile:
+        payload.mobile || "",
 
-    input,
-    select,
-    textarea {
-      width: 100%;
-      border: 1px solid #d6c4b1;
-      border-radius: 9px;
-      padding: 12px 13px;
-      font-size: 15px;
-      background: #fff;
-      color: #2f241b;
-      outline: none;
-      transition: .2s;
-    }
+      district:
+        payload.district || "",
 
-    input:focus,
-    select:focus,
-    textarea:focus {
-      border-color: #8b4d22;
-      box-shadow:
-        0 0 0 3px rgba(139,77,34,.12);
-    }
+      block:
+        payload.block || "",
 
-    textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
+      village:
+        payload.village || "",
 
-    .checkbox-box {
-      grid-column: 1 / -1;
+      address:
+        payload.address || "",
 
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
+      termsAccepted:
+        payload.termsAccepted || "",
 
-      background: #fff9f0;
-      border: 1px solid #ead7c1;
-      padding: 13px;
-      border-radius: 10px;
-    }
+      informationConfirmed:
+        payload.informationConfirmed || "",
 
-    .checkbox-box input {
-      width: 19px;
-      height: 19px;
-      margin-top: 2px;
-      flex-shrink: 0;
-    }
+      status:
+        "pending",
 
-    .checkbox-box label {
-      font-size: 14px;
-      line-height: 1.6;
-      cursor: pointer;
-    }
+      createdAt:
+        serverTimestamp()
 
-    .submit-area {
-      margin-top: 25px;
-      text-align: center;
-    }
+    };
 
-    .submit-btn {
-      border: none;
-      background: #7b401b;
-      color: white;
-      padding: 14px 35px;
-      border-radius: 10px;
-      font-size: 17px;
-      font-weight: 700;
-      cursor: pointer;
-      min-width: 220px;
-      transition: .2s;
-    }
 
-    .submit-btn:hover {
-      background: #5f3015;
-      transform: translateY(-1px);
-    }
+    // --------------------------------------------
+    // SAVE REGISTRATION
+    // --------------------------------------------
 
-    .submit-btn:disabled {
-      opacity: .65;
-      cursor: not-allowed;
-      transform: none;
-    }
+    transaction.set(
+      registrationRef,
+      registrationData
+    );
 
-    .message {
-      display: none;
-      padding: 13px 15px;
-      margin-bottom: 18px;
-      border-radius: 9px;
-      font-size: 14px;
-      line-height: 1.6;
-    }
 
-    .message.success {
-      display: block;
-      background: #e9f7ef;
-      color: #176b3a;
-      border: 1px solid #a9dfbd;
-    }
+    // --------------------------------------------
+    // MOBILE UNIQUE KEY
+    // --------------------------------------------
 
-    .message.error {
-      display: block;
-      background: #fff0f0;
-      color: #a52323;
-      border: 1px solid #efb0b0;
-    }
-
-    .note {
-      margin-top: 15px;
-      padding: 12px;
-      background: #f8f4ee;
-      border-radius: 9px;
-      color: #654a36;
-      font-size: 13px;
-      line-height: 1.6;
-    }
-
-    .footer {
-      text-align: center;
-      padding: 22px 10px;
-      color: #765b45;
-      font-size: 13px;
-    }
-
-    .loading {
-      display: none;
-      margin-top: 12px;
-      color: #7b401b;
-      font-size: 14px;
-    }
-
-    @media (max-width: 700px) {
-
-      .page {
-        padding: 10px;
+    transaction.set(
+      mobileKeyRef,
+      {
+        type: "mobile",
+        createdAt: serverTimestamp()
       }
+    );
 
-      .header {
-        padding: 18px 12px;
-        border-radius: 14px;
-      }
 
-      .header h1 {
-        font-size: 22px;
-      }
+    // --------------------------------------------
+    // EMAIL UNIQUE KEY
+    // --------------------------------------------
 
-      .header p {
-        font-size: 13px;
+    transaction.set(
+      emailKeyRef,
+      {
+        type: "email",
+        createdAt: serverTimestamp()
       }
+    );
 
-      .form-card {
-        padding: 16px;
-        border-radius: 14px;
-      }
+  });
 
-      .form-grid {
-        grid-template-columns: 1fr;
-      }
+}
 
-      .field.full {
-        grid-column: auto;
-      }
 
-      .checkbox-box {
-        grid-column: auto;
-      }
+// ============================================================
+// SUBMIT
+// ============================================================
 
-      .submit-btn {
-        width: 100%;
-      }
+form.addEventListener("submit", async (event) => {
+
+  event.preventDefault();
+
+  clearMessage();
+
+
+  // Browser required validation
+
+  if (!form.checkValidity()) {
+
+    form.reportValidity();
+
+    return;
+  }
+
+
+  const payload = getPayload();
+
+
+  // Local validation
+
+  if (!validateLocal(payload)) {
+
+    return;
+  }
+
+
+  // Button loading
+
+  submitBtn.disabled = true;
+
+  submitBtn.innerHTML =
+    "<span>सेव हो रहा है...</span><b>…</b>";
+
+
+  try {
+
+    await saveRegistration(payload);
+
+
+    // --------------------------------------------
+    // SUCCESS
+    // --------------------------------------------
+
+    showMessage(
+      "✅ <strong>पंजीयन सफलतापूर्वक सबमिट हो गया।</strong><p>आपका पंजीयन Firebase में सुरक्षित रूप से दर्ज हो गया है।</p>",
+      "success"
+    );
+
+
+    form.reset();
+
+    otherWrap.classList.add("hidden");
+
+    otherInput.required = false;
+
+    blockSelect.innerHTML =
+      '<option value="">-- पहले जिला चुनें --</option>';
+
+    blockSelect.disabled = true;
+
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+
+
+  } catch (error) {
+
+    console.error(
+      "Firebase Registration Error:",
+      error
+    );
+
+
+    // --------------------------------------------
+    // DUPLICATE MOBILE
+    // --------------------------------------------
+
+    if (error.message === "DUPLICATE_MOBILE") {
+
+      showMessage(
+        "<strong>⚠️ यह मोबाइल नंबर पहले से पंजीकृत है।</strong><p>इस मोबाइल नंबर से नया पंजीयन स्वीकार नहीं किया जाएगा।</p>",
+        "error"
+      );
+
+      return;
     }
-  </style>
-</head>
 
-<body>
 
-  <div class="page">
+    // --------------------------------------------
+    // DUPLICATE EMAIL
+    // --------------------------------------------
 
-    <!-- HEADER -->
-    <header class="header">
+    if (error.message === "DUPLICATE_EMAIL") {
 
-      <!-- यदि logo.webp उपलब्ध है तो यह दिखेगा -->
-      <img
-        src="assets/logo.webp"
-        alt="हल्बा हल्बी समाज"
-        class="logo"
-        onerror="this.style.display='none'"
-      >
+      showMessage(
+        "<strong>⚠️ यह ईमेल पहले से पंजीकृत है।</strong><p>इस ईमेल से नया पंजीयन स्वीकार नहीं किया जाएगा।</p>",
+        "error"
+      );
 
-      <h1>अखिल भारतीय आदिवासी हल्बा हल्बी समाज</h1>
+      return;
+    }
 
-      <p>
-        छत्तीसगढ़ • समाज सदस्य पंजीयन
-      </p>
 
-    </header>
+    // --------------------------------------------
+    // OTHER FIREBASE ERROR
+    // --------------------------------------------
 
+    showMessage(
+      "❌ <strong>डेटा सेव नहीं हो पाया।</strong><p>कृपया इंटरनेट कनेक्शन जाँचकर दोबारा प्रयास करें।</p>",
+      "error"
+    );
 
-    <!-- FORM -->
-    <main class="form-card">
 
-      <div id="formMessage" class="message"></div>
+  } finally {
 
-      <form
-        id="registrationForm"
-        autocomplete="on"
-      >
+    submitBtn.disabled = false;
 
-        <!-- ========================= -->
-        <!-- महासभा जानकारी -->
-        <!-- ========================= -->
+    submitBtn.innerHTML =
+      "<span>पंजीयन सबमिट करें</span><b>→</b>";
 
-        <div class="section-title">
-          🏹 महासभा एवं सामाजिक जानकारी
-        </div>
+  }
 
-        <div class="form-grid">
-
-          <label class="field">
-            <span>महासभा <i>*</i></span>
-
-            <select
-              name="mahasabha"
-              id="mahasabha"
-              required
-            >
-              <option value="">
-                महासभा चुनें
-              </option>
-
-              <option value="छत्तीसगढ़ महासभा">
-                छत्तीसगढ़ महासभा
-              </option>
-
-              <option value="अन्य">
-                अन्य
-              </option>
-            </select>
-          </label>
-
-
-          <label
-            class="field"
-            id="otherMahasabhaField"
-            style="display:none;"
-          >
-            <span>अन्य महासभा का नाम</span>
-
-            <input
-              type="text"
-              name="otherMahasabha"
-              id="otherMahasabha"
-              placeholder="महासभा का नाम"
-            >
-          </label>
-
-
-          <label class="field">
-            <span>गोत्र</span>
-
-            <input
-              type="text"
-              name="gotra"
-              id="gotra"
-              placeholder="अपना गोत्र लिखें"
-            >
-          </label>
-
-
-          <label class="field">
-            <span>टोटम</span>
-
-            <input
-              type="text"
-              name="totem"
-              id="totem"
-              placeholder="अपना टोटम लिखें"
-            >
-          </label>
-
-        </div>
-
-
-        <!-- ========================= -->
-        <!-- व्यक्तिगत जानकारी -->
-        <!-- ========================= -->
-
-        <div class="section-title">
-          👤 व्यक्तिगत जानकारी
-        </div>
-
-        <div class="form-grid">
-
-          <label class="field">
-            <span>प्रतिभागी का नाम <i>*</i></span>
-
-            <input
-              type="text"
-              name="participantName"
-              id="participantName"
-              placeholder="पूरा नाम"
-              required
-            >
-          </label>
-
-
-          <label class="field">
-            <span>पिता का नाम <i>*</i></span>
-
-            <input
-              type="text"
-              name="fatherName"
-              id="fatherName"
-              placeholder="पिता का पूरा नाम"
-              required
-            >
-          </label>
-
-
-          <label class="field">
-            <span>जन्मतिथि</span>
-
-            <input
-              type="date"
-              name="dob"
-              id="dob"
-            >
-          </label>
-
-
-          <label class="field">
-            <span>लिंग</span>
-
-            <select
-              name="gender"
-              id="gender"
-            >
-              <option value="">
-                लिंग चुनें
-              </option>
-
-              <option value="पुरुष">
-                पुरुष
-              </option>
-
-              <option value="महिला">
-                महिला
-              </option>
-
-              <option value="अन्य">
-                अन्य
-              </option>
-            </select>
-          </label>
-
-        </div>
-
-
-        <!-- ========================= -->
-        <!-- संपर्क जानकारी -->
-        <!-- ========================= -->
-
-        <div class="section-title">
-          📱 संपर्क जानकारी
-        </div>
-
-        <div class="form-grid">
-
-          <label class="field">
-            <span>मोबाइल नंबर <i>*</i></span>
-
-            <input
-              type="tel"
-              name="mobile"
-              id="mobile"
-              inputmode="numeric"
-              maxlength="10"
-              pattern="[0-9]{10}"
-              placeholder="10 अंकों का मोबाइल नंबर"
-              required
-            >
-          </label>
-
-
-          <label class="field">
-            <span>वैकल्पिक मोबाइल नंबर</span>
-
-            <input
-              type="tel"
-              name="alternateMobile"
-              id="alternateMobile"
-              inputmode="numeric"
-              maxlength="10"
-              pattern="[0-9]{10}"
-              placeholder="वैकल्पिक मोबाइल नंबर"
-            >
-          </label>
-
-
-          <label class="field full">
-            <span>ई-मेल</span>
-
-            <input
-              type="email"
-              name="email"
-              id="email"
-              placeholder="example@gmail.com"
-            >
-          </label>
-
-        </div>
-
-
-        <!-- ========================= -->
-        <!-- पता -->
-        <!-- ========================= -->
-
-        <div class="section-title">
-          📍 पता एवं क्षेत्रीय जानकारी
-        </div>
-
-        <div class="form-grid">
-
-          <!-- DISTRICT -->
-          <label class="field">
-            <span>जिला <i>*</i></span>
-
-            <select
-              name="district"
-              id="district"
-              required
-            >
-              <option value="">
-                जिला चुनें
-              </option>
-            </select>
-          </label>
-
-
-          <!-- RELATED BLOCK -->
-          <label class="field">
-
-            <span>
-              संबंधित ब्लॉक <i>*</i>
-            </span>
-
-            <input
-              type="text"
-              name="relatedBlock"
-              id="relatedBlock"
-              placeholder="संबंधित ब्लॉक का नाम"
-              required
-            >
-
-          </label>
-
-
-          <!-- BLOCK -->
-          <label class="field">
-
-            <span>
-              ब्लॉक <i>*</i>
-            </span>
-
-            <select
-              name="block"
-              id="block"
-              required
-            >
-
-              <option value="">
-                पहले जिला चुनें
-              </option>
-
-            </select>
-
-          </label>
-
-
-          <!-- VILLAGE -->
-          <label class="field">
-
-            <span>
-              गाँव / नगर <i>*</i>
-            </span>
-
-            <input
-              type="text"
-              name="village"
-              id="village"
-              placeholder="गाँव / नगर का नाम"
-              required
-            >
-
-          </label>
-
-
-          <!-- ADDRESS -->
-          <label class="field full">
-
-            <span>
-              पूरा पता
-            </span>
-
-            <textarea
-              name="address"
-              id="address"
-              placeholder="मकान नंबर, मोहल्ला, गाँव, पोस्ट आदि"
-            ></textarea>
-
-          </label>
-
-        </div>
-
-
-        <!-- ========================= -->
-        <!-- घोषणा -->
-        <!-- ========================= -->
-
-        <div class="section-title">
-          ✅ घोषणा एवं पुष्टि
-        </div>
-
-        <div class="form-grid">
-
-          <div class="checkbox-box">
-
-            <input
-              type="checkbox"
-              name="termsAccepted"
-              id="termsAccepted"
-              value="true"
-              required
-            >
-
-            <label for="termsAccepted">
-              मैं घोषणा करता/करती हूँ कि मेरे द्वारा दी गई
-              जानकारी मेरी जानकारी के अनुसार सही है और
-              समाज पंजीयन के उद्देश्य से इसका उपयोग किया जा सकता है।
-              <strong>*</strong>
-            </label>
-
-          </div>
-
-
-          <div class="checkbox-box">
-
-            <input
-              type="checkbox"
-              name="informationConfirmed"
-              id="informationConfirmed"
-              value="true"
-              required
-            >
-
-            <label for="informationConfirmed">
-              मैंने ऊपर दी गई सभी जानकारी को जाँच लिया है
-              और इसे सही मानते हुए पंजीयन के लिए प्रस्तुत कर रहा/रही हूँ।
-              <strong>*</strong>
-            </label>
-
-          </div>
-
-        </div>
-
-
-        <!-- NOTE -->
-        <div class="note">
-          <strong>महत्वपूर्ण:</strong>
-          पंजीयन सफल होने के बाद आपको पंजीयन क्रमांक प्राप्त होगा।
-          कृपया इसे सुरक्षित रखें।
-        </div>
-
-
-        <!-- SUBMIT -->
-        <div class="submit-area">
-
-          <button
-            type="submit"
-            id="submitBtn"
-            class="submit-btn"
-          >
-            पंजीयन करें
-          </button>
-
-          <div
-            id="loadingMessage"
-            class="loading"
-          >
-            ⏳ पंजीयन सुरक्षित किया जा रहा है...
-          </div>
-
-        </div>
-
-      </form>
-
-    </main>
-
-
-    <!-- FOOTER -->
-    <footer class="footer">
-
-      © <span id="currentYear"></span>
-      अखिल भारतीय आदिवासी हल्बा हल्बी समाज छत्तीसगढ़
-
-    </footer>
-
-  </div>
-
-
-  <!-- Supabase + Registration Script -->
-  <script
-    type="module"
-    src="script.js"
-  ></script>
-
-</body>
-</html>
+});

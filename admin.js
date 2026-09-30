@@ -1,11 +1,14 @@
 /* ============================================================
    HALBA HALBI SAMAJ
-   ADMIN DASHBOARD - FINAL VERSION
+   ADMIN DASHBOARD - CORRECTED VERSION
+
+   Admin Firebase Authentication:
+   Username : admin
+   Email    : aaryanchiram@gmail.com
 
    Features:
    - Firebase Authentication
    - Firestore registrations
-   - Admin username/password login
    - District / Related Block / Block / Village filters
    - Search
    - Statistics
@@ -68,7 +71,7 @@ const db = getFirestore(app);
 
 const ADMIN_USERNAME = "admin";
 
-const ADMIN_EMAIL = "admin@halbasamaj.com";
+const ADMIN_EMAIL = "aaryanchiram@gmail.com";
 
 
 /* ============================================================
@@ -420,14 +423,9 @@ let filteredRecords = [];
    HELPER FUNCTIONS
    ============================================================ */
 
-function showMessage(
-  message,
-  type = "info"
-) {
+function showMessage(message, type = "info") {
 
-  if (!adminMessage) {
-    return;
-  }
+  if (!adminMessage) return;
 
   adminMessage.textContent = message;
 
@@ -439,9 +437,7 @@ function showMessage(
 
 function hideMessage() {
 
-  if (!adminMessage) {
-    return;
-  }
+  if (!adminMessage) return;
 
   adminMessage.textContent = "";
 
@@ -487,9 +483,7 @@ function normalizeText(value) {
 
 function formatDate(value) {
 
-  if (!value) {
-    return "";
-  }
+  if (!value) return "";
 
   try {
 
@@ -515,16 +509,11 @@ function formatDate(value) {
 
     }
 
-    const date =
-      new Date(value);
+    const date = new Date(value);
 
-    if (
-      !Number.isNaN(date.getTime())
-    ) {
+    if (!Number.isNaN(date.getTime())) {
 
-      return date.toLocaleString(
-        "hi-IN"
-      );
+      return date.toLocaleString("hi-IN");
 
     }
 
@@ -544,12 +533,9 @@ function formatDate(value) {
 
 function getCreatedAtForSort(record) {
 
-  const value =
-    record.createdAt;
+  const value = record.createdAt;
 
-  if (!value) {
-    return 0;
-  }
+  if (!value) return 0;
 
   try {
 
@@ -578,15 +564,11 @@ function getCreatedAtForSort(record) {
 
     }
 
-    const date =
-      new Date(value);
+    const date = new Date(value);
 
-    const time =
-      date.getTime();
+    const time = date.getTime();
 
-    return Number.isNaN(time)
-      ? 0
-      : time;
+    return Number.isNaN(time) ? 0 : time;
 
   } catch {
 
@@ -607,7 +589,9 @@ onAuthStateChanged(
 
     if (
       user &&
-      user.email === ADMIN_EMAIL
+      user.email &&
+      user.email.toLowerCase() ===
+        ADMIN_EMAIL.toLowerCase()
     ) {
 
       loginPanel?.classList.add("hidden");
@@ -664,21 +648,35 @@ loginForm?.addEventListener(
       );
 
       return;
+
     }
 
 
-    if (username !== "admin") {
-  showMessage("गलत एडमिन यूज़रनेम।", "error");
-  return;
-}
+    if (
+      username.toLowerCase() !==
+      ADMIN_USERNAME
+    ) {
+
+      showMessage(
+        "गलत एडमिन यूज़रनेम।",
+        "error"
+      );
+
+      return;
+
+    }
 
 
     try {
 
-      loginBtn.disabled = true;
+      if (loginBtn) {
 
-      loginBtn.innerHTML =
-        "<span>लॉगिन हो रहा है...</span><b>…</b>";
+        loginBtn.disabled = true;
+
+        loginBtn.innerHTML =
+          "<span>लॉगिन हो रहा है...</span><b>…</b>";
+
+      }
 
 
       await signInWithEmailAndPassword(
@@ -697,25 +695,124 @@ loginForm?.addEventListener(
     } catch (error) {
 
       console.error(
-        "Admin login error:",
+        "ADMIN LOGIN ERROR:",
         error
       );
 
-console.error("ADMIN LOGIN ERROR CODE:", error.code);
-console.error("ADMIN LOGIN ERROR MESSAGE:", error.message);
+      console.error(
+        "ERROR CODE:",
+        error?.code
+      );
 
-showMessage(
-  `लॉगिन असफल: ${error.code || "Unknown Error"} — ${error.message || ""}`,
-  "error"
-);
-      
+      console.error(
+        "ERROR MESSAGE:",
+        error?.message
+      );
+
+
+      let message =
+        "लॉगिन असफल हुआ।";
+
+
+      switch (error?.code) {
+
+        case "auth/invalid-credential":
+
+          message =
+            "ईमेल या पासवर्ड गलत है। Firebase Authentication में admin password जाँचें।";
+
+          break;
+
+
+        case "auth/invalid-login-credentials":
+
+          message =
+            "ईमेल या पासवर्ड गलत है। Firebase Authentication में admin password जाँचें।";
+
+          break;
+
+
+        case "auth/wrong-password":
+
+          message =
+            "पासवर्ड गलत है।";
+
+          break;
+
+
+        case "auth/user-not-found":
+
+          message =
+            "aaryanchiram@gmail.com Firebase Authentication में नहीं मिला।";
+
+          break;
+
+
+        case "auth/user-disabled":
+
+          message =
+            "Admin Firebase Authentication में disabled है।";
+
+          break;
+
+
+        case "auth/too-many-requests":
+
+          message =
+            "बहुत अधिक login प्रयास हुए हैं। कुछ समय बाद पुनः प्रयास करें।";
+
+          break;
+
+
+        case "auth/operation-not-allowed":
+
+          message =
+            "Firebase में Email/Password Sign-in enabled नहीं है।";
+
+          break;
+
+
+        case "auth/invalid-api-key":
+
+          message =
+            "Firebase API Key गलत है। Firebase Configuration जाँचें।";
+
+          break;
+
+
+        case "auth/network-request-failed":
+
+          message =
+            "Internet connection या Firebase network समस्या है।";
+
+          break;
+
+
+        default:
+
+          message =
+            `लॉगिन असफल: ${
+              error?.code || "Unknown Error"
+            }`;
+
+      }
+
+
+      showMessage(
+        message,
+        "error"
+      );
 
     } finally {
 
-      loginBtn.disabled = false;
+      if (loginBtn) {
 
-      loginBtn.innerHTML =
-        "<span>लॉगिन करें</span><b>→</b>";
+        loginBtn.disabled = false;
+
+        loginBtn.innerHTML =
+          "<span>लॉगिन करें</span><b>→</b>";
+
+      }
 
     }
 
@@ -768,14 +865,13 @@ logoutBtn?.addEventListener(
 
 async function loadData() {
 
-  if (!auth.currentUser) {
-    return;
-  }
+  if (!auth.currentUser) return;
 
 
   if (
-    auth.currentUser.email !==
-    ADMIN_EMAIL
+    !auth.currentUser.email ||
+    auth.currentUser.email.toLowerCase() !==
+      ADMIN_EMAIL.toLowerCase()
   ) {
 
     showMessage(
@@ -784,6 +880,7 @@ async function loadData() {
     );
 
     return;
+
   }
 
 
@@ -797,11 +894,6 @@ async function loadData() {
 
     let snapshot;
 
-
-    /*
-      पहले createdAt descending order
-      से data लोड करने का प्रयास।
-    */
 
     try {
 
@@ -817,6 +909,7 @@ async function loadData() {
           )
         );
 
+
       snapshot =
         await getDocs(
           orderedQuery
@@ -829,12 +922,6 @@ async function loadData() {
         orderError
       );
 
-
-      /*
-        अगर पुराने documents या index के कारण
-        orderBy query fail हो तो बिना order
-        पूरा collection पढ़ेंगे।
-      */
 
       snapshot =
         await getDocs(
@@ -860,32 +947,19 @@ async function loadData() {
 
             ...data,
 
-            /*
-              पुराने documents में
-              relatedBlock नहीं होगा।
-            */
-
             relatedBlock:
               safeValue(
                 data.relatedBlock
               ),
 
-            /*
-              Internal fallback number.
-            */
-
-            _index: index
+            _index:
+              index
 
           };
 
         }
       );
 
-
-    /*
-      अगर बिना order query data आया है
-      तो client-side createdAt sorting।
-    */
 
     allRecords.sort(
       (a, b) =>
@@ -902,12 +976,18 @@ async function loadData() {
 
     populateVillageFilter();
 
-
     applyFilters();
 
 
-    lastUpdated.textContent =
-      `अंतिम अपडेट: ${new Date().toLocaleString("hi-IN")}`;
+    if (lastUpdated) {
+
+      lastUpdated.textContent =
+        `अंतिम अपडेट: ${
+          new Date()
+            .toLocaleString("hi-IN")
+        }`;
+
+    }
 
 
     showMessage(
@@ -923,15 +1003,16 @@ async function loadData() {
       error
     );
 
-
     allRecords = [];
 
     filteredRecords = [];
 
-    renderTable();
+    renderTable([]);
 
     showMessage(
-      "Firestore से डेटा लोड नहीं हो पाया। Firebase Rules और Admin Login जाँचें।",
+      `Firestore से डेटा लोड नहीं हो पाया। ${
+        error?.code || ""
+      }`,
       "error"
     );
 
@@ -977,14 +1058,10 @@ function uniqueSorted(
 
 function populateDistrictFilter() {
 
-  if (!districtFilter) {
-    return;
-  }
-
+  if (!districtFilter) return;
 
   const current =
     districtFilter.value;
-
 
   const districts =
     uniqueSorted(
@@ -992,10 +1069,8 @@ function populateDistrictFilter() {
       "district"
     );
 
-
   districtFilter.innerHTML =
     `<option value="">सभी जिले</option>`;
-
 
   districts.forEach(
     district => {
@@ -1019,9 +1094,7 @@ function populateDistrictFilter() {
   );
 
 
-  if (
-    districts.includes(current)
-  ) {
+  if (districts.includes(current)) {
 
     districtFilter.value =
       current;
@@ -1039,14 +1112,10 @@ function populateRelatedBlockFilter(
   records = allRecords
 ) {
 
-  if (!relatedBlockFilter) {
-    return;
-  }
-
+  if (!relatedBlockFilter) return;
 
   const current =
     relatedBlockFilter.value;
-
 
   const relatedBlocks =
     uniqueSorted(
@@ -1054,10 +1123,8 @@ function populateRelatedBlockFilter(
       "relatedBlock"
     );
 
-
   relatedBlockFilter.innerHTML =
     `<option value="">सभी संबंधित ब्लॉक</option>`;
-
 
   relatedBlocks.forEach(
     relatedBlock => {
@@ -1099,20 +1166,15 @@ function populateRelatedBlockFilter(
 
 function populateBlockFilter() {
 
-  if (!blockFilter) {
-    return;
-  }
-
+  if (!blockFilter) return;
 
   const district =
     safeValue(
       districtFilter?.value
     );
 
-
   const current =
     blockFilter.value;
-
 
   let blocks = [];
 
@@ -1135,12 +1197,6 @@ function populateBlockFilter() {
 
   }
 
-
-  /*
-    Firestore में मौजूद block को भी
-    include करेंगे ताकि कोई नया block
-    data में हो तो वह गायब न हो।
-  */
 
   const firestoreBlocks =
     uniqueSorted(
@@ -1199,9 +1255,7 @@ function populateBlockFilter() {
   );
 
 
-  if (
-    blocks.includes(current)
-  ) {
+  if (blocks.includes(current)) {
 
     blockFilter.value =
       current;
@@ -1219,21 +1273,16 @@ function populateVillageFilter(
   records = allRecords
 ) {
 
-  if (!villageFilter) {
-    return;
-  }
-
+  if (!villageFilter) return;
 
   const current =
     villageFilter.value;
-
 
   const villages =
     uniqueSorted(
       records,
       "village"
     );
-
 
   villageFilter.innerHTML =
     `<option value="">सभी गाँव</option>`;
@@ -1261,9 +1310,7 @@ function populateVillageFilter(
   );
 
 
-  if (
-    villages.includes(current)
-  ) {
+  if (villages.includes(current)) {
 
     villageFilter.value =
       current;
@@ -1501,18 +1548,11 @@ function applyFilters() {
     );
 
 
-  /*
-    Dependent filters के options को
-    वर्तमान district के अनुसार update करें।
-  */
-
   const districtFiltered =
     allRecords.filter(
       record => {
 
-        if (!district) {
-          return true;
-        }
+        if (!district) return true;
 
         return (
           normalizeText(
@@ -1552,13 +1592,10 @@ function applyFilters() {
    RENDER STATISTICS
    ============================================================ */
 
-function renderStats(
-  records
-) {
+function renderStats(records) {
 
   const total =
     records.length;
-
 
   const male =
     records.filter(
@@ -1568,7 +1605,6 @@ function renderStats(
         ) === "पुरुष"
     ).length;
 
-
   const female =
     records.filter(
       record =>
@@ -1577,35 +1613,24 @@ function renderStats(
         ) === "महिला"
     ).length;
 
-
   const other =
     total -
     male -
     female;
 
 
-  if (totalCount) {
-    totalCount.textContent =
-      total;
-  }
+  if (totalCount)
+    totalCount.textContent = total;
 
-  if (maleCount) {
-    maleCount.textContent =
-      male;
-  }
+  if (maleCount)
+    maleCount.textContent = male;
 
-  if (femaleCount) {
-    femaleCount.textContent =
-      female;
-  }
+  if (femaleCount)
+    femaleCount.textContent = female;
 
-  if (otherCount) {
+  if (otherCount)
     otherCount.textContent =
-      Math.max(
-        0,
-        other
-      );
-  }
+      Math.max(0, other);
 
 }
 
@@ -1618,9 +1643,7 @@ function renderTable(
   records = filteredRecords
 ) {
 
-  if (!recordsBody) {
-    return;
-  }
+  if (!recordsBody) return;
 
 
   if (visibleCount) {
@@ -1644,6 +1667,7 @@ function renderTable(
     `;
 
     return;
+
   }
 
 
@@ -1655,57 +1679,42 @@ function renderTable(
           const name =
             safeValue(
               record.participantName
-            ) ||
-            "—";
-
+            ) || "—";
 
           const gender =
             safeValue(
               record.gender
-            ) ||
-            "—";
-
+            ) || "—";
 
           const district =
             safeValue(
               record.district
-            ) ||
-            "—";
-
+            ) || "—";
 
           const relatedBlock =
             safeValue(
               record.relatedBlock
-            ) ||
-            "—";
-
+            ) || "—";
 
           const block =
             safeValue(
               record.block
-            ) ||
-            "—";
-
+            ) || "—";
 
           const village =
             safeValue(
               record.village
-            ) ||
-            "—";
-
+            ) || "—";
 
           const mobile =
             safeValue(
               record.mobile
-            ) ||
-            "—";
-
+            ) || "—";
 
           const email =
             safeValue(
               record.email
-            ) ||
-            "—";
+            ) || "—";
 
 
           return `
@@ -1768,10 +1777,6 @@ function renderTable(
       .join("");
 
 
-  /*
-    Single record print buttons
-  */
-
   recordsBody
     .querySelectorAll(
       ".record-print-btn"
@@ -1830,7 +1835,6 @@ function createSummary(
         ) ||
         "नहीं बताया";
 
-
       counts[value] =
         (counts[value] || 0) + 1;
 
@@ -1886,9 +1890,7 @@ function createSummary(
 }
 
 
-function renderSummaries(
-  records
-) {
+function renderSummaries(records) {
 
   if (districtSummary) {
 
@@ -1954,15 +1956,12 @@ refreshBtn?.addEventListener(
    SINGLE RECORD PRINT
    ============================================================ */
 
-function printSingleRecord(
-  record
-) {
+function printSingleRecord(record) {
 
   const html =
     buildPrintableRecordHtml(
       record
     );
-
 
   openPrintWindow(
     html,
@@ -1972,13 +1971,7 @@ function printSingleRecord(
 }
 
 
-/* ============================================================
-   PRINTABLE SINGLE RECORD HTML
-   ============================================================ */
-
-function buildPrintableRecordHtml(
-  record
-) {
+function buildPrintableRecordHtml(record) {
 
   const rows = [
 
@@ -2296,7 +2289,6 @@ printListBtn?.addEventListener(
         filteredRecords
       );
 
-
     openPrintWindow(
       html,
       "पंजीयन सूची"
@@ -2306,13 +2298,7 @@ printListBtn?.addEventListener(
 );
 
 
-/* ============================================================
-   PRINTABLE LIST
-   ============================================================ */
-
-function buildPrintableListHtml(
-  records
-) {
+function buildPrintableListHtml(records) {
 
   const rows =
     records
@@ -2536,45 +2522,16 @@ function buildPrintableListHtml(
 
             <tr>
 
-              <th>
-                क्रम
-              </th>
-
-              <th>
-                पंजीयन ID
-              </th>
-
-              <th>
-                नाम
-              </th>
-
-              <th>
-                लिंग
-              </th>
-
-              <th>
-                जिला
-              </th>
-
-              <th>
-                संबंधित ब्लॉक
-              </th>
-
-              <th>
-                ब्लॉक
-              </th>
-
-              <th>
-                गाँव
-              </th>
-
-              <th>
-                मोबाइल
-              </th>
-
-              <th>
-                ईमेल
-              </th>
+              <th>क्रम</th>
+              <th>पंजीयन ID</th>
+              <th>नाम</th>
+              <th>लिंग</th>
+              <th>जिला</th>
+              <th>संबंधित ब्लॉक</th>
+              <th>ब्लॉक</th>
+              <th>गाँव</th>
+              <th>मोबाइल</th>
+              <th>ईमेल</th>
 
             </tr>
 
@@ -2669,10 +2626,6 @@ downloadExcelBtn?.addEventListener(
 );
 
 
-/* ============================================================
-   CREATE EXCEL FILE
-   ============================================================ */
-
 function downloadExcel() {
 
   if (
@@ -2702,10 +2655,6 @@ function downloadExcel() {
 
 
   try {
-
-    /*
-      Excel में वर्तमान filtered list जाएगी।
-    */
 
     const excelData =
       filteredRecords.map(
@@ -2829,19 +2778,11 @@ function downloadExcel() {
       );
 
 
-    /*
-      JSON → worksheet
-    */
-
     const worksheet =
       XLSX.utils.json_to_sheet(
         excelData
       );
 
-
-    /*
-      Column widths
-    */
 
     worksheet["!cols"] = [
 
@@ -2871,10 +2812,6 @@ function downloadExcel() {
     ];
 
 
-    /*
-      Workbook
-    */
-
     const workbook =
       XLSX.utils.book_new();
 
@@ -2886,43 +2823,26 @@ function downloadExcel() {
     );
 
 
-    /*
-      Date filename
-    */
-
     const now =
       new Date();
-
 
     const year =
       now.getFullYear();
 
-
     const month =
       String(
         now.getMonth() + 1
-      ).padStart(
-        2,
-        "0"
-      );
-
+      ).padStart(2, "0");
 
     const day =
       String(
         now.getDate()
-      ).padStart(
-        2,
-        "0"
-      );
+      ).padStart(2, "0");
 
 
     const filename =
       `Halba-Samaj-Registration-${year}-${month}-${day}.xlsx`;
 
-
-    /*
-      Download XLSX
-    */
 
     XLSX.writeFile(
       workbook,

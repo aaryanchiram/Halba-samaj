@@ -396,97 +396,129 @@ function generateRegistrationId() {
 function setupDistrictBlock() {
 
   const district =
-    document.getElementById("district") ||
-    document.querySelector('[name="district"]');
+    document.getElementById("district");
 
   const block =
-    document.getElementById("block") ||
-    document.querySelector('[name="block"]');
+    document.getElementById("block");
 
-  if (!district || !block) return;
+  if (!district) {
+    console.error("District field नहीं मिला।");
+    return;
+  }
+
+
+  // ========================================================
+  // DISTRICT OPTIONS
+  // ========================================================
+
+  district.innerHTML = "";
+
+  const defaultDistrict =
+    document.createElement("option");
+
+  defaultDistrict.value = "";
+
+  defaultDistrict.textContent =
+    "जिला चुनें";
+
+  defaultDistrict.disabled = false;
+
+  defaultDistrict.selected = true;
+
+  district.appendChild(
+    defaultDistrict
+  );
+
+
+  Object.keys(CG_DISTRICT_BLOCKS)
+    .sort((a, b) =>
+      a.localeCompare(b, "hi")
+    )
+    .forEach(districtName => {
+
+      const option =
+        document.createElement("option");
+
+      option.value =
+        districtName;
+
+      option.textContent =
+        districtName;
+
+      district.appendChild(
+        option
+      );
+    });
+
+
+  // ========================================================
+  // BLOCK OPTIONS
+  // ========================================================
 
   function updateBlocks() {
 
+    if (!block) return;
+
     const selectedDistrict =
-      String(district.value || "").trim();
+      district.value;
+
+
+    block.innerHTML = "";
+
+    const defaultBlock =
+      document.createElement("option");
+
+    defaultBlock.value = "";
+
+    defaultBlock.textContent =
+      selectedDistrict
+        ? "ब्लॉक चुनें"
+        : "पहले जिला चुनें";
+
+    defaultBlock.selected = true;
+
+    block.appendChild(
+      defaultBlock
+    );
+
 
     const blocks =
-      CG_DISTRICT_BLOCKS[selectedDistrict] || [];
+      CG_DISTRICT_BLOCKS[
+        selectedDistrict
+      ] || [];
 
-    if (block.tagName.toLowerCase() === "select") {
 
-      block.innerHTML = "";
+    blocks.forEach(blockName => {
 
-      const firstOption =
+      const option =
         document.createElement("option");
 
-      firstOption.value = "";
-      firstOption.textContent =
-        blocks.length
-          ? "ब्लॉक चुनें"
-          : "पहले जिला चुनें";
+      option.value =
+        blockName;
 
-      block.appendChild(firstOption);
+      option.textContent =
+        blockName;
 
-      blocks.forEach(blockName => {
+      block.appendChild(
+        option
+      );
 
-        const option =
-          document.createElement("option");
-
-        option.value = blockName;
-        option.textContent = blockName;
-
-        block.appendChild(option);
-      });
-
-    } else {
-
-      block.value = "";
-
-      if (blocks.length) {
-
-        block.setAttribute(
-          "list",
-          "cgBlockList"
-        );
-
-        let datalist =
-          document.getElementById("cgBlockList");
-
-        if (!datalist) {
-
-          datalist =
-            document.createElement("datalist");
-
-          datalist.id = "cgBlockList";
-
-          document.body.appendChild(datalist);
-        }
-
-        datalist.innerHTML = "";
-
-        blocks.forEach(blockName => {
-
-          const option =
-            document.createElement("option");
-
-          option.value = blockName;
-
-          datalist.appendChild(option);
-        });
-      }
-    }
+    });
   }
+
+
+  // District बदलने पर Block बदलेगा
 
   district.addEventListener(
     "change",
     updateBlocks
   );
 
+
+  // Initial state
+
   updateBlocks();
 }
-
-
 // ============================================================
 // FORM SUBMIT
 // ============================================================

@@ -15,1473 +15,404 @@
     content="#0f6b68"
   >
 
-  <title>
-    पंजीयन सफल | हल्बा हल्बी समाज
-  </title>
+  <title>पंजीयन सफल | हलबा हलबी समाज</title>
 
-  <link
-    rel="stylesheet"
-    href="style.css"
-  >
-
-  <style>
-
-    /* =====================================================
-       NORMAL SCREEN
-    ===================================================== */
-
-    .success-page{
-      max-width:900px;
-      margin:auto;
-      position:relative;
-      z-index:2;
-    }
-
-    .success-header{
-      text-align:center;
-      padding:10px 10px 25px;
-    }
-
-    .success-icon{
-      width:78px;
-      height:78px;
-      border-radius:50%;
-      margin:0 auto 15px;
-
-      display:flex;
-      align-items:center;
-      justify-content:center;
-
-      background:#0f6b68;
-      color:#fff;
-
-      font-size:42px;
-      font-weight:bold;
-
-      box-shadow:
-        0 0 0 8px rgba(15,107,104,.10),
-        0 8px 25px rgba(15,107,104,.25);
-
-      animation:successPop .7s ease-out;
-    }
-
-    @keyframes successPop{
-
-      0%{
-        transform:scale(0);
-        opacity:0;
-      }
-
-      60%{
-        transform:scale(1.2);
-      }
-
-      100%{
-        transform:scale(1);
-        opacity:1;
-      }
-
-    }
-
-    .success-header h1{
-      margin:8px 0;
-      color:#0f6b68;
-    }
-
-    .success-header p{
-      margin:6px 0;
-    }
-
-
-    /* =====================================================
-       REGISTRATION CARD
-    ===================================================== */
-
-    .registration-card{
-
-      border:1px solid #d8e5e4;
-
-      border-radius:16px;
-
-      overflow:hidden;
-
-      background:#fff;
-
-      margin-top:20px;
-
-      position:relative;
-
-      z-index:3;
-
-    }
-
-    .registration-card-header{
-
-      background:#f0f7f6;
-
-      padding:16px 20px;
-
-      display:flex;
-
-      justify-content:space-between;
-
-      align-items:center;
-
-      gap:15px;
-
-      flex-wrap:wrap;
-
-    }
-
-    .registration-card-header h2{
-
-      margin:0;
-
-      font-size:20px;
-
-      color:#0f6b68;
-
-    }
-
-    .registration-id{
-
-      font-weight:bold;
-
-      color:#163b39;
-
-    }
-
-
-    /* =====================================================
-       DETAILS TABLE
-    ===================================================== */
-
-    .details-table{
-
-      width:100%;
-
-      border-collapse:collapse;
-
-    }
-
-    .details-table th,
-    .details-table td{
-
-      padding:12px 15px;
-
-      border-bottom:1px solid #e4eeee;
-
-      text-align:left;
-
-      vertical-align:top;
-
-    }
-
-    .details-table th{
-
-      width:35%;
-
-      background:#fafcfc;
-
-      font-weight:600;
-
-    }
-
-    .details-table tr:last-child th,
-    .details-table tr:last-child td{
-
-      border-bottom:0;
-
-    }
-
-
-    /* =====================================================
-       BUTTONS
-    ===================================================== */
-
-    .success-actions{
-
-      display:flex;
-
-      justify-content:center;
-
-      gap:12px;
-
-      flex-wrap:wrap;
-
-      margin-top:25px;
-
-    }
-
-    .success-actions button,
-    .success-actions a{
-
-      border:0;
-
-      border-radius:10px;
-
-      padding:12px 20px;
-
-      cursor:pointer;
-
-      text-decoration:none;
-
-      font-size:15px;
-
-      font-weight:600;
-
-    }
-
-    .print-btn{
-
-      background:#0f6b68;
-
-      color:#fff;
-
-    }
-
-    .new-btn{
-
-      background:#eaf4f3;
-
-      color:#0f6b68;
-
-    }
-
-    .note{
-
-      text-align:center;
-
-      margin-top:20px;
-
-      font-size:13px;
-
-      color:#667;
-
-    }
-
-
-    /* =====================================================
-       FOOTER
-    ===================================================== */
-
-    .powered-footer{
-
-      text-align:center;
-
-      font-size:11px;
-
-      color:#777;
-
-      margin-top:18px;
-
-      padding-bottom:15px;
-
-    }
-
-
-    /* =====================================================
-       CELEBRATION
-    ===================================================== */
-
-    #celebration{
-
-      position:fixed;
-
-      inset:0;
-
-      width:100%;
-
-      height:100%;
-
-      overflow:hidden;
-
-      pointer-events:none;
-
-      z-index:9999;
-
-    }
-
-    .balloon{
-
-      position:absolute;
-
-      bottom:-120px;
-
-      width:55px;
-
-      height:68px;
-
-      border-radius:50% 50% 48% 48%;
-
-      opacity:0;
-
-      animation:
-        balloonRise 3.2s ease-out forwards;
-
-    }
-
-    .balloon::before{
-
-      content:"";
-
-      position:absolute;
-
-      width:7px;
-
-      height:10px;
-
-      bottom:-6px;
-
-      left:24px;
-
-      background:inherit;
-
-      clip-path:
-        polygon(
-          0 0,
-          100% 0,
-          50% 100%
-        );
-
-    }
-
-    .balloon::after{
-
-      content:"";
-
-      position:absolute;
-
-      top:68px;
-
-      left:27px;
-
-      width:1px;
-
-      height:130px;
-
-      background:rgba(80,80,80,.35);
-
-    }
-
-    .balloon.b1{
-
-      left:8%;
-
-      background:#e74c3c;
-
-      animation-delay:.05s;
-
-    }
-
-    .balloon.b2{
-
-      left:23%;
-
-      background:#f1c40f;
-
-      animation-delay:.20s;
-
-    }
-
-    .balloon.b3{
-
-      left:43%;
-
-      background:#3498db;
-
-      animation-delay:.10s;
-
-    }
-
-    .balloon.b4{
-
-      left:64%;
-
-      background:#9b59b6;
-
-      animation-delay:.25s;
-
-    }
-
-    .balloon.b5{
-
-      left:82%;
-
-      background:#2ecc71;
-
-      animation-delay:.15s;
-
-    }
-
-    @keyframes balloonRise{
-
-      0%{
-
-        transform:
-          translateY(0)
-          rotate(-5deg)
-          scale(.7);
-
-        opacity:0;
-
-      }
-
-      15%{
-        opacity:1;
-      }
-
-      70%{
-        opacity:1;
-      }
-
-      100%{
-
-        transform:
-          translateY(-115vh)
-          rotate(12deg)
-          scale(1);
-
-        opacity:0;
-
-      }
-
-    }
-
-    .pop{
-
-      position:absolute;
-
-      width:8px;
-
-      height:8px;
-
-      border-radius:50%;
-
-      opacity:0;
-
-      animation:
-        popBurst .65s ease-out forwards;
-
-    }
-
-    @keyframes popBurst{
-
-      0%{
-
-        transform:scale(.3);
-
-        opacity:1;
-
-      }
-
-      100%{
-
-        transform:
-          translate(
-            var(--x),
-            var(--y)
-          )
-          scale(1.8);
-
-        opacity:0;
-
-      }
-
-    }
-
-    .paper{
-
-      position:absolute;
-
-      top:-30px;
-
-      width:10px;
-
-      height:16px;
-
-      opacity:0;
-
-      animation:
-        paperFall var(--duration)
-        linear
-        forwards;
-
-      transform:
-        rotate(var(--rotate));
-
-    }
-
-    @keyframes paperFall{
-
-      0%{
-
-        transform:
-          translate3d(
-            0,
-            -30px,
-            0
-          )
-          rotate(0deg);
-
-        opacity:0;
-
-      }
-
-      10%{
-        opacity:1;
-      }
-
-      100%{
-
-        transform:
-          translate3d(
-            var(--moveX),
-            115vh,
-            0
-          )
-          rotate(
-            var(--rotation)
-          );
-
-        opacity:0;
-
-      }
-
-    }
-
-
-    /* =====================================================
-       MOBILE
-    ===================================================== */
-
-    @media(max-width:600px){
-
-      .details-table th,
-      .details-table td{
-
-        display:block;
-
-        width:auto;
-
-      }
-
-      .details-table th{
-
-        padding-bottom:5px;
-
-        border-bottom:0;
-
-      }
-
-      .details-table td{
-
-        padding-top:5px;
-
-      }
-
-      .balloon{
-
-        width:42px;
-
-        height:54px;
-
-      }
-
-      .balloon::after{
-
-        top:54px;
-
-      }
-
-    }
-
-
-    /* =====================================================
-       A4 PRINT - ONE PAGE
-    ===================================================== */
-
-    @page{
-
-      size:A4 portrait;
-
-      margin:8mm;
-
-    }
-
-
-    @media print{
-
-      html,
-      body{
-
-        width:210mm;
-
-        height:500mm;
-
-        margin:0 !important;
-
-        padding:0 !important;
-
-        background:#fff !important;
-
-      }
-
-
-      body{
-
-        font-size:14px !important;
-
-        overflow:hidden;
-
-      }
-
-
-      #celebration{
-
-        display:none !important;
-
-      }
-
-
-      .success-page{
-
-        width:100% !important;
-
-        max-width:none !important;
-
-        margin:0 !important;
-
-        padding:0 !important;
-
-      }
-
-
-      .card{
-
-        width:100% !important;
-
-        margin:0 !important;
-
-        padding:0 !important;
-
-        border:0 !important;
-
-        box-shadow:none !important;
-
-      }
-
-
-      /* -----------------------------------------------
-         HEADER
-      ------------------------------------------------ */
-
-      .hero{
-
-        padding:3mm 0 !important;
-
-        margin:0 !important;
-
-      }
-
-
-      .hero .logo{
-
-        max-width:48px !important;
-
-        max-height:48px !important;
-
-      }
-
-
-      .hero-text h1{
-
-        font-size:16px !important;
-
-        margin:2px 0 !important;
-
-      }
-
-
-      .hero-text h2{
-
-        font-size:13px !important;
-
-        margin:2px 0 !important;
-
-      }
-
-
-      .eyebrow{
-
-        font-size:9px !important;
-
-        margin:0 0 2px !important;
-
-      }
-
-
-      /* -----------------------------------------------
-         SUCCESS HEADER
-      ------------------------------------------------ */
-
-      .success-header{
-
-        padding:2mm 0 3mm !important;
-
-      }
-
-
-      .success-icon{
-
-        width:35px !important;
-
-        height:35px !important;
-
-        font-size:22px !important;
-
-        margin:0 auto 3px !important;
-
-        box-shadow:none !important;
-
-        border:1px solid #0f6b68 !important;
-
-        background:#fff !important;
-
-        color:#0f6b68 !important;
-
-      }
-
-
-      .success-header h1{
-
-        font-size:15px !important;
-
-        margin:2px 0 !important;
-
-      }
-
-
-      .success-header p{
-
-        font-size:9px !important;
-
-        margin:1px 0 !important;
-
-      }
-
-
-      /* -----------------------------------------------
-         REGISTRATION CARD
-      ------------------------------------------------ */
-
-      .registration-card{
-
-        margin:2mm 0 0 !important;
-
-        border:1px solid #999 !important;
-
-        border-radius:3px !important;
-
-        page-break-inside:avoid !important;
-
-        break-inside:avoid !important;
-
-      }
-
-
-      .registration-card-header{
-
-        padding:2.5mm 3mm !important;
-
-        background:#f0f7f6 !important;
-
-      }
-
-
-      .registration-card-header h2{
-
-        font-size:12px !important;
-
-      }
-
-
-      .registration-id{
-
-        font-size:9px !important;
-
-      }
-
-
-      /* -----------------------------------------------
-         TABLE
-      ------------------------------------------------ */
-
-      .details-table{
-
-        width:100% !important;
-
-        font-size:9px !important;
-
-        table-layout:fixed !important;
-
-      }
-
-
-      .details-table th,
-      .details-table td{
-
-        display:table-cell !important;
-
-        padding:1.8mm 2.5mm !important;
-
-        border-bottom:1px solid #ddd !important;
-
-        line-height:1.25 !important;
-
-      }
-
-
-      .details-table th{
-
-        width:32% !important;
-
-        background:#fafcfc !important;
-
-        font-size:9px !important;
-
-      }
-
-
-      .details-table td{
-
-        width:68% !important;
-
-        word-break:break-word !important;
-
-      }
-
-
-      /* -----------------------------------------------
-         HIDE BUTTONS
-      ------------------------------------------------ */
-
-      .success-actions,
-      .note,
-      .back-link{
-
-        display:none !important;
-
-      }
-
-
-      /* -----------------------------------------------
-         FOOTER
-      ------------------------------------------------ */
-
-      .powered-footer{
-
-        display:block !important;
-
-        font-size:7.5px !important;
-
-        color:#777 !important;
-
-        margin:3mm 0 0 !important;
-
-        padding:0 !important;
-
-        text-align:center !important;
-
-      }
-
-    }
-
-  </style>
+  <link rel="stylesheet" href="style.css">
 
 </head>
 
-
 <body>
 
+  <main class="page">
 
-<!-- =====================================================
-     CELEBRATION
-===================================================== -->
+    <section class="card">
 
-<div id="celebration">
+      <div class="hero">
 
-  <div class="balloon b1"></div>
-  <div class="balloon b2"></div>
-  <div class="balloon b3"></div>
-  <div class="balloon b4"></div>
-  <div class="balloon b5"></div>
+        <img
+          src="assets/logo.webp"
+          class="logo"
+          alt="समाज लोगो"
+        >
 
-</div>
+        <div class="hero-text">
 
+          <p class="eyebrow">
+            जय माँ दंतेश्वरी • जय जोहार
+          </p>
 
-<!-- =====================================================
-     MAIN
-===================================================== -->
+          <h1>
+            अखिल भारतीय आदिवासी हलबा हलबी समाज
+          </h1>
 
-<main class="page success-page">
+          <h2>
+            बालोद महासभा
+          </h2>
 
-<section class="card">
+          <p class="subtitle">
+            पंजीयन सफल
+          </p>
 
-
-  <!-- HEADER -->
-
-  <div class="hero">
-
-    <img
-      src="assets/logo.webp"
-      class="logo"
-      alt="अखिल भारतीय आदिवासी हल्बा हल्बी समाज लोगो"
-    >
-
-    <div class="hero-text">
-
-      <p class="eyebrow">
-        जय माँ दंतेश्वरी • जय जोहार
-      </p>
-
-      <h1>
-        अखिल भारतीय आदिवासी हल्बा हल्बी समाज
-      </h1>
-
-      <h2>
-        बालोद महासभा
-      </h2>
-
-    </div>
-
-  </div>
-
-
-  <!-- SUCCESS -->
-
-  <div class="success-header">
-
-    <div class="success-icon">
-      ✓
-    </div>
-
-    <h1>
-      पंजीयन सफलतापूर्वक हो गया!
-    </h1>
-
-    <p>
-      आपका पंजीयन सुरक्षित रूप से दर्ज हो गया है।
-    </p>
-
-    <p>
-      नीचे आपके द्वारा जमा की गई जानकारी दी गई है।
-    </p>
-
-  </div>
-
-
-  <!-- REGISTRATION -->
-
-  <div class="registration-card">
-
-    <div class="registration-card-header">
-
-      <h2>
-        पंजीयन विवरण
-      </h2>
-
-      <div class="registration-id">
-
-        पंजीयन ID:
-
-        <span id="registrationId">
-          —
-        </span>
+        </div>
 
       </div>
 
-    </div>
 
+      <!-- Celebration -->
 
-    <table class="details-table">
-
-      <tbody id="detailsBody"></tbody>
-
-    </table>
-
-  </div>
-
-
-  <!-- ACTIONS -->
-
-  <div class="success-actions">
-
-    <button
-      type="button"
-      class="print-btn"
-      onclick="window.print()"
-    >
-      🖨️ पंजीयन प्रिंट करें
-    </button>
-
-
-    <a
-      href="index.html"
-      class="new-btn"
-    >
-      ➕ नया पंजीयन करें
-    </a>
-
-  </div>
-
-
-  <p class="note">
-
-    प्रिंट बटन से आप इस पंजीयन को
-    प्रिंट या PDF के रूप में सुरक्षित कर सकते हैं।
-
-  </p>
-
-
-  <p
-    class="privacy-note back-link"
-    style="text-align:center"
-  >
-
-    <a href="admin.html">
-      एडमिन लॉगिन
-    </a>
-
-  </p>
-
-
-  <!-- PRINT FOOTER -->
-
-  <div class="powered-footer">
-
-    Powered by Aarya Chiram
-
-  </div>
-
-
-</section>
-
-</main>
-
-
-<!-- =====================================================
-     DATA
-===================================================== -->
-
-<script>
-
-const data =
-  JSON.parse(
-    sessionStorage.getItem(
-      "halbaRegistration"
-    ) || "null"
-  );
-
-
-/* =====================================================
-   NO DATA
-===================================================== */
-
-if (!data) {
-
-  document.getElementById(
-    "detailsBody"
-  ).innerHTML = `
-
-    <tr>
-
-      <td
-        colspan="2"
-        style="text-align:center;padding:30px"
+      <div
+        id="celebration"
+        aria-hidden="true"
       >
+        🎉 🎊 🎉
+      </div>
 
-        पंजीयन विवरण उपलब्ध नहीं है।
 
-        <br><br>
+      <!-- Success Message -->
 
-        <a href="index.html">
-          वापस पंजीयन फॉर्म पर जाएँ
+      <section class="success-message">
+
+        <div class="success-icon">
+          ✓
+        </div>
+
+        <h2>
+          आपका पंजीयन सफलतापूर्वक हो गया है!
+        </h2>
+
+        <p>
+          हलबा हलबी समाज के पंजीयन में
+          आपका स्वागत है।
+        </p>
+
+      </section>
+
+
+      <!-- Registration Details -->
+
+      <section class="details-section">
+
+        <h3>
+          पंजीयन विवरण
+        </h3>
+
+        <div
+          id="registrationDetails"
+          class="details-grid"
+        >
+          डेटा लोड हो रहा है...
+        </div>
+
+      </section>
+
+
+      <!-- Actions -->
+
+      <div class="success-actions">
+
+        <button
+          type="button"
+          class="print-btn"
+          id="printBtn"
+        >
+          🖨️ पंजीयन प्रिंट करें
+        </button>
+
+        <a
+          href="index.html"
+          class="secondary-btn"
+        >
+          नया पंजीयन करें
         </a>
 
-      </td>
+        <a
+          href="admin.html"
+          class="secondary-btn"
+        >
+          एडमिन लॉगिन
+        </a>
 
-    </tr>
-
-  `;
-
-}
-
-
-/* =====================================================
-   SHOW DATA
-===================================================== */
-
-if (data) {
-
-  document.getElementById(
-    "registrationId"
-  ).textContent =
-    data.registrationId || "—";
+      </div>
 
 
-  const fields = [
+      <div class="note">
 
-    ["महासभा", data.mahasabha],
+        <strong>महत्वपूर्ण:</strong>
 
-    ["अन्य महासभा", data.otherMahasabha],
+        <br>
 
-    ["प्रतिभागी का नाम", data.participantName],
+        अपने पंजीयन विवरण को सुरक्षित रखें।
+        आवश्यकता होने पर इसका प्रिंट उपयोग किया
+        जा सकता है।
 
-    ["गोत्र", data.gotra],
-
-    ["टोटम", data.totem],
-
-    ["पिता का नाम", data.fatherName],
-
-    ["जन्मतिथि", data.dob],
-
-    ["लिंग", data.gender],
-
-    ["ईमेल", data.email],
-
-    ["कॉन्टेक्ट नम्बर", data.mobile],
-
-    ["जिला", data.district],
-
-    ["ब्लॉक / विकासखंड", data.block],
-
-    ["गाँव / नगर", data.village],
-
-    ["पूरा पता", data.address],
-
-    ["नियम एवं शर्तें", data.termsAccepted],
-
-    ["जानकारी पुष्टि", data.informationConfirmed],
-
-    ["पंजीयन समय", data.registrationTime]
-
-  ];
+      </div>
 
 
-  document.getElementById(
-    "detailsBody"
-  ).innerHTML =
-
-    fields
-
-      .filter(
-        ([label, value]) =>
-
-          value !== undefined &&
-          value !== null &&
-          value !== ""
-
-      )
-
-      .map(
-        ([label, value]) => `
-
-          <tr>
-
-            <th>
-              ${escapeHtml(label)}
-            </th>
-
-            <td>
-              ${escapeHtml(value)}
-            </td>
-
-          </tr>
-
-        `
-      )
-
-      .join("");
-
-}
+      <p class="back-link">
+        <a href="index.html">
+          ← पंजीयन फॉर्म पर वापस जाएँ
+        </a>
+      </p>
 
 
-/* =====================================================
-   ESCAPE HTML
-===================================================== */
+      <div class="powered-footer">
+        Powered by Aaryan Chiram
+      </div>
 
-function escapeHtml(value) {
+    </section>
 
-  return String(value ?? "")
-
-    .replace(
-      /[&<>"']/g,
-
-      char => ({
-
-        "&": "&amp;",
-
-        "<": "&lt;",
-
-        ">": "&gt;",
-
-        '"': "&quot;",
-
-        "'": "&#39;"
-
-      }[char])
-
-    );
-
-}
+  </main>
 
 
-/* =====================================================
-   CELEBRATION
-===================================================== */
+  <script>
 
-function startCelebration() {
+    /* =========================
+       READ REGISTRATION DATA
+    ========================= */
 
-  const container =
-    document.getElementById(
-      "celebration"
-    );
-
-
-  /* PAPERS */
-
-  for (
-    let i = 0;
-    i < 90;
-    i++
-  ) {
-
-    const paper =
-      document.createElement(
-        "div"
+    const details =
+      document.getElementById(
+        "registrationDetails"
       );
 
+    const printBtn =
+      document.getElementById(
+        "printBtn"
+      );
 
-    paper.className =
-      "paper";
-
-
-    paper.style.left =
-      Math.random() * 100 + "%";
-
-
-    paper.style.width =
-      (6 + Math.random() * 9) + "px";
+    let data = null;
 
 
-    paper.style.height =
-      (9 + Math.random() * 13) + "px";
+    try {
 
-
-    paper.style.background =
-      [
-        "#e74c3c",
-        "#f1c40f",
-        "#3498db",
-        "#2ecc71",
-        "#9b59b6",
-        "#e67e22"
-      ][
-        Math.floor(
-          Math.random() * 6
-        )
-      ];
-
-
-    paper.style.setProperty(
-      "--moveX",
-      (
-        Math.random() * 400 - 200
-      ) + "px"
-    );
-
-
-    paper.style.setProperty(
-      "--rotation",
-      (
-        Math.random() * 1000 - 500
-      ) + "deg"
-    );
-
-
-    paper.style.setProperty(
-      "--duration",
-      (
-        2.5 + Math.random() * 3
-      ) + "s"
-    );
-
-
-    paper.style.animationDelay =
-      (
-        Math.random() * .9
-      ) + "s";
-
-
-    container.appendChild(
-      paper
-    );
-
-  }
-
-
-  setTimeout(
-    createPopEffect,
-    2300
-  );
-
-
-  setTimeout(
-    () => {
-
-      container.innerHTML = "";
-
-    },
-    6500
-  );
-
-}
-
-
-/* =====================================================
-   POP EFFECT
-===================================================== */
-
-function createPopEffect() {
-
-  const container =
-    document.getElementById(
-      "celebration"
-    );
-
-
-  const positions = [
-
-    {
-      x: "13vw",
-      y: "25vh"
-    },
-
-    {
-      x: "28vw",
-      y: "18vh"
-    },
-
-    {
-      x: "48vw",
-      y: "20vh"
-    },
-
-    {
-      x: "69vw",
-      y: "18vh"
-    },
-
-    {
-      x: "86vw",
-      y: "24vh"
-    }
-
-  ];
-
-
-  positions.forEach(
-    position => {
-
-      for (
-        let i = 0;
-        i < 14;
-        i++
-      ) {
-
-        const pop =
-          document.createElement(
-            "span"
-          );
-
-
-        pop.className =
-          "pop";
-
-
-        pop.style.left =
-          position.x;
-
-
-        pop.style.top =
-          position.y;
-
-
-        pop.style.background =
-          [
-            "#e74c3c",
-            "#f1c40f",
-            "#3498db",
-            "#2ecc71",
-            "#9b59b6"
-          ][
-            Math.floor(
-              Math.random() * 5
-            )
-          ];
-
-
-        pop.style.setProperty(
-          "--x",
-          (
-            Math.random() * 180 - 90
-          ) + "px"
+      const savedData =
+        sessionStorage.getItem(
+          "halbaRegistration"
         );
 
+      if (savedData) {
 
-        pop.style.setProperty(
-          "--y",
-          (
-            Math.random() * 180 - 90
-          ) + "px"
-        );
-
-
-        pop.style.animationDelay =
-          (
-            Math.random() * .15
-          ) + "s";
-
-
-        container.appendChild(
-          pop
+        data = JSON.parse(
+          savedData
         );
 
       }
 
+    } catch (error) {
+
+      console.error(
+        "Registration data error:",
+        error
+      );
+
     }
-  );
-
-}
 
 
-/* =====================================================
-   START ANIMATION
-===================================================== */
+    /* =========================
+       ESCAPE HTML
+    ========================= */
 
-if (data) {
+    function esc(value) {
 
-  startCelebration();
+      return String(
+        value ?? ""
+      )
+        .replace(
+          /&/g,
+          "&amp;"
+        )
+        .replace(
+          /</g,
+          "&lt;"
+        )
+        .replace(
+          />/g,
+          "&gt;"
+        )
+        .replace(
+          /"/g,
+          "&quot;"
+        )
+        .replace(
+          /'/g,
+          "&#039;"
+        );
 
-}
+    }
 
-</script>
 
+    /* =========================
+       FORMAT VALUE
+    ========================= */
+
+    function valueOrDash(value) {
+
+      const text =
+        String(
+          value ?? ""
+        ).trim();
+
+      return text
+        ? text
+        : "—";
+
+    }
+
+
+    /* =========================
+       DISPLAY DETAILS
+    ========================= */
+
+    if (!data) {
+
+      details.innerHTML = `
+        <div class="message error">
+          पंजीयन विवरण उपलब्ध नहीं है।
+          कृपया पंजीयन फॉर्म से दोबारा प्रयास करें।
+        </div>
+      `;
+
+      printBtn.style.display = "none";
+
+    } else {
+
+      const fields = [
+
+        [
+          "महासभा",
+          data.mahasabha
+        ],
+
+        [
+          "अन्य महासभा",
+          data.otherMahasabha
+        ],
+
+        [
+          "प्रतिभागी का नाम",
+          data.participantName
+        ],
+
+        [
+          "गोत्र",
+          data.gotra
+        ],
+
+        [
+          "टोटम",
+          data.totem
+        ],
+
+        [
+          "पिता का नाम",
+          data.fatherName
+        ],
+
+        [
+          "जन्मतिथि",
+          data.dob
+        ],
+
+        [
+          "लिंग",
+          data.gender
+        ],
+
+        [
+          "ईमेल",
+          data.email
+        ],
+
+        [
+          "कॉन्टेक्ट नम्बर",
+          data.mobile
+        ],
+
+        [
+          "जिला",
+          data.district
+        ],
+
+        [
+          "संबंधित ब्लॉक",
+          data.relatedBlock
+        ],
+
+        [
+          "ब्लॉक / विकासखंड",
+          data.block
+        ],
+
+        [
+          "गाँव / नगर",
+          data.village
+        ],
+
+        [
+          "पूरा पता",
+          data.address
+        ],
+
+        [
+          "नियम एवं शर्तें",
+          data.termsAccepted
+        ],
+
+        [
+          "जानकारी पुष्टि",
+          data.informationConfirmed
+        ],
+
+        [
+          "पंजीयन समय",
+          data.registrationTime
+        ]
+
+      ];
+
+
+      details.innerHTML =
+        fields
+          .map(
+            ([label, value]) => `
+
+              <div class="detail-item">
+
+                <span class="detail-label">
+                  ${esc(label)}
+                </span>
+
+                <strong class="detail-value">
+                  ${esc(
+                    valueOrDash(value)
+                  )}
+                </strong>
+
+              </div>
+
+            `
+          )
+          .join("");
+
+    }
+
+
+    /* =========================
+       PRINT
+    ========================= */
+
+    printBtn.addEventListener(
+      "click",
+      () => {
+
+        window.print();
+
+      }
+    );
+
+
+  </script>
 
 </body>
 
 </html>
-<div class="powered-footer">
-  Powered by <strong>Aaryan Chiram</strong>
-</div>

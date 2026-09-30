@@ -923,3 +923,50 @@ textarea:focus {
     flex:1;
   }
 }
+/* ============================================================
+   POWERED BY AARYAN CHIRAM
+   ============================================================ */
+
+.powered-footer{
+  width:100%;
+  text-align:center;
+  margin:22px 0 4px;
+  padding:10px 8px;
+  color:#6b7778;
+  font-size:.82rem;
+  font-weight:700;
+  letter-spacing:.2px;
+}
+
+.powered-footer::before{
+  content:"";
+  display:block;
+  width:55px;
+  height:2px;
+  margin:0 auto 8px;
+  background:linear-gradient(
+    90deg,
+    transparent,
+    #e76f32,
+    transparent
+  );
+  border-radius:10px;
+}
+
+.powered-footer strong{
+  color:#0d6f6c;
+  font-weight:800;
+}
+
+@media print{
+  .powered-footer{
+    margin:6px 0 0;
+    padding:4px;
+    font-size:7px;
+  }
+
+  .powered-footer::before{
+    margin-bottom:3px;
+    width:35px;
+  }
+}

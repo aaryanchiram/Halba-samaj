@@ -493,9 +493,9 @@ textarea:focus {
     min-width: 210mm !important;
     max-width: 210mm !important;
 
-    height: 297mm !important;
+    height: 500mm !important;
     min-height: 297mm !important;
-    max-height: 297mm !important;
+    max-height: 500mm !important;
 
     margin: 0 !important;
     padding: 0 !important;
@@ -510,7 +510,7 @@ textarea:focus {
   }
 
   body {
-    font-size: 9px !important;
+    font-size: 14px !important;
     line-height: 1.08 !important;
   }
 
@@ -522,9 +522,9 @@ textarea:focus {
     width: 202mm !important;
     max-width: 202mm !important;
 
-    height: 289mm !important;
+    height: 500mm !important;
     min-height: 289mm !important;
-    max-height: 289mm !important;
+    max-height: 500mm !important;
 
     margin: 0 auto !important;
     padding: 0 !important;
@@ -538,9 +538,9 @@ textarea:focus {
     width: 202mm !important;
     max-width: 202mm !important;
 
-    height: 289mm !important;
+    height: 500mm !important;
     min-height: 289mm !important;
-    max-height: 289mm !important;
+    max-height: 500mm !important;
 
     margin: 0 !important;
     padding: 0 !important;

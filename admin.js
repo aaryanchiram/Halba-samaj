@@ -1,5 +1,5 @@
 /* Use the same deployed Apps Script /exec URL as script.js. */
-const APPS_SCRIPT_URL = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwoPRbJjgxXsoToR2A2L_b7bkfAQAUkOHVd2UNvt1EqWtngM2FVsoQ3cu2KE9LaIOZt/exec";
 const loginForm = document.getElementById("loginForm");
 const loginBtn = document.getElementById("loginBtn");
 const loginPanel = document.getElementById("loginPanel");

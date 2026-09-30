@@ -667,17 +667,10 @@ loginForm?.addEventListener(
     }
 
 
-    if (
-      username !== ADMIN_USERNAME
-    ) {
-
-      showMessage(
-        "गलत एडमिन यूज़रनेम।",
-        "error"
-      );
-
-      return;
-    }
+    if (username !== "admin") {
+  showMessage("गलत एडमिन यूज़रनेम।", "error");
+  return;
+}
 
 
     try {

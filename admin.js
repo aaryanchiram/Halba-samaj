@@ -1533,3 +1533,279 @@ printListBtn.addEventListener(
 
   }
 );
+// ============================================================
+// EXCEL DOWNLOAD
+// ============================================================
+
+const downloadExcelBtn =
+  document.getElementById("downloadExcelBtn");
+
+if (downloadExcelBtn) {
+
+  downloadExcelBtn.addEventListener(
+    "click",
+    downloadExcel
+  );
+
+}
+
+
+// ============================================================
+// EXCEL DATE FORMAT
+// ============================================================
+
+function excelDateValue(timestamp) {
+
+  if (
+    timestamp &&
+    typeof timestamp.toDate === "function"
+  ) {
+
+    return timestamp
+      .toDate()
+      .toLocaleString("hi-IN");
+
+  }
+
+  if (timestamp instanceof Date) {
+
+    return timestamp
+      .toLocaleString("hi-IN");
+
+  }
+
+  return "";
+
+}
+
+
+// ============================================================
+// DOWNLOAD FIRESTORE DATA AS EXCEL
+// ============================================================
+
+function downloadExcel() {
+
+  const list = filteredRecords();
+
+  if (!list.length) {
+
+    showMessage(
+      "❌ Excel डाउनलोड करने के लिए कोई रिकॉर्ड नहीं मिला।",
+      "error"
+    );
+
+    return;
+  }
+
+
+  // XLSX library check
+
+  if (typeof XLSX === "undefined") {
+
+    showMessage(
+      "❌ Excel लाइब्रेरी लोड नहीं हुई। Internet connection जाँचें।",
+      "error"
+    );
+
+    return;
+  }
+
+
+  downloadExcelBtn.disabled = true;
+
+  downloadExcelBtn.textContent =
+    "⏳ Excel तैयार हो रहा है...";
+
+
+  try {
+
+    // ========================================================
+    // EXCEL DATA
+    // ========================================================
+
+    const excelData = list.map(
+      (record, index) => ({
+
+        "क्रम":
+          index + 1,
+
+        "पंजीयन ID":
+          record.id || "",
+
+        "महासभा":
+          record.mahasabha || "",
+
+        "अन्य महासभा":
+          record.otherMahasabha || "",
+
+        "प्रतिभागी का नाम":
+          record.participantName || "",
+
+        "गोत्र":
+          record.gotra || "",
+
+        "टोटम":
+          record.totem || "",
+
+        "पिता का नाम":
+          record.fatherName || "",
+
+        "जन्मतिथि":
+          record.dob || "",
+
+        "लिंग":
+          record.gender || "",
+
+        "ईमेल":
+          record.email || "",
+
+        "मोबाइल":
+          record.mobile || "",
+
+        "जिला":
+          record.district || "",
+
+        "ब्लॉक / विकासखंड":
+          record.block || "",
+
+        "गाँव / नगर":
+          record.village || "",
+
+        "पूरा पता":
+          record.address || "",
+
+        "नियम एवं शर्तें":
+          record.termsAccepted || "",
+
+        "जानकारी पुष्टि":
+          record.informationConfirmed || "",
+
+        "स्थिति":
+          record.status || "",
+
+        "पंजीयन समय":
+          excelDateValue(
+            record.createdAt
+          )
+
+      })
+    );
+
+
+    // ========================================================
+    // CREATE WORKSHEET
+    // ========================================================
+
+    const worksheet =
+      XLSX.utils.json_to_sheet(
+        excelData
+      );
+
+
+    // ========================================================
+    // COLUMN WIDTH
+    // ========================================================
+
+    worksheet["!cols"] = [
+
+      { wch: 7 },   // क्रम
+      { wch: 28 },  // ID
+      { wch: 22 },  // महासभा
+      { wch: 22 },  // अन्य महासभा
+      { wch: 25 },  // नाम
+      { wch: 18 },  // गोत्र
+      { wch: 18 },  // टोटम
+      { wch: 25 },  // पिता
+      { wch: 15 },  // DOB
+      { wch: 14 },  // Gender
+      { wch: 30 },  // Email
+      { wch: 16 },  // Mobile
+      { wch: 22 },  // District
+      { wch: 22 },  // Block
+      { wch: 25 },  // Village
+      { wch: 40 },  // Address
+      { wch: 22 },  // Terms
+      { wch: 22 },  // Confirmation
+      { wch: 14 },  // Status
+      { wch: 25 }   // Created
+    ];
+
+
+    // ========================================================
+    // CREATE WORKBOOK
+    // ========================================================
+
+    const workbook =
+      XLSX.utils.book_new();
+
+
+    XLSX.utils.book_append_sheet(
+      workbook,
+      worksheet,
+      "पंजीयन डेटा"
+    );
+
+
+    // ========================================================
+    // FILE NAME
+    // ========================================================
+
+    const now =
+      new Date();
+
+
+    const date =
+      now.toISOString()
+        .slice(0, 10);
+
+
+    const time =
+      now.toTimeString()
+        .slice(0, 8)
+        .replace(/:/g, "-");
+
+
+    const filename =
+      `Halba-Samaj-Registration-${date}-${time}.xlsx`;
+
+
+    // ========================================================
+    // DOWNLOAD
+    // ========================================================
+
+    XLSX.writeFile(
+      workbook,
+      filename
+    );
+
+
+    showMessage(
+      `✅ ${list.length} रिकॉर्ड Excel में डाउनलोड हो गए।`,
+      "success"
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Excel Export Error:",
+      error
+    );
+
+    showMessage(
+      "❌ Excel फाइल तैयार नहीं हो सकी।",
+      "error"
+    );
+
+
+  } finally {
+
+    downloadExcelBtn.disabled =
+      false;
+
+    downloadExcelBtn.textContent =
+      "📥 Excel डाउनलोड";
+
+  }
+
+}

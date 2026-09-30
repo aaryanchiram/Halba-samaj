@@ -940,123 +940,114 @@ async function submitRegistration(
 
 
     // --------------------------------------------------------
-    // INSERT INTO SUPABASE
-    // --------------------------------------------------------
+// INSERT INTO SUPABASE
+// --------------------------------------------------------
 
-    const {
-  
-      error
-    } = await supabase
-      .from("registrations")
-      .insert([data]);
+const { error } = await supabase
+  .from("registrations")
+  .insert([data]);
 
 
-    // --------------------------------------------------------
-    // ERROR
-    // --------------------------------------------------------
+// --------------------------------------------------------
+// ERROR
+// --------------------------------------------------------
 
-    if (error) {
+if (error) {
 
-      console.error(
-        "Supabase insert error:",
-        error
-      );
+  console.error(
+    "Supabase insert error:",
+    error
+  );
 
+  console.error(
+    "Supabase error code:",
+    error.code
+  );
 
-      // Unique registration ID
-      if (
-        error.code ===
-        "23505"
-      ) {
-
-        showMessage(
-          "पंजीयन क्रमांक पहले से मौजूद है। कृपया दोबारा प्रयास करें।"
-        );
-
-      }
-
-      // RLS / permission
-      else if (
-        error.code ===
-        "42501"
-      ) {
-
-        showMessage(
-          "डेटाबेस अनुमति में समस्या है। Supabase RLS Policy जाँचें।"
-        );
-
-      }
-
-      else {
-
-        showMessage(
-          "पंजीयन सुरक्षित नहीं हो सका। कृपया कुछ देर बाद पुनः प्रयास करें।"
-        );
-
-      }
+  console.error(
+    "Supabase error message:",
+    error.message
+  );
 
 
-      return;
-    }
+  if (error.code === "23505") {
 
-
-    // --------------------------------------------------------
-    // SUCCESS
-    // --------------------------------------------------------
-
-    console.log(
-      "Registration successful:",
-      insertedData
+    showMessage(
+      "पंजीयन क्रमांक पहले से मौजूद है। कृपया दोबारा प्रयास करें।"
     );
-
-
-    const savedRegistration = {
-
-      registration_id:
-        registrationId,
-
-      participant_name:
-        data.participant_name,
-
-      father_name:
-        data.father_name,
-
-      mobile:
-        data.mobile,
-
-      district:
-        data.district,
-
-      block:
-        data.block,
-
-      village:
-        data.village,
-
-      created_at:
-        insertedData?.created_at ||
-        new Date().toISOString()
-
-    };
-
-
-    // Session storage
-    sessionStorage.setItem(
-      "halbaRegistrationSuccess",
-      JSON.stringify(
-        savedRegistration
-      )
-    );
-
-
-    // --------------------------------------------------------
-    // REDIRECT TO SUCCESS PAGE
-    // --------------------------------------------------------
-
-    window.location.href =
-      "success.html";
 
   }
+
+  else if (
+    error.code === "42501"
+  ) {
+
+    showMessage(
+      "Supabase में database permission/RLS की समस्या है।"
+    );
+
+  }
+
+  else {
+
+    showMessage(
+      "पंजीयन सुरक्षित नहीं हो सका। कृपया कुछ देर बाद पुनः प्रयास करें।"
+    );
+
+  }
+
+  return;
+}
+
+
+// --------------------------------------------------------
+// SUCCESS
+// --------------------------------------------------------
+
+const savedRegistration = {
+
+  registration_id:
+    registrationId,
+
+  participant_name:
+    data.participant_name,
+
+  father_name:
+    data.father_name,
+
+  mobile:
+    data.mobile,
+
+  district:
+    data.district,
+
+  block:
+    data.block,
+
+  village:
+    data.village,
+
+  created_at:
+    new Date().toISOString()
+
+};
+
+
+sessionStorage.setItem(
+  "halbaRegistrationSuccess",
+  JSON.stringify(
+    savedRegistration
+  )
+);
+
+
+// --------------------------------------------------------
+// REDIRECT
+// --------------------------------------------------------
+
+window.location.href =
+  "success.html";
+      
 
   catch (error) {
 

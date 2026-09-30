@@ -1,0 +1,39 @@
+*{box-sizing:border-box}
+:root{--teal:#0d6f6c;--teal2:#124e52;--orange:#e76f32;--cream:#fffaf3;--ink:#183536;--muted:#6b7778;--line:#dbe6e3;--white:#fff}
+html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,"Noto Sans Devanagari","Mangal",sans-serif;color:var(--ink);background:#eef5f2}
+body{padding:24px 14px;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.35;background-image:radial-gradient(circle at 10px 10px,#d4e4df 1px,transparent 1px);background-size:20px 20px}
+.page{max-width:1000px;margin:auto;position:relative}
+.card{position:relative;overflow:hidden;background:rgba(255,255,255,.97);border:1px solid #dce8e5;border-radius:26px;box-shadow:0 20px 60px rgba(18,78,82,.13);padding:28px}
+.hero{position:relative;display:flex;gap:22px;align-items:center;padding:20px 22px;border-radius:20px;background:linear-gradient(135deg,#eff9f5,#fff8ef);border:1px solid #d9ebe5}
+.logo{width:125px;height:125px;object-fit:contain;flex:0 0 auto;filter:drop-shadow(0 8px 12px rgba(0,0,0,.08))}
+.eyebrow{margin:0 0 5px;color:var(--orange);font-weight:800;font-size:.9rem}
+h1{margin:0;color:var(--teal2);font-size:clamp(1.35rem,3.2vw,2.1rem);line-height:1.25}
+h2{margin:5px 0 4px;color:var(--orange);font-size:clamp(1.35rem,3vw,1.9rem)}
+.subtitle{margin:0;color:var(--muted);font-weight:650}
+.watermark{position:absolute;right:-100px;bottom:120px;width:450px;opacity:.035;pointer-events:none}
+.watermark img{width:100%}
+.section-title{display:flex;align-items:center;gap:12px;margin:30px 0 16px}
+.section-title>span{display:grid;place-items:center;width:39px;height:39px;border-radius:12px;background:var(--teal);color:#fff;font-weight:800}
+.section-title b{display:block;font-size:1.05rem}.section-title small{display:block;color:var(--muted);margin-top:2px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.field{display:flex;flex-direction:column;gap:7px;position:relative;z-index:1}
+.field.full{grid-column:1/-1}
+.field>span{font-weight:750;font-size:.94rem}
+.field i{color:#d84e2d;font-style:normal}
+input,select,textarea{width:100%;border:1px solid var(--line);background:#fff;border-radius:13px;padding:13px 14px;font:inherit;color:var(--ink);outline:none;transition:.18s}
+textarea{resize:vertical;min-height:100px}
+input:focus,select:focus,textarea:focus{border-color:#4caaa0;box-shadow:0 0 0 4px rgba(76,170,160,.12)}
+.consent{display:flex;align-items:flex-start;gap:9px;margin:22px 0 18px;color:#445657;font-size:.92rem}
+.consent input{width:18px;height:18px;margin-top:2px;accent-color:var(--teal);flex:0 0 auto}.consent label{line-height:1.55}.consent a{color:var(--teal);font-weight:800;text-decoration:none;border-bottom:1px dashed var(--teal)}.consent a:hover{text-decoration:underline}.consent i{color:#d84e2d;font-style:normal}
+.submit-btn{position:relative;z-index:2;width:100%;border:0;border-radius:15px;padding:15px 18px;background:linear-gradient(100deg,var(--teal2),var(--teal));color:#fff;font:800 1.05rem inherit;display:flex;align-items:center;justify-content:center;gap:15px;cursor:pointer;box-shadow:0 10px 22px rgba(13,111,108,.22);transition:.18s}
+.submit-btn:hover{transform:translateY(-1px)}.submit-btn:disabled{opacity:.6;cursor:wait;transform:none}
+.submit-btn b{font-size:1.35rem}
+.privacy-note{text-align:center;color:#7b8585;font-size:.78rem;margin:12px 0 0}
+.message{display:none;margin:18px 0;padding:14px 16px;border-radius:13px;position:relative;z-index:3;font-weight:650}
+.message.show{display:block}.message.success{background:#e8f7ef;color:#14643d;border:1px solid #bfe7d0}.message.error{background:#fff0ed;color:#8d3025;border:1px solid #f1c5bd}.message.info{background:#edf7f8;color:#145c60;border:1px solid #c5e3e4}
+.hidden{display:none!important}.hidden-frame{display:none}
+.duplicate-box{margin-top:10px;padding:14px;border-radius:12px;background:#fffaf0;border:1px solid #f0d6a8}
+.duplicate-box button{margin-top:10px;border:0;border-radius:9px;padding:10px 14px;background:var(--orange);color:#fff;font-weight:750;cursor:pointer}
+@media(max-width:700px){body{padding:10px}.card{padding:15px;border-radius:20px}.hero{padding:16px;gap:12px;align-items:flex-start}.logo{width:82px;height:82px}.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.section-title{margin-top:24px}}
+.print-btn{border:0;border-radius:10px;padding:10px 14px;background:var(--orange);color:#fff;font:inherit;font-weight:800;cursor:pointer;margin-top:8px}

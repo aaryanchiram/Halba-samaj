@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f6b68">
+  <title>अखिल भारतीय आदिवासी हल्बा हल्बी समाज बालोद महासभा</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="page">
+    <section class="card">
+      <div class="hero">
+        <img src="assets/logo.webp" class="logo" alt="अखिल भारतीय आदिवासी हल्बा हल्बी समाज लोगो">
+        <div class="hero-text">
+          <p class="eyebrow">जय माँ दंतेश्वरी • जय जोहार</p>
+          <h1>अखिल भारतीय आदिवासी हल्बा हल्बी समाज</h1>
+          <h2>बालोद महासभा</h2>
+          <p class="subtitle">प्रतिभागी पंजीयन फॉर्म</p>
+        </div>
+      </div>
+
+      <div class="watermark" aria-hidden="true">
+        <img src="assets/logo.webp" alt="">
+      </div>
+
+      <div id="message" class="message" role="status" aria-live="polite"></div>
+
+      <form id="registrationForm" autocomplete="on">
+        <div class="section-title"><span>01</span><div><b>महासभा एवं प्रतिभागी</b><small>कृपया सही जानकारी भरें</small></div></div>
+
+        <div class="grid">
+          <label class="field">
+            <span>महासभा <i>*</i></span>
+            <select id="mahasabha" name="mahasabha" required>
+              <option value="">-- महासभा चुनें --</option>
+              <option value="बालोद महासभा">1. बालोद महासभा</option>
+              <option value="अन्य">2. अन्य</option>
+            </select>
+          </label>
+
+          <label class="field hidden" id="otherMahasabhaWrap">
+            <span>अन्य महासभा का नाम <i>*</i></span>
+            <input id="otherMahasabha" name="otherMahasabha" maxlength="120" placeholder="महासभा का नाम लिखें">
+          </label>
+
+          <label class="field">
+            <span>प्रतिभागी का नाम <i>*</i></span>
+            <input name="participantName" required maxlength="120" placeholder="पूरा नाम">
+          </label>
+
+          <label class="field">
+            <span>गोत्र <i>*</i></span>
+            <input name="gotra" required maxlength="80" placeholder="गोत्र">
+          </label>
+
+          <label class="field">
+            <span>टोटम <i>*</i></span>
+            <input name="totem" required maxlength="80" placeholder="टोटम">
+          </label>
+
+          <label class="field">
+            <span>पिता का नाम <i>*</i></span>
+            <input name="fatherName" required maxlength="120" placeholder="पिता का पूरा नाम">
+          </label>
+
+          <label class="field">
+            <span>जन्मतिथि <i>*</i></span>
+            <input type="date" name="dob" required>
+          </label>
+
+          <label class="field">
+            <span>लिंग <i>*</i></span>
+            <select name="gender" required>
+              <option value="">-- लिंग चुनें --</option>
+              <option value="पुरुष">पुरुष</option>
+              <option value="महिला">महिला</option>
+              <option value="अन्य">अन्य</option>
+              <option value="बताना नहीं चाहते">बताना नहीं चाहते</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="section-title"><span>02</span><div><b>संपर्क विवरण</b><small>ईमेल और मोबाइल से डुप्लीकेट जाँच होगी</small></div></div>
+
+        <div class="grid">
+          <label class="field">
+            <span>ईमेल <i>*</i></span>
+            <input type="email" name="email" required maxlength="160" placeholder="example@email.com">
+          </label>
+
+          <label class="field">
+            <span>कॉन्टेक्ट नम्बर <i>*</i></span>
+            <input type="tel" id="mobile" name="mobile" required inputmode="numeric" maxlength="10" pattern="[6-9][0-9]{9}" placeholder="10 अंकों का मोबाइल नम्बर">
+          </label>
+
+          <label class="field">
+            <span>जिला <i>*</i></span>
+            <select id="district" name="district" required>
+              <option value="">-- जिला चुनें --</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>ब्लॉक / विकासखंड <i>*</i></span>
+            <select id="block" name="block" required disabled>
+              <option value="">-- पहले जिला चुनें --</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>गाँव / नगर <i>*</i></span>
+            <input name="village" required maxlength="120" placeholder="गाँव या नगर लिखें">
+          </label>
+          <label class="field full">
+            <span>पूरा पता <i>*</i></span>
+            <textarea name="address" required maxlength="500" rows="4" placeholder="मोहल्ला/वार्ड, पोस्ट, तहसील, राज्य आदि"></textarea>
+          </label>
+        </div>
+
+        <div class="consent terms-consent">
+          <input type="checkbox" id="termsAccepted" name="termsAccepted" value="हाँ" required>
+          <label for="termsAccepted">मैंने <a href="terms.html" target="_blank" rel="noopener">नियम एवं शर्तें</a> पढ़ ली हैं और उनका पालन करने के लिए सहमत हूँ। <i>*</i></label>
+        </div>
+
+        <div class="consent">
+          <input type="checkbox" id="consent" name="informationConfirmed" value="हाँ" required>
+          <label for="consent">मैंने दी गई जानकारी जाँचकर सही रूप से भरी है। <i>*</i></label>
+        </div>
+
+        <button class="submit-btn" id="submitBtn" type="submit">
+          <span>पंजीयन सबमिट करें</span><b>→</b>
+        </button>
+        <p class="privacy-note">आपकी जानकारी केवल पंजीयन एवं संबंधित प्रशासनिक कार्य के लिए Google Sheet में सुरक्षित की जाएगी।</p>
+        <p class="privacy-note"><a href="admin.html">एडमिन लॉगिन</a></p>
+      </form>
+    </section>
+  </main>
+
+  <iframe name="appsScriptFrame" id="appsScriptFrame" class="hidden-frame" title="डेटा प्रोसेसिंग"></iframe>
+  <script src="script.js"></script>
+</body>
+</html>

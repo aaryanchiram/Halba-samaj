@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f6b68"><title>एडमिन डैशबोर्ड | बालोद महासभा</title>
+  <link rel="stylesheet" href="style.css"><link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <main class="page admin-page">
+    <section class="card">
+      <div class="hero">
+        <img src="assets/logo.webp" class="logo" alt="समाज लोगो">
+        <div class="hero-text"><p class="eyebrow">जय माँ दंतेश्वरी • जय जोहार</p><h1>अखिल भारतीय आदिवासी हलबा हलबी समाज</h1><h2>बालोद महासभा</h2><p class="subtitle">एडमिन डैशबोर्ड</p></div>
+      </div>
+      <div id="adminMessage" class="message" role="status" aria-live="polite"></div>
+      <section id="loginPanel" class="login-panel">
+        <h3>एडमिन लॉगिन</h3>
+        <form id="loginForm" autocomplete="on">
+          <label class="field"><span>यूज़रनेम</span><input name="username" required autocomplete="username"></label>
+          <label class="field"><span>पासवर्ड</span><input type="password" name="password" required autocomplete="current-password"></label>
+          <button class="submit-btn" id="loginBtn" type="submit"><span>लॉगिन करें</span><b>→</b></button>
+        </form>
+      </section>
+      <section id="dashboardPanel" class="hidden">
+        <div class="dashboard-heading"><div><h3>पंजीयन डैशबोर्ड</h3><p id="lastUpdated" class="privacy-note"></p></div><button type="button" class="secondary-btn" id="refreshBtn">रीफ्रेश</button><button type="button" class="logout-btn" id="logoutBtn">लॉगआउट</button></div>
+        <div class="stats-grid">
+          <article class="stat-card"><span>कुल पंजीयन</span><strong id="totalCount">0</strong></article>
+          <article class="stat-card"><span>पुरुष</span><strong id="maleCount">0</strong></article>
+          <article class="stat-card"><span>महिला</span><strong id="femaleCount">0</strong></article>
+          <article class="stat-card"><span>अन्य / नहीं बताया</span><strong id="otherCount">0</strong></article>
+        </div>
+        <div class="filters">
+          <label class="field"><span>जिला</span><select id="districtFilter"><option value="">सभी जिले</option></select></label>
+          <label class="field"><span>ब्लॉक</span><select id="blockFilter"><option value="">सभी ब्लॉक</option></select></label>
+          <label class="field"><span>गाँव</span><select id="villageFilter"><option value="">सभी गाँव</option></select></label>
+          <label class="field"><span>लिंग</span><select id="genderFilter"><option value="">सभी</option><option>पुरुष</option><option>महिला</option><option>अन्य</option><option>बताना नहीं चाहते</option></select></label>
+          <label class="field search-field"><span>नाम / ईमेल / मोबाइल खोजें</span><input id="searchFilter" placeholder="खोजें..."></label>
+        </div>
+        <div class="table-heading"><h3>पंजीयन सूची <span id="visibleCount">0</span></h3><button type="button" class="secondary-btn" id="printListBtn">सूची प्रिंट करें</button></div>
+        <div class="table-wrap"><table id="recordsTable"><thead><tr><th>क्रम</th><th>नाम</th><th>लिंग</th><th>जिला</th><th>ब्लॉक</th><th>गाँव</th><th>मोबाइल</th><th>ईमेल</th><th>प्रिंट</th></tr></thead><tbody id="recordsBody"><tr><td colspan="9">डेटा लोड नहीं हुआ।</td></tr></tbody></table></div>
+        <div class="location-summary"><section><h3>जिला अनुसार संख्या</h3><div id="districtSummary"></div></section><section><h3>ब्लॉक अनुसार संख्या</h3><div id="blockSummary"></div></section><section><h3>गाँव अनुसार संख्या</h3><div id="villageSummary"></div></section></div>
+      </section>
+      <p class="privacy-note"><a href="index.html">पंजीयन फॉर्म पर वापस जाएँ</a></p>
+    </section>
+  </main>
+  <iframe name="adminAppsScriptFrame" id="adminAppsScriptFrame" class="hidden-frame" title="एडमिन डेटा कनेक्शन"></iframe>
+  <script src="admin.js"></script>
+</body></html>

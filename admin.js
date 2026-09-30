@@ -701,50 +701,14 @@ loginForm?.addEventListener(
         error
       );
 
+console.error("ADMIN LOGIN ERROR CODE:", error.code);
+console.error("ADMIN LOGIN ERROR MESSAGE:", error.message);
 
-      let message =
-        "लॉगिन असफल हुआ।";
-
-
-      if (
-        error.code ===
-        "auth/invalid-credential"
-      ) {
-
-        message =
-          "यूज़रनेम या पासवर्ड गलत है।";
-
-      } else if (
-        error.code ===
-        "auth/user-not-found"
-      ) {
-
-        message =
-          "एडमिन Firebase Authentication में नहीं मिला।";
-
-      } else if (
-        error.code ===
-        "auth/wrong-password"
-      ) {
-
-        message =
-          "पासवर्ड गलत है।";
-
-      } else if (
-        error.code ===
-        "auth/too-many-requests"
-      ) {
-
-        message =
-          "बहुत अधिक प्रयास किए गए हैं। थोड़ी देर बाद पुनः प्रयास करें।";
-
-      }
-
-
-      showMessage(
-        message,
-        "error"
-      );
+showMessage(
+  `लॉगिन असफल: ${error.code || "Unknown Error"} — ${error.message || ""}`,
+  "error"
+);
+      
 
     } finally {
 
